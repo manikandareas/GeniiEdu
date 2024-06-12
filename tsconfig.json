@@ -9,8 +9,16 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "removeComments": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "noImplicitAny": true,
+
+    "target": "es2017",
+    "outDir": "out",
+    "sourceMap": true,
+
+
     "incremental": true,
     "plugins": [
       {
@@ -19,7 +27,8 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "baseUrl": "."
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
