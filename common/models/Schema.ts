@@ -1,5 +1,9 @@
 import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { uuidv7 } from "uuidv7";
+
+const customUniqueID = (identifier: string, size: number = 15) =>
+  `${identifier}${nanoid(size)}`;
 
 export const RoleEnum = pgEnum("role", ["teacher", "student"]);
 export const createdAt = timestamp("created_at", {
