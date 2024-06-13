@@ -1,9 +1,13 @@
 import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
-const RoleEnum = pgEnum("role", ["teacher", "student"]);
-const createdAt = timestamp("created_at", { mode: "string" }).defaultNow();
-const updatedAt = timestamp("updated_at", { mode: "string" }).defaultNow();
+export const RoleEnum = pgEnum("role", ["teacher", "student"]);
+export const createdAt = timestamp("created_at", {
+  mode: "string",
+}).defaultNow();
+export const updatedAt = timestamp("updated_at", {
+  mode: "string",
+}).defaultNow();
 
 export const users = pgTable("users", {
   id: text("user_id")
