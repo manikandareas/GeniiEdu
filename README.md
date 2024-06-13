@@ -39,7 +39,7 @@
 
 <!-- eraser-additional-files -->
 
-<a href="/README-Educational Platform ERD-1.eraserdiagram" data-element-id="UXdqLz9zRsihR-ooJqiT6"><img src="/.eraser/t6I16ZLb1y1Q3ZtsR7G8___LrUIYWCYGDbfR5WEkD4zsD0ZtOb2___---diagram----fae97a02c192f4fcd079dbcba3ed6e81-Educational-Platform-ERD.png" alt="" data-element-id="UXdqLz9zRsihR-ooJqiT6" /></a>
+<a href="/database-schema.eraserdiagram" data-element-id="UXdqLz9zRsihR-ooJqiT6"><img src="/.eraser/t6I16ZLb1y1Q3ZtsR7G8___LrUIYWCYGDbfR5WEkD4zsD0ZtOb2___---diagram----fae97a02c192f4fcd079dbcba3ed6e81-Educational-Platform-ERD.png" alt="" data-element-id="UXdqLz9zRsihR-ooJqiT6" /></a>
 
 <!-- end-eraser-additional-files -->
 
