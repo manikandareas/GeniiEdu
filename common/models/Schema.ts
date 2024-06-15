@@ -33,10 +33,47 @@ export const users = pgTable('users', {
     role: RoleEnum('role'),
     profilePicture: text('profile_picture'),
     bio: text('bio'),
-    googleId: text('google_id'),
-    githubId: text('github_id'),
+    isEmailVerified: boolean('is_email_verified').default(false),
+    onBoardingComplete: boolean('on_boarding_complete').default(false),
     createdAt,
     updatedAt,
+});
+
+export const oauthAccounts = pgTable('oauth_accounts', {
+    id: text('id')
+        .$defaultFn(() => uuidv7())
+        .primaryKey(),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    provider: text('provider').notNull(), // google, github
+    providerUserId: text('provider_user_id').notNull(),
+    accessToken: text('access_token').notNull(),
+    refreshToken: text('refresh_token'),
+    expiresAt: timestamp('expires_at', {
+        withTimezone: true,
+        mode: 'date',
+    }),
+});
+
+export const emailVerifications = pgTable('email_verifications', {
+    id: serial('email_verification_id').primaryKey(),
+    userId: text('user_id')
+        .references(() => users.id)
+        .notNull(),
+    code: text('code').notNull(),
+    sentAt: createdAt,
+});
+
+export const sessions = pgTable('sessions', {
+    id: text('session_id').primaryKey(),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    expiresAt: timestamp('expires_at', {
+        withTimezone: true,
+        mode: 'date',
+    }).notNull(),
 });
 
 export const notifications = pgTable('notifications', {
@@ -251,9 +288,4 @@ export const submissionsRelations = relations(submissions, ({ one }) => ({
 
 // ? Defining Zod Schemas
 
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
 import { relations } from 'drizzle-orm';
-
-export const insertUserSchema = createInsertSchema(users);
-export const selectUserSchema = createSelectSchema(users);

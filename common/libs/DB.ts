@@ -10,4 +10,6 @@ const pool = new Pool({
     database: Env.DATABASE_NAME as string,
 });
 
-export const db = drizzle(pool, { schema, logger: true });
+const db = drizzle(pool, { schema, logger: true });
+
+export default db;
