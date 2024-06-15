@@ -41,6 +41,13 @@ CREATE TABLE IF NOT EXISTS "classes" (
 	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "email_verifications" (
+	"email_verification_id" serial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"code" text NOT NULL,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "folders" (
 	"folder_id" text PRIMARY KEY NOT NULL,
 	"folder_name" text NOT NULL,
@@ -73,6 +80,22 @@ CREATE TABLE IF NOT EXISTS "notifications" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "oauth_accounts" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"provider" text NOT NULL,
+	"provider_user_id" text NOT NULL,
+	"access_token" text NOT NULL,
+	"refresh_token" text,
+	"expires_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "sessions" (
+	"session_id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "submissions" (
 	"submission_id" text PRIMARY KEY NOT NULL,
 	"assignment_id" text NOT NULL,
@@ -92,8 +115,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"role" "role",
 	"profile_picture" text,
 	"bio" text,
-	"google_id" text,
-	"github_id" text,
+	"is_email_verified" boolean DEFAULT false,
+	"on_boarding_complete" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
@@ -136,6 +159,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "email_verifications" ADD CONSTRAINT "email_verifications_user_id_users_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("user_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "folders" ADD CONSTRAINT "folders_class_id_classes_class_id_fk" FOREIGN KEY ("class_id") REFERENCES "public"."classes"("class_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -167,6 +196,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_users_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("user_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "oauth_accounts" ADD CONSTRAINT "oauth_accounts_user_id_users_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("user_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("user_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
