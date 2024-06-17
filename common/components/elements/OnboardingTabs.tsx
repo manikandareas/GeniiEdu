@@ -102,7 +102,6 @@ export function OnboardingTabs() {
                     </div>
                 </section>
             );
-
         case 1:
             return (
                 <section className='max-w-md'>
