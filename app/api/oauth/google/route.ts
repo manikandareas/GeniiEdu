@@ -7,16 +7,7 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from '@/common/libs/lucia/oauth';
 import { Env } from '@/common/libs/Env';
-
-interface GoogleUser {
-    id: string;
-    email: string;
-    verified_email: boolean;
-    name: string;
-    given_name: string;
-    picture: string;
-    locale: string;
-}
+import { GoogleAuthenticatedUser } from '@/common/types/Oauth.type';
 
 export const GET = async (req: NextRequest) => {
     try {
@@ -44,8 +35,6 @@ export const GET = async (req: NextRequest) => {
 
         const codeVerifier = cookies().get('codeVerifier')?.value;
         const savedState = cookies().get('state')?.value;
-
-        console.log({ codeVerifier, savedState, state });
 
         if (!codeVerifier || !savedState) {
             return Response.json(
@@ -79,16 +68,8 @@ export const GET = async (req: NextRequest) => {
                 method: 'GET',
             },
         );
-        console.log({
-            accessToken,
-            idToken,
-            accessTokenExpiresAt,
-            refreshToken,
-        });
 
-        const googleData = (await googleRes.json()) as GoogleUser;
-
-        console.log('google data', googleData);
+        const googleData = (await googleRes.json()) as GoogleAuthenticatedUser;
 
         let userId = '';
 
@@ -97,15 +78,12 @@ export const GET = async (req: NextRequest) => {
                 await trx.query.oauthAccounts.findFirst({
                     where: eq(oauthAccounts.providerUserId, googleData.id),
                 });
-            console.debug('User', registeredUserWithGoogle);
 
             if (!registeredUserWithGoogle) {
-                console.log('Creating user', registeredUserWithGoogle);
-
                 const createdUserRes = await trx
                     .insert(users)
                     .values({
-                        email: googleData.email,
+                        name: googleData.name,
                         username: googleData.given_name,
                         profilePicture: googleData.picture,
                     })
