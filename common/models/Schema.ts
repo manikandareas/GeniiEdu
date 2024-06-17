@@ -27,6 +27,7 @@ export const users = pgTable('users', {
     id: text('user_id')
         .$defaultFn(() => uuidv7())
         .primaryKey(),
+    name: text('name'),
     username: text('username'),
     email: text('email').unique(),
     passwordHash: text('password_hash'),

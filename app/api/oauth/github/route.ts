@@ -3,6 +3,7 @@ import { Env } from '@/common/libs/Env';
 import { lucia } from '@/common/libs/lucia';
 import { github } from '@/common/libs/lucia/oauth';
 import { oauthAccounts, users } from '@/common/models/Schema';
+import { GithubAuthenticatedUser } from '@/common/types/Oauth.type';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -55,7 +56,7 @@ export const GET = async (req: NextRequest) => {
             method: 'GET',
         });
 
-        const githubData = (await githubRes.json()) as any;
+        const githubData = (await githubRes.json()) as GithubAuthenticatedUser;
 
         console.log('githubData', githubData);
 
@@ -64,15 +65,18 @@ export const GET = async (req: NextRequest) => {
         await db.transaction(async (trx) => {
             const registeredUserWithGithub =
                 await trx.query.oauthAccounts.findFirst({
-                    where: eq(oauthAccounts.providerUserId, githubData.id),
+                    where: eq(
+                        oauthAccounts.providerUserId,
+                        githubData.id.toString(),
+                    ),
                 });
 
             if (!registeredUserWithGithub) {
                 const createdUserRes = await trx
                     .insert(users)
                     .values({
+                        name: githubData.name,
                         username: githubData.login,
-                        email: githubData.email,
                         profilePicture: githubData.avatar_url,
                     })
                     .returning({
@@ -96,7 +100,7 @@ export const GET = async (req: NextRequest) => {
                     .values({
                         accessToken,
                         provider: 'github',
-                        providerUserId: githubData.id,
+                        providerUserId: githubData.id.toString(),
                         userId: createdUserRes[0].id,
                     });
 
@@ -115,7 +119,12 @@ export const GET = async (req: NextRequest) => {
                     .set({
                         accessToken,
                     })
-                    .where(eq(oauthAccounts.providerUserId, githubData.id))
+                    .where(
+                        eq(
+                            oauthAccounts.providerUserId,
+                            githubData.id.toString(),
+                        ),
+                    )
                     .returning({
                         userId: oauthAccounts.userId,
                     });

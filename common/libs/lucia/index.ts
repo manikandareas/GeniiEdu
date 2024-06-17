@@ -23,6 +23,8 @@ export const lucia = new Lucia(adapter, {
             isEmailVerified: attributes.isEmailVerified,
             googleId: attributes.googleId,
             githubId: attributes.githubId,
+            onBoardingComplete: attributes.onBoardingComplete,
+            name: attributes.name,
         };
     },
 });
@@ -80,5 +82,7 @@ declare module 'lucia' {
         isEmailVerified: boolean;
         googleId?: string;
         githubId?: string;
+        onBoardingComplete: boolean;
+        name?: string;
     }
 }

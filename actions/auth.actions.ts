@@ -16,6 +16,7 @@ import React from 'react';
 import { z } from 'zod';
 import { sendEmail } from './email.actions';
 import { ActRes } from '@/common/types/Action.type';
+import { DefaultProfile } from '@/common/constants/DefaultProfile';
 
 // * Actions running expectedly
 export const resendEmailVerification = async (email: string) => {
@@ -141,10 +142,9 @@ export const signUp = async (
         const userId = await db
             .insert(Schema.users)
             .values({
-                // username: values.username,
                 email: values.email,
                 passwordHash: hashedPassword,
-                // role: values.role,
+                profilePicture: DefaultProfile.profilePicture,
             })
             .returning({
                 userId: Schema.users.id,
