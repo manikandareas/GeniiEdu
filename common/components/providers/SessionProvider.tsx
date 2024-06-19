@@ -1,5 +1,6 @@
 'use client';
 import { Session, User } from 'lucia';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 type SessionProviderContext = {
@@ -21,6 +22,9 @@ const SessionProvider: React.FC<SessionProviderProps> = (props) => {
         children,
         data: { user, session },
     } = props;
+
+    console.log('Session provider rerender');
+
     return (
         <sessionContext.Provider value={{ user, session }}>
             {children}

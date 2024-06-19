@@ -1,10 +1,8 @@
-'use client';
 import { Search } from 'lucide-react';
 
-import { useSession } from '../providers/SessionProvider';
 import { Input } from '../ui/input';
 import DropdownProfile from './DropdownProfile';
-import GenerateBreadcrumb, { BreadcrumbURLs } from './GenerateBreadcrumb';
+import GenerateBreadcrumb from './GenerateBreadcrumb';
 import SidebarOnSM from './SidebarOnSM';
 
 type HeaderProps = {
@@ -18,10 +16,6 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = (props) => {
-    const { user } = useSession();
-
-    console.log({ currentPath: props.currentPath });
-
     return (
         <header className='sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
             <SidebarOnSM />

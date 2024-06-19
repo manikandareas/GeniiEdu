@@ -15,11 +15,15 @@ const nextConfig = {
                 protocol: 'https',
             },
             {
-                hostname: 'res.cloudinary.com',
+                hostname: 'img.icons8.com',
                 protocol: 'https',
             },
             {
-                hostname: 'img.icons8.com',
+                hostname: 'picsum.photos',
+                protocol: 'https',
+            },
+            {
+                hostname: 'utfs.io',
                 protocol: 'https',
             },
         ],

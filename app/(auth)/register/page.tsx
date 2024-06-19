@@ -1,9 +1,8 @@
 import { Metadata } from 'next';
-
-import Register from '@/common/components/elements/Register';
 import RetroGrid from '@/common/components/ui/retro-grid';
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
+import Register from './_components/Register';
 
 export const metadata: Metadata = {
     title: 'Register',

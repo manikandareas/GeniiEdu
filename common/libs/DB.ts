@@ -1,4 +1,4 @@
-import * as schema from '@/common/models/Schema';
+import * as schema from '@/common/models/schema.model';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { Env } from './Env';
@@ -10,6 +10,6 @@ const pool = new Pool({
     database: Env.DATABASE_NAME as string,
 });
 
-const db = drizzle(pool, { schema, logger: true });
+const db = drizzle(pool, { schema });
 
 export default db;

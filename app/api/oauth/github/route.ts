@@ -2,7 +2,7 @@ import db from '@/common/libs/DB';
 import { Env } from '@/common/libs/Env';
 import { lucia } from '@/common/libs/lucia';
 import { github } from '@/common/libs/lucia/oauth';
-import { oauthAccounts, users } from '@/common/models/Schema';
+import { oauthAccounts, users } from '@/common/models/schema.model';
 import { GithubAuthenticatedUser } from '@/common/types/Oauth.type';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';

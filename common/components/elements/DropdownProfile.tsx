@@ -14,22 +14,31 @@ import { useSession } from '../providers/SessionProvider';
 import Link from 'next/link';
 import { signOut } from '@/actions/auth.actions';
 import { toast } from 'sonner';
+import { useAction } from 'next-safe-action/hooks';
 
 type DropdownProfileProps = {};
 
 const DropdownProfile: React.FC<DropdownProfileProps> = () => {
     const { user } = useSession();
+    const { execute, status } = useAction(signOut, {
+        onSuccess: ({ data }) => {
+            if (!data) throw new Error('Something went wrong');
 
-    const onSignOutClick = async () => {
-        console.log('logging out');
-        try {
-            const response = await signOut();
-            if (response.success) {
-                toast.success(response.message);
+            if (!data.success) {
+                toast.error(data.error);
+                return;
             }
-        } catch (error: any) {
-            toast.error(error.message);
-        }
+
+            toast.success(data.message);
+        },
+        onError: ({ error }) => {
+            console.error(JSON.stringify(error, null, 2));
+            // toast.error(error);
+        },
+    });
+
+    const onSignOutClick = () => {
+        execute();
     };
     return (
         <DropdownMenu>
@@ -40,6 +49,7 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                     className='overflow-hidden rounded-full'
                 >
                     <Image
+                        priority
                         src={user?.profilePicture ?? ''}
                         width={36}
                         height={36}
@@ -60,6 +70,7 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                     <Button
                         type='button'
                         onClick={onSignOutClick}
+                        disabled={status === 'executing'}
                         variant={'ghost'}
                         className='w-full justify-start text-start text-sm text-destructive'
                     >
