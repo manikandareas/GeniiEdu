@@ -6,30 +6,19 @@ import { Icons } from '../ui/icons';
 
 type ContinueWithGithubProps = {
     isLoading: boolean;
-    setIsLoading: (value: boolean) => void;
+    executeFn: () => void;
 };
 
 const ContinueWithGithub: React.FC<ContinueWithGithubProps> = ({
-    isLoading,
-    setIsLoading,
+    isLoading = false,
+    executeFn,
 }) => {
-    const onContinueWithGithubClicked = async () => {
-        setIsLoading(true);
-        console.debug('github sign in clicked');
-        const res = await createGithubAuthorizationURL();
-        if (res.error) {
-            toast.error(res.error);
-        } else if (res.success) {
-            window.location.href = res.data;
-        }
-        setIsLoading(false);
-    };
     return (
         <Button
             className='w-full'
             variant='outline'
             type='button'
-            onClick={onContinueWithGithubClicked}
+            onClick={executeFn}
         >
             {isLoading ? (
                 <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />

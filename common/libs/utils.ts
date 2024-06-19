@@ -17,3 +17,16 @@ export function generateRandomNumber(length: number): string {
 
     return result;
 }
+
+export const generateRandomToken = (length: number): string => {
+    const characters =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    const charactersLength = characters.length;
+    let token = '';
+    for (let i = 0; i < length; i++) {
+        token += characters.charAt(
+            Math.floor(Math.random() * charactersLength),
+        );
+    }
+    return token;
+};

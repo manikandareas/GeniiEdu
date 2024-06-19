@@ -1,13 +1,13 @@
-import { fontInter } from '@/common/libs/Fonts';
-import type { Metadata } from 'next';
-import './globals.css';
+import ApplicationLayout from '@/common/components/elements/ApplicationLayout';
+import ReactQueryProvider from '@/common/components/providers/ReactQueryProvider';
+import SessionProvider from '@/common/components/providers/SessionProvider';
 import { ThemeProvider } from '@/common/components/providers/ThemeProvider';
 import { Toaster } from '@/common/components/ui/sonner';
-import SessionProvider from '@/common/components/providers/SessionProvider';
+import { fontInter } from '@/common/libs/Fonts';
 import { validateRequest } from '@/common/libs/lucia';
-import ReactQueryProvider from '@/common/components/providers/ReactQueryProvider';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import ApplicationLayout from '@/common/components/elements/ApplicationLayout';
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
     title: 'GeniiEdu',
@@ -22,7 +22,7 @@ export default async function RootLayout({
     const session = await validateRequest();
 
     return (
-        <html lang='en'>
+        <html lang='en' suppressHydrationWarning>
             <body className={fontInter.className}>
                 <SessionProvider data={session}>
                     <ReactQueryProvider>

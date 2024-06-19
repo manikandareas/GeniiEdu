@@ -1,4 +1,4 @@
 export const DefaultProfile = {
     profilePicture:
-        'https://res.cloudinary.com/dzfw66khj/image/upload/v1718550724/yellow-profile.webp',
+        'https://utfs.io/f/05c419fb-4080-4613-8de4-702c59b78162-8yg8gq.webp',
 };

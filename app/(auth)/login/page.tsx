@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 
 import RetroGrid from '@/common/components/ui/retro-grid';
-import Login from '@/common/components/elements/Login';
+
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
+import Login from './_components/Login';
 
 export const metadata: Metadata = {
     title: 'Login',

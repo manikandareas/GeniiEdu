@@ -1,5 +1,5 @@
-import { ProfileForm } from '@/common/components/elements/ProfileForm';
 import { Separator } from '@/common/components/ui/separator';
+import { ProfileForm } from './_components/ProfileForm';
 
 const SettingsProfilePage = () => {
     return (

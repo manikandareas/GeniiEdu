@@ -1,10 +1,9 @@
 import { Metadata } from 'next';
 
-import VerifyEmail from '@/common/components/elements/VerifyEmail';
+import { isEmailVerified } from '@/actions/auth.actions';
 import RetroGrid from '@/common/components/ui/retro-grid';
 import { notFound, redirect } from 'next/navigation';
-import { isEmailVerified } from '@/actions/auth.actions';
-import { toast } from 'sonner';
+import VerifyEmail from './_components/VerifyEmail';
 
 export const metadata: Metadata = {
     title: 'Verify Email',
@@ -22,9 +21,13 @@ const VerifyEmailPage = async (props: VerifyEmailPageProps) => {
         return notFound();
     }
     // ? Check if email is already verified and exists in the database
-    const { data: isVerified, success } = await isEmailVerified(
-        props.searchParams.email,
-    );
+    const response = await isEmailVerified(props.searchParams.email);
+
+    if (!response?.data) {
+        throw new Error('Something went wrong');
+    }
+
+    const { success, data: isVerified } = response.data;
 
     // ? If user not found or email is't valid
     if (!success) {

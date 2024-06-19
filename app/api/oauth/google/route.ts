@@ -1,5 +1,5 @@
 import db from '@/common/libs/DB';
-import { oauthAccounts, users } from '@/common/models/Schema';
+import { oauthAccounts, users } from '@/common/models/schema.model';
 import { lucia } from '@/common/libs/lucia';
 
 import { eq } from 'drizzle-orm';

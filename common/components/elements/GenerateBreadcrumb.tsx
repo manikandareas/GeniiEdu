@@ -7,6 +7,7 @@ import {
     BreadcrumbSeparator,
     BreadcrumbPage,
 } from '../ui/breadcrumb';
+import { nanoid } from 'nanoid';
 
 export type BreadcrumbURLs = {
     name: string;
@@ -22,7 +23,7 @@ const GenerateBreadcrumb: React.FC<GenerateBreadcrumbProps> = (props) => {
         <Breadcrumb className='mb-5'>
             <BreadcrumbList>
                 {props.urls.map((item, idx) => (
-                    <React.Fragment key={crypto.randomUUID.toString()}>
+                    <React.Fragment key={nanoid()}>
                         <BreadcrumbItem>
                             {props.urls.length - 1 !== idx ? (
                                 <BreadcrumbLink href={item.href}>

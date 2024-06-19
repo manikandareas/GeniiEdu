@@ -1,6 +1,6 @@
-import { OnboardingTabs } from '@/common/components/elements/OnboardingTabs';
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
+import { OnboardingTabs } from './_components/OnboardingTabs';
 
 type OnBoardingPageProps = {};
 

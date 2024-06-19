@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
-import ForgotPassword from '@/common/components/elements/ForgotPassword';
 import RetroGrid from '@/common/components/ui/retro-grid';
+import ForgotPassword from './_components/ForgotPassword';
 
 export const metadata: Metadata = {
     title: 'Forgot Password',

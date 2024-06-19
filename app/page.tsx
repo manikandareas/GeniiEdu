@@ -1,6 +1,6 @@
-import { Dashboard } from '@/common/components/elements/Dashboard';
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
+import { Dashboard } from './_components/Dashboard';
 
 const HomePage = async () => {
     const { session, user } = await validateRequest();
