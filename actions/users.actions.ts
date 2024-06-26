@@ -29,17 +29,18 @@ export const onboardingProfile = async (
             return redirect('/login');
         }
 
-        const response = db
+        const response = await db
             .update(Schema.users)
             .set({
                 name: values.name,
                 username: values.username,
                 role: values.role,
                 onBoardingComplete: true,
+                updatedAt: new Date(),
             })
             .where(eq(Schema.users.id, user.id));
 
-        if ((await response).rowCount === 0) {
+        if (response.count === 0) {
             return {
                 success: false,
                 error: 'User not found',
@@ -88,3 +89,109 @@ export const isEmailExist = actionClient
             } satisfies ActRes;
         }
     });
+
+export const getStudentClasses = async () => {
+    const { user } = await validateRequest();
+
+    if (!user) {
+        throw new Error('Unauthorized');
+    }
+
+    try {
+        const userClasses = await db.query.classMembers.findMany({
+            where: eq(Schema.classMembers.userId, user.id),
+            with: {
+                class: {
+                    with: {
+                        teacher: true,
+                    },
+                },
+            },
+        });
+
+        if (userClasses.length === 0) {
+            return {
+                success: true,
+                data: {
+                    classes: [],
+                    metadata: {
+                        all: 0,
+                        ongoing: 0,
+                        completed: 0,
+                        archived: 0,
+                    },
+                },
+                message: "You don't have any classes 😢",
+            } satisfies ActRes;
+        }
+
+        return {
+            success: true,
+            data: {
+                classes: userClasses,
+                metadata: {
+                    all: userClasses.length,
+                    ongoing: userClasses.filter(
+                        (classMember) =>
+                            classMember.statusCompletion === 'ongoing',
+                    ).length,
+                    completed: userClasses.filter(
+                        (classMember) =>
+                            classMember.statusCompletion === 'completed',
+                    ).length,
+                    archived: userClasses.filter(
+                        (classMember) =>
+                            classMember.statusCompletion === 'archived',
+                    ).length,
+                },
+            },
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        } satisfies ActRes;
+    }
+};
+
+export const getTeacherClasses = async () => {
+    const { user } = await validateRequest();
+
+    if (!user) {
+        throw new Error('Unauthorized');
+    }
+
+    if (user.role !== 'teacher') {
+        throw new Error('Unauthorized');
+    }
+
+    try {
+        const teacherClasses = await db.query.classes.findMany({
+            where: eq(Schema.classes.teacherId, user.id),
+            with: {
+                teacher: true,
+            },
+        });
+
+        if (teacherClasses.length === 0) {
+            return {
+                success: true,
+                data: {
+                    classes: [],
+                    metadata: {
+                        all: 0,
+                        ongoing: 0,
+                        completed: 0,
+                        archived: 0,
+                    },
+                },
+                message: "You don't have any classes 😢",
+            } satisfies ActRes;
+        }
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};

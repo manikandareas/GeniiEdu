@@ -7,7 +7,7 @@ import { lucia } from '@/common/libs/lucia';
 import { github, google } from '@/common/libs/lucia/oauth';
 import { generateRandomNumber } from '@/common/libs/utils';
 import { AuthModel, Schema } from '@/common/models';
-import GeniiEduVerificationEmail from '@/common/templates/verify-email.template';
+import GeniiEduVerificationEmail from '@/common/emails/verify-email';
 import { ActRes } from '@/common/types/Action.type';
 import { generateCodeVerifier, generateState } from 'arctic';
 import * as argon from 'argon2';
@@ -62,7 +62,7 @@ export const resendEmailVerification = actionClient
 
             await db
                 .update(Schema.emailVerifications)
-                .set({ code, sentAt: new Date().toDateString() })
+                .set({ code, sentAt: new Date() })
                 .where(eq(Schema.emailVerifications.userId, existingUser.id));
 
             const token = jwt.sign(
@@ -162,7 +162,7 @@ export const signUp = actionClient
             await db.insert(Schema.emailVerifications).values({
                 code,
                 userId: registeredUserId,
-                sentAt: new Date().toDateString(),
+                sentAt: new Date(),
             });
 
             const token = jwt.sign(

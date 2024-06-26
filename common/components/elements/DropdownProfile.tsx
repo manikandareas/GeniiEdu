@@ -15,6 +15,17 @@ import Link from 'next/link';
 import { signOut } from '@/actions/auth.actions';
 import { toast } from 'sonner';
 import { useAction } from 'next-safe-action/hooks';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/common/components/ui/alert-dialog';
 
 type DropdownProfileProps = {};
 
@@ -67,15 +78,39 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Button
-                        type='button'
-                        onClick={onSignOutClick}
-                        disabled={status === 'executing'}
-                        variant={'ghost'}
-                        className='w-full justify-start text-start text-sm text-destructive'
-                    >
-                        Sign Out
-                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                type='button'
+                                variant={'ghost'}
+                                className='w-full justify-start text-start text-sm text-destructive'
+                            >
+                                Sign Out
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you sure you want to sign out?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Your current session will be terminated.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                                <Button
+                                    onClick={onSignOutClick}
+                                    disabled={status === 'executing'}
+                                    variant={'destructive'}
+                                    className='bg-red-600 text-foreground hover:bg-red-600'
+                                >
+                                    Sign Out
+                                </Button>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

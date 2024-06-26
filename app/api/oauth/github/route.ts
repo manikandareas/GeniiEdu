@@ -104,7 +104,7 @@ export const GET = async (req: NextRequest) => {
                         userId: createdUserRes[0].id,
                     });
 
-                if (createdOAuthAccountsRes.rowCount === 0) {
+                if (createdOAuthAccountsRes.count === 0) {
                     trx.rollback();
                     return Response.json(
                         { error: 'Failed to create OAuthAccountsRes' },

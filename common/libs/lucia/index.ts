@@ -2,7 +2,7 @@ import { Lucia } from 'lucia';
 import adapter from './adapter';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
-import { RoleEnum } from '@/common/models/Schema';
+import { RoleEnum } from '@/common/models/schema.model';
 
 export const lucia = new Lucia(adapter, {
     sessionCookie: {

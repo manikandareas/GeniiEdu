@@ -112,7 +112,7 @@ export const GET = async (req: NextRequest) => {
                         refreshToken,
                     });
 
-                if (createdOAuthAccountRes.rowCount === 0) {
+                if (createdOAuthAccountRes.count === 0) {
                     trx.rollback();
                     return Response.json(
                         { error: 'Failed to create OAuthAccountRes' },

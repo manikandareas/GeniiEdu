@@ -32,10 +32,30 @@ export const ourFileRouter = {
             // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
             return { uploadedBy: metadata.userId, url: file.url };
         }),
+    learningMaterialsFileUploader: f([
+        'pdf',
+        'application/vnd.ms-word.document.macroenabled.12',
+        'application/vnd.ms-powerpoint',
+    ])
+        .middleware(async ({ req }) => {
+            const { user } = await validateRequest();
+            if (!user) throw new UploadThingError('Unauthorized');
+            return { userId: user.id };
+        })
+        .onUploadComplete(async ({ metadata, file }) => {
+            // This code RUNS ON YOUR SERVER after upload
+            console.log('Upload complete for userId:', metadata.userId);
+
+            console.log('file url', file.url);
+
+            // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+            return { uploadedBy: metadata.userId, url: file.url };
+        }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
 
 import { UTApi } from 'uploadthing/server';
+import { generateReactHelpers } from '@uploadthing/react';
 
 export const utapi = new UTApi();

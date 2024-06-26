@@ -1,5 +1,5 @@
 {
-  "id": "99fcd03e-63d2-4146-a985-40c04d62165b",
+  "id": "871cab09-a6e2-43ff-a24b-599b3afeb7de",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -32,18 +32,25 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "posted_at": {
+          "name": "posted_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         },
-        "posted_by": {
-          "name": "posted_by",
+        "posted_by_id": {
+          "name": "posted_by_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -58,20 +65,108 @@
           "columnsTo": [
             "class_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "announcements_posted_by_users_user_id_fk": {
-          "name": "announcements_posted_by_users_user_id_fk",
+        "announcements_posted_by_id_users_user_id_fk": {
+          "name": "announcements_posted_by_id_users_user_id_fk",
           "tableFrom": "announcements",
           "tableTo": "users",
           "columnsFrom": [
-            "posted_by"
+            "posted_by_id"
           ],
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.assignment_modules": {
+      "name": "assignment_modules",
+      "schema": "",
+      "columns": {
+        "assignment_module_id": {
+          "name": "assignment_module_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "assignment_id": {
+          "name": "assignment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "module_id": {
+          "name": "module_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "assignment_modules_assignment_id_assignments_assignment_id_fk": {
+          "name": "assignment_modules_assignment_id_assignments_assignment_id_fk",
+          "tableFrom": "assignment_modules",
+          "tableTo": "assignments",
+          "columnsFrom": [
+            "assignment_id"
+          ],
+          "columnsTo": [
+            "assignment_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "assignment_modules_module_id_modules_module_id_fk": {
+          "name": "assignment_modules_module_id_modules_module_id_fk",
+          "tableFrom": "assignment_modules",
+          "tableTo": "modules",
+          "columnsFrom": [
+            "module_id"
+          ],
+          "columnsTo": [
+            "module_id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -88,12 +183,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "class_id": {
-          "name": "class_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "title": {
           "name": "title",
           "type": "text",
@@ -106,22 +195,28 @@
           "primaryKey": false,
           "notNull": true
         },
-        "due_date": {
-          "name": "due_date",
-          "type": "timestamp",
+        "file_path": {
+          "name": "file_path",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
+        "posted_by_id": {
+          "name": "posted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -129,17 +224,17 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "assignments_class_id_classes_class_id_fk": {
-          "name": "assignments_class_id_classes_class_id_fk",
+        "assignments_posted_by_id_users_user_id_fk": {
+          "name": "assignments_posted_by_id_users_user_id_fk",
           "tableFrom": "assignments",
-          "tableTo": "classes",
+          "tableTo": "users",
           "columnsFrom": [
-            "class_id"
+            "posted_by_id"
           ],
           "columnsTo": [
-            "class_id"
+            "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -168,16 +263,24 @@
           "primaryKey": false,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "role",
+        "status_completion": {
+          "name": "status_completion",
+          "type": "class_completion_status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'ongoing'"
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -195,7 +298,7 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "class_members_class_id_classes_class_id_fk": {
@@ -208,7 +311,83 @@
           "columnsTo": [
             "class_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.class_modules": {
+      "name": "class_modules",
+      "schema": "",
+      "columns": {
+        "class_module_id": {
+          "name": "class_module_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "class_id": {
+          "name": "class_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "module_id": {
+          "name": "module_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "class_modules_class_id_classes_class_id_fk": {
+          "name": "class_modules_class_id_classes_class_id_fk",
+          "tableFrom": "class_modules",
+          "tableTo": "classes",
+          "columnsFrom": [
+            "class_id"
+          ],
+          "columnsTo": [
+            "class_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "class_modules_module_id_modules_module_id_fk": {
+          "name": "class_modules_module_id_modules_module_id_fk",
+          "tableFrom": "class_modules",
+          "tableTo": "modules",
+          "columnsFrom": [
+            "module_id"
+          ],
+          "columnsTo": [
+            "module_id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -243,22 +422,42 @@
           "primaryKey": false,
           "notNull": false
         },
+        "class_code": {
+          "name": "class_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "teacher_id": {
           "name": "teacher_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
+        "access_type": {
+          "name": "access_type",
+          "type": "class_access_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "thumbnail_id": {
+          "name": "thumbnail_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -276,12 +475,33 @@
           "columnsTo": [
             "user_id"
           ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "classes_thumbnail_id_images_image_id_fk": {
+          "name": "classes_thumbnail_id_images_image_id_fk",
+          "tableFrom": "classes",
+          "tableTo": "images",
+          "columnsFrom": [
+            "thumbnail_id"
+          ],
+          "columnsTo": [
+            "image_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "classes_slug_unique": {
+          "name": "classes_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      }
     },
     "public.email_verifications": {
       "name": "email_verifications",
@@ -305,9 +525,23 @@
           "primaryKey": false,
           "notNull": true
         },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -325,45 +559,51 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.folders": {
-      "name": "folders",
+    "public.images": {
+      "name": "images",
       "schema": "",
       "columns": {
-        "folder_id": {
-          "name": "folder_id",
+        "image_id": {
+          "name": "image_id",
           "type": "text",
           "primaryKey": true,
           "notNull": true
         },
-        "folder_name": {
-          "name": "folder_name",
+        "url": {
+          "name": "url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "class_id": {
-          "name": "class_id",
+        "key": {
+          "name": "key",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -371,17 +611,17 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "folders_class_id_classes_class_id_fk": {
-          "name": "folders_class_id_classes_class_id_fk",
-          "tableFrom": "folders",
-          "tableTo": "classes",
+        "images_user_id_users_user_id_fk": {
+          "name": "images_user_id_users_user_id_fk",
+          "tableFrom": "images",
+          "tableTo": "users",
           "columnsFrom": [
-            "class_id"
+            "user_id"
           ],
           "columnsTo": [
-            "class_id"
+            "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -398,20 +638,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "class_id": {
-          "name": "class_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
+        "content": {
+          "name": "content",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -420,17 +654,24 @@
           "name": "file_path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "uploaded_by": {
-          "name": "uploaded_by",
+        "posted_by_id": {
+          "name": "posted_by_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -438,42 +679,29 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "learning_materials_class_id_classes_class_id_fk": {
-          "name": "learning_materials_class_id_classes_class_id_fk",
-          "tableFrom": "learning_materials",
-          "tableTo": "classes",
-          "columnsFrom": [
-            "class_id"
-          ],
-          "columnsTo": [
-            "class_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "learning_materials_uploaded_by_users_user_id_fk": {
-          "name": "learning_materials_uploaded_by_users_user_id_fk",
+        "learning_materials_posted_by_id_users_user_id_fk": {
+          "name": "learning_materials_posted_by_id_users_user_id_fk",
           "tableFrom": "learning_materials",
           "tableTo": "users",
           "columnsFrom": [
-            "uploaded_by"
+            "posted_by_id"
           ],
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.material_folders": {
-      "name": "material_folders",
+    "public.material_modules": {
+      "name": "material_modules",
       "schema": "",
       "columns": {
-        "material_folder_id": {
-          "name": "material_folder_id",
+        "material_module_id": {
+          "name": "material_module_id",
           "type": "serial",
           "primaryKey": true,
           "notNull": true
@@ -482,20 +710,47 @@
           "name": "material_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "folder_id": {
-          "name": "folder_id",
+        "module_id": {
+          "name": "module_id",
           "type": "text",
           "primaryKey": false,
+          "notNull": true
+        },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
           "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "material_folders_material_id_learning_materials_material_id_fk": {
-          "name": "material_folders_material_id_learning_materials_material_id_fk",
-          "tableFrom": "material_folders",
+        "material_modules_material_id_learning_materials_material_id_fk": {
+          "name": "material_modules_material_id_learning_materials_material_id_fk",
+          "tableFrom": "material_modules",
           "tableTo": "learning_materials",
           "columnsFrom": [
             "material_id"
@@ -503,25 +758,88 @@
           "columnsTo": [
             "material_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "material_folders_folder_id_folders_folder_id_fk": {
-          "name": "material_folders_folder_id_folders_folder_id_fk",
-          "tableFrom": "material_folders",
-          "tableTo": "folders",
+        "material_modules_module_id_modules_module_id_fk": {
+          "name": "material_modules_module_id_modules_module_id_fk",
+          "tableFrom": "material_modules",
+          "tableTo": "modules",
           "columnsFrom": [
-            "folder_id"
+            "module_id"
           ],
           "columnsTo": [
-            "folder_id"
+            "module_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.modules": {
+      "name": "modules",
+      "schema": "",
+      "columns": {
+        "module_id": {
+          "name": "module_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "module_name": {
+          "name": "module_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "modules_slug_unique": {
+          "name": "modules_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      }
     },
     "public.notifications": {
       "name": "notifications",
@@ -543,7 +861,7 @@
           "name": "is_read",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         },
         "user_id": {
@@ -554,7 +872,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -572,7 +897,7 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -611,7 +936,7 @@
           "name": "access_token",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "refresh_token": {
           "name": "refresh_token",
@@ -624,6 +949,20 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -638,7 +977,7 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -665,7 +1004,21 @@
           "name": "expires_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -680,7 +1033,121 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.student_progress": {
+      "name": "student_progress",
+      "schema": "",
+      "columns": {
+        "student_progress_id": {
+          "name": "student_progress_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class_id": {
+          "name": "class_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "material_id": {
+          "name": "material_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignment_id": {
+          "name": "assignment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "progress_type": {
+          "name": "progress_type",
+          "type": "student_progress_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "student_progress_student_id_users_user_id_fk": {
+          "name": "student_progress_student_id_users_user_id_fk",
+          "tableFrom": "student_progress",
+          "tableTo": "users",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "student_progress_class_id_classes_class_id_fk": {
+          "name": "student_progress_class_id_classes_class_id_fk",
+          "tableFrom": "student_progress",
+          "tableTo": "classes",
+          "columnsFrom": [
+            "class_id"
+          ],
+          "columnsTo": [
+            "class_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "student_progress_material_id_learning_materials_material_id_fk": {
+          "name": "student_progress_material_id_learning_materials_material_id_fk",
+          "tableFrom": "student_progress",
+          "tableTo": "learning_materials",
+          "columnsFrom": [
+            "material_id"
+          ],
+          "columnsTo": [
+            "material_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "student_progress_assignment_id_assignments_assignment_id_fk": {
+          "name": "student_progress_assignment_id_assignments_assignment_id_fk",
+          "tableFrom": "student_progress",
+          "tableTo": "assignments",
+          "columnsFrom": [
+            "assignment_id"
+          ],
+          "columnsTo": [
+            "assignment_id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -703,24 +1170,24 @@
           "primaryKey": false,
           "notNull": true
         },
-        "file_path": {
-          "name": "file_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "student_id": {
           "name": "student_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "file_path": {
+          "name": "file_path",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
+          "notNull": false
+        },
+        "is_graded": {
+          "name": "is_graded",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "grade": {
           "name": "grade",
@@ -728,17 +1195,19 @@
           "primaryKey": false,
           "notNull": false
         },
-        "feedback": {
-          "name": "feedback",
-          "type": "text",
+        "submitted_at": {
+          "name": "submitted_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         },
-        "graded_at": {
-          "name": "graded_at",
-          "type": "timestamp",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -753,7 +1222,7 @@
           "columnsTo": [
             "assignment_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "submissions_student_id_users_user_id_fk": {
@@ -766,7 +1235,99 @@
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.user_contacts": {
+      "name": "user_contacts",
+      "schema": "",
+      "columns": {
+        "user_contact_id": {
+          "name": "user_contact_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "instagram": {
+          "name": "instagram",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "twitter": {
+          "name": "twitter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "github": {
+          "name": "github",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "linkedin": {
+          "name": "linkedin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "facebook": {
+          "name": "facebook",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_contacts_user_id_users_user_id_fk": {
+          "name": "user_contacts_user_id_users_user_id_fk",
+          "tableFrom": "user_contacts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -782,6 +1343,12 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "username": {
           "name": "username",
@@ -824,26 +1391,26 @@
           "name": "is_email_verified",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         },
         "on_boarding_complete": {
           "name": "on_boarding_complete",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -853,6 +1420,13 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
@@ -864,12 +1438,37 @@
     }
   },
   "enums": {
+    "public.class_access_type": {
+      "name": "class_access_type",
+      "schema": "public",
+      "values": [
+        "public",
+        "private"
+      ]
+    },
+    "public.class_completion_status": {
+      "name": "class_completion_status",
+      "schema": "public",
+      "values": [
+        "ongoing",
+        "completed",
+        "archived"
+      ]
+    },
     "public.role": {
       "name": "role",
       "schema": "public",
       "values": [
         "teacher",
         "student"
+      ]
+    },
+    "public.student_progress_type": {
+      "name": "student_progress_type",
+      "schema": "public",
+      "values": [
+        "assignment_completion",
+        "material_view"
       ]
     }
   },

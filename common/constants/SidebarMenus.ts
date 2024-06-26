@@ -6,12 +6,13 @@ import {
     School2,
     BotMessageSquare,
     Library,
+    ClipboardList,
 } from 'lucide-react';
 
 export const StudentMenu = [
     {
         name: 'Dashboard',
-        href: '/',
+        href: '/dashboard',
         icon: Home,
     },
     {
@@ -25,8 +26,8 @@ export const StudentMenu = [
         icon: Library,
     },
     {
-        name: 'Ask Ai',
-        href: '/chatbot',
+        name: 'Genii Chat',
+        href: '/genii-chat',
         icon: BotMessageSquare,
     },
 ];
@@ -34,7 +35,7 @@ export const StudentMenu = [
 export const TeacherMenu = [
     {
         name: 'Dashboard',
-        href: '/',
+        href: '/dashboard',
         icon: Home,
     },
     {
@@ -43,8 +44,14 @@ export const TeacherMenu = [
         icon: School2,
     },
     {
-        name: 'Ask Ai',
-        href: '/chatbot',
+        name: 'Modules',
+        href: '/modules',
+        icon: Library,
+    },
+
+    {
+        name: 'Genii Chat',
+        href: '/genii-chat',
         icon: BotMessageSquare,
     },
 ];
