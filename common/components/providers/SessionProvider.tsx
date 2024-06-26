@@ -1,6 +1,5 @@
 'use client';
 import { Session, User } from 'lucia';
-import { redirect } from 'next/navigation';
 import React from 'react';
 
 type SessionProviderContext = {
@@ -38,5 +37,6 @@ export const useSession = () => {
     if (!context) {
         throw new Error('useSession must be used within a SessionProvider');
     }
+
     return context;
 };

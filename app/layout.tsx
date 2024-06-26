@@ -6,6 +6,7 @@ import { Toaster } from '@/common/components/ui/sonner';
 import { fontInter } from '@/common/libs/Fonts';
 import { validateRequest } from '@/common/libs/lucia';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import NextTopLoader from 'nextjs-toploader';
 import type { Metadata } from 'next';
 import './globals.css';
 
@@ -24,6 +25,7 @@ export default async function RootLayout({
     return (
         <html lang='en' suppressHydrationWarning>
             <body className={fontInter.className}>
+                <NextTopLoader color='#facc15' />
                 <SessionProvider data={session}>
                     <ReactQueryProvider>
                         <ThemeProvider
@@ -32,7 +34,7 @@ export default async function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            <ApplicationLayout>{children}</ApplicationLayout>
+                            {children}
                             <Toaster richColors position='top-center' />
                         </ThemeProvider>
 

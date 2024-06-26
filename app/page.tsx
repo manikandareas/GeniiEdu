@@ -1,19 +1,6 @@
-import { validateRequest } from '@/common/libs/lucia';
-import { redirect } from 'next/navigation';
-import { Dashboard } from './_components/Dashboard';
+type LandingPageProps = {};
 
-const HomePage = async () => {
-    const { session, user } = await validateRequest();
-
-    if (!session || !user) {
-        return redirect('/login');
-    }
-
-    if (!user.onBoardingComplete) {
-        return redirect('/onboarding');
-    }
-
-    return <Dashboard />;
+const LandingPage: React.FC<LandingPageProps> = () => {
+    return <div>LandingPage</div>;
 };
-
-export default HomePage;
+export default LandingPage;

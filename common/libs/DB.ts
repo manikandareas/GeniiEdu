@@ -1,15 +1,50 @@
 import * as schema from '@/common/models/schema.model';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
 import { Env } from './Env';
 
-const pool = new Pool({
-    host: Env.DATABASE_HOST as string,
-    port: Env.DATABASE_PORT as number,
-    user: Env.DATABASE_USER as string,
-    database: Env.DATABASE_NAME as string,
-});
+// const pool = new Pool({
+//     host: Env.DATABASE_HOST as string,
+//     port: Env.DATABASE_PORT as number,
+//     user: Env.DATABASE_USER as string,
+//     database: Env.DATABASE_NAME as string,
+// });
 
-const db = drizzle(pool, { schema });
+// const db = drizzle(pool, { schema });
+
+// export default db;
+
+import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+// import postgres from "postgres";
+
+declare global {
+    // eslint-disable-next-line no-var -- only var works here
+    var db: PostgresJsDatabase<typeof schema> | undefined;
+}
+
+let db: PostgresJsDatabase<typeof schema>;
+let pg: ReturnType<typeof postgres>;
+
+if (process.env.NODE_ENV === 'production') {
+    pg = postgres({
+        host: Env.DATABASE_HOST as string,
+        port: Env.DATABASE_PORT as number,
+        user: Env.DATABASE_USER as string,
+        database: Env.DATABASE_NAME as string,
+    });
+    db = drizzle(pg, { schema });
+} else {
+    if (!global.db) {
+        pg = postgres({
+            host: Env.DATABASE_HOST as string,
+            port: Env.DATABASE_PORT as number,
+            user: Env.DATABASE_USER as string,
+            database: Env.DATABASE_NAME as string,
+        });
+        global.db = drizzle(pg, { schema });
+    }
+    db = global.db;
+}
+
+export { db, pg };
 
 export default db;

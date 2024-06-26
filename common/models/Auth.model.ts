@@ -5,9 +5,7 @@ import { isEmailExist } from '@/actions/users.actions';
 
 export const insertUserSchema = z
     .object({
-        // username: z.string().min(4, "Username can't be less than 4 characters"),
         email: z.string().email('Please enter a valid email address'),
-        // role: z.enum(['teacher', 'student']),
         password: z
             .string()
             .min(8, "Password can't be less than 8 characters")

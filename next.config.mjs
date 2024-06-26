@@ -26,6 +26,10 @@ const nextConfig = {
                 hostname: 'utfs.io',
                 protocol: 'https',
             },
+            {
+                hostname: 'cloudflare-ipfs.com',
+                protocol: 'https',
+            },
         ],
     },
 };

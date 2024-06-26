@@ -1,1 +1,0 @@
-ALTER TABLE "class_members" DROP COLUMN IF EXISTS "role";

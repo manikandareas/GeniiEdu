@@ -1,3 +1,5 @@
+import { DefaultProfile } from './DefaultProfile';
+
 export const DummyActivities = [
     {
         id: 1,
@@ -5,7 +7,7 @@ export const DummyActivities = [
         teacher: 'Sandika Galih',
         activity: 'Added new assignment',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: '/profile-picture.webp',
+        profilePicture: DefaultProfile.profilePicture,
     },
     {
         id: 1,
@@ -13,7 +15,7 @@ export const DummyActivities = [
         teacher: 'Jerome Polin',
         activity: 'Deadline approaching',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: '/profile-picture.webp',
+        profilePicture: DefaultProfile.profilePicture,
     },
     {
         id: 1,
@@ -21,7 +23,7 @@ export const DummyActivities = [
         teacher: 'Aldy Sambur',
         activity: 'Added new materials',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: '/profile-picture.webp',
+        profilePicture: DefaultProfile.profilePicture,
     },
     {
         id: 1,
@@ -29,6 +31,6 @@ export const DummyActivities = [
         teacher: 'Abizar Saputra',
         activity: 'Deadline approaching',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: '/profile-picture.webp',
+        profilePicture: DefaultProfile.profilePicture,
     },
 ];

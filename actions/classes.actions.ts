@@ -6,6 +6,7 @@ import { ActRes } from '@/common/types/Action.type';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { authActionClient, studentActionClient, teacherActionClient } from '.';
+import { revalidatePath } from 'next/cache';
 
 // * Actions running expectedly
 export const createClass = teacherActionClient
@@ -53,21 +54,21 @@ export const createClass = teacherActionClient
             // ? Upload default thumbnail to database if not provided
             if (!parsedInput.thumbnailKey && parsedInput.thumbnail) {
                 const uploadedDefaultThumbnail = await db
-                    .insert(Schema.images)
+                    .insert(Schema.files)
                     .values({
-                        filePath: parsedInput.thumbnail,
+                        url: parsedInput.thumbnail,
                         key: parsedInput.slug,
-                        uploadedBy: teacher.id,
+                        userId: teacher.id,
                     })
                     .returning({
-                        id: Schema.images.id,
+                        id: Schema.files.id,
                     });
 
                 classThumbnailId = uploadedDefaultThumbnail[0].id;
             } else if (parsedInput.thumbnailKey && parsedInput.thumbnail) {
                 // ? Get inserted thumbnail id from database
-                const classThumbnail = await db.query.images.findFirst({
-                    where: eq(Schema.images.key, parsedInput.thumbnailKey),
+                const classThumbnail = await db.query.files.findFirst({
+                    where: eq(Schema.files.key, parsedInput.thumbnailKey),
                 });
 
                 classThumbnailId = classThumbnail?.id;
@@ -88,7 +89,7 @@ export const createClass = teacherActionClient
                     teacherId: teacher.id,
                     classCode: parsedInput.classCode,
                     accessType: parsedInput.accessType,
-                    thumbnail: classThumbnailId,
+                    thumbnailId: classThumbnailId,
                 })
                 .returning({
                     slug: Schema.classes.slug,
@@ -127,13 +128,14 @@ export const uploadClassThumbnail = teacherActionClient
         try {
             const { user } = ctx;
 
-            const response = await db.insert(Schema.images).values({
-                filePath: parsedInput.url,
+            const response = await db.insert(Schema.files).values({
+                url: parsedInput.url,
                 key: parsedInput.key,
-                uploadedBy: user.id,
+                type: 'image',
+                userId: user.id,
             });
 
-            if (response.rowCount === 0) {
+            if (response.count === 0) {
                 throw new Error('Something went wrong, please try again.');
             }
 
@@ -214,6 +216,8 @@ export const joinClass = studentActionClient
                 classId: classToJoin.id,
                 userId: student.id,
             });
+
+            revalidatePath('/classes');
 
             return {
                 success: true,
