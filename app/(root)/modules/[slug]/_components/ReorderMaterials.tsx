@@ -54,48 +54,11 @@ const ReorderMaterials: React.FC<ReorderMaterialsProps> = ({ slug }) => {
                                         Learning Materials
                                     </span>
                                 </div>
-
-                                <Button size={'icon'} variant={'ghost'}>
-                                    <Grip />
-                                </Button>
                             </CardHeader>
                         </Card>
                     </Reorder.Item>
                 ))}
             </Reorder.Group>
-
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button className='w-full' variant={'outline'}>
-                        <Plus className='mr-2 inline' size={16} /> Add More
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className=''>
-                    <DropdownMenuItem asChild>
-                        <Link
-                            href={`/modules/${slug}/learning-materials/editor`}
-                            className={buttonVariants({
-                                className:
-                                    'w-full text-xs hover:cursor-pointer',
-                                variant: 'ghost',
-                            })}
-                        >
-                            <SiGitbook className='mr-1.5 inline' size={16} />{' '}
-                            Learning Materials
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Button
-                            className='w-full text-xs hover:cursor-pointer'
-                            variant={'ghost'}
-                        >
-                            <SiTask className='mr-1.5 inline' size={16} />{' '}
-                            Assignments
-                        </Button>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
         </div>
     );
 };

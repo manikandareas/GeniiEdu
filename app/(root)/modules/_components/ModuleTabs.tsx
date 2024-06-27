@@ -17,7 +17,7 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import { webDevelopmentToC } from '@/common/constants/DummyTOC';
+
 import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { cn } from '@/common/libs/utils';
 import { useSearchParams } from 'next/navigation';

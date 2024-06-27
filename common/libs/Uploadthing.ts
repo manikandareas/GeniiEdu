@@ -42,6 +42,13 @@ export const ourFileRouter = {
             if (!user) throw new UploadThingError('Unauthorized');
             return { userId: user.id };
         })
+        .onUploadError(async ({ error, fileKey }) => {
+            console.log({
+                message: 'Error uploading file',
+                error,
+                file: fileKey,
+            });
+        })
         .onUploadComplete(async ({ metadata, file }) => {
             // This code RUNS ON YOUR SERVER after upload
             console.log('Upload complete for userId:', metadata.userId);
@@ -56,6 +63,5 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 
 import { UTApi } from 'uploadthing/server';
-import { generateReactHelpers } from '@uploadthing/react';
 
 export const utapi = new UTApi();

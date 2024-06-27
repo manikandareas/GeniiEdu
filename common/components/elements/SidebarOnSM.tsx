@@ -1,5 +1,5 @@
 'use client';
-import { StudentMenu, TeacherMenu } from '@/common/constants/SidebarMenus';
+import { STUDENT_MENU, TEACHER_MENU } from '@/common/constants/SidebarMenus';
 import { cn } from '@/common/libs/utils';
 import { PanelLeft } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -32,10 +32,10 @@ const SidebarOnSM: React.FC<SidebarOnSMProps> = () => {
                         <span className='sr-only'>Genii Edu</span>
                     </Link>
                     {user?.role === 'student'
-                        ? StudentMenu.map((menu) => (
+                        ? STUDENT_MENU.map((menu) => (
                               <SidebarOnSMItem key={nanoid(5)} {...menu} />
                           ))
-                        : TeacherMenu.map((menu) => (
+                        : TEACHER_MENU.map((menu) => (
                               <SidebarOnSMItem key={nanoid(5)} {...menu} />
                           ))}
                 </nav>
