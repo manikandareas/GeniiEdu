@@ -35,8 +35,6 @@ const urls = [
 const EditorLearningMaterialsPage: React.FC<
     EditorLearningMaterialsPageProps
 > = ({ params }) => {
-    console.log(params);
-
     return (
         <>
             <HeaderOptions title='Editor' urls={urls} />

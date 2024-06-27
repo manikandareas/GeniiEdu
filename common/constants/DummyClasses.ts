@@ -1,4 +1,4 @@
-export const dummyClasses: {
+export const DUMMY_CLASSES: {
     className: string;
     classCode: string;
     description: string;
@@ -109,7 +109,7 @@ export const dummyClasses: {
     },
 ];
 
-export const dummyThumbnail = dummyClasses.map((cls, index) => ({
+export const dummyThumbnail = DUMMY_CLASSES.map((cls, index) => ({
     id: `image_${index + 1}`,
     url: cls.thumbnail,
     key: cls.slug,
@@ -117,7 +117,7 @@ export const dummyThumbnail = dummyClasses.map((cls, index) => ({
 }));
 
 // Langkah 2: Memperbarui dummyClasses dengan thumbnail id
-export const updatedDummyClasses = dummyClasses.map((cls, index) => ({
+export const updatedDummyClasses = DUMMY_CLASSES.map((cls, index) => ({
     ...cls,
     thumbnailId: dummyThumbnail[index].id,
 }));

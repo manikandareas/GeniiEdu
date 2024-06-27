@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/common/components/ui/button';
-import { DummyStudents } from '@/common/constants/DummyStudents';
+import { DUMMY_STUDENTS } from '@/common/constants/DummyStudents';
 import { MoreVertical } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import Image from 'next/image';
@@ -12,7 +12,7 @@ type StudentsCardProps = {};
 
 const StudentsCards: React.FC<StudentsCardProps> = () => {
     const dummyStudents = useMemo(() => {
-        return DummyStudents.slice(0, 11);
+        return DUMMY_STUDENTS.slice(0, 11);
     }, []);
     return (
         <div className='rounded-lg border bg-card p-6 text-card-foreground shadow-sm'>

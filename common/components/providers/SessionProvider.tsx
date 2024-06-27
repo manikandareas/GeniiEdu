@@ -22,8 +22,6 @@ const SessionProvider: React.FC<SessionProviderProps> = (props) => {
         data: { user, session },
     } = props;
 
-    console.log('Session provider rerender');
-
     return (
         <sessionContext.Provider value={{ user, session }}>
             {children}

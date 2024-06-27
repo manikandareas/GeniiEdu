@@ -47,8 +47,6 @@ export function TeaserModule() {
         queryFn: () => getModuleBySlug(searchParams.get('active') as string),
     });
 
-    console.log({ module });
-
     if (!module?.success) {
         return null;
     }

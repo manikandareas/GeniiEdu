@@ -54,6 +54,14 @@ const ReorderMaterials: React.FC<ReorderMaterialsProps> = ({ slug }) => {
                                         Learning Materials
                                     </span>
                                 </div>
+
+                                <Button
+                                    className=''
+                                    size={'icon'}
+                                    variant={'ghost'}
+                                >
+                                    <Grip />
+                                </Button>
                             </CardHeader>
                         </Card>
                     </Reorder.Item>
