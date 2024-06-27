@@ -11,7 +11,7 @@ const generateStudent = () => ({
 export const generateDummyStudents = (count: number) =>
     Array.from({ length: count }, generateStudent);
 
-export const DummyStudents = [
+export const DUMMY_STUDENTS = [
     {
         id: 'd3f1296d-77d1-475f-b1e3-9bdbbd36bda7',
         name: 'Jailani Marwata',

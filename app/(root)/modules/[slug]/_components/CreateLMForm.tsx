@@ -53,11 +53,12 @@ const CreateLMForm = () => {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button className='space-x-1.5'>
-                    <PlusCircle className='h-3.5 w-3.5' />
-                    <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                        Add LM
-                    </span>
+                <Button
+                    variant={'outline'}
+                    className='border-teal-500/40 bg-teal-600/10 text-teal-500 hover:bg-teal-600/20 hover:text-teal-600'
+                >
+                    <PlusCircle className='mr-2 inline' size={16} />
+                    Learning Material
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>
@@ -115,51 +116,6 @@ const CreateLMForm = () => {
                                 </FormItem>
                             )}
                         />
-                        {/* <FormField
-                            control={createLMForm.control}
-                            name='slug'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Slug</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder='pemrograman-web-2024'
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        If not provided, will be auto-generated
-                                        depends on the module name. hover{' '}
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <span className='bg-primary/10 italic text-primary underline'>
-                                                        here
-                                                    </span>
-                                                </TooltipTrigger>
-                                                <TooltipContent className='w-[300px]'>
-                                                    <p>
-                                                        The slug is used to
-                                                        generate the URL for
-                                                        your module, making it
-                                                        easy to share and
-                                                        remember.
-                                                        <br />
-                                                        For instance:{' '}
-                                                        <code>
-                                                            pemrograman_web_2024
-                                                        </code>
-                                                        .
-                                                    </p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>{' '}
-                                        to learn more.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /> */}
 
                         <SheetFooter>
                             <Button

@@ -12,7 +12,7 @@ export const classesSeeder = async () => {
     console.log('Running class seed script...');
     
     
-    await db.insert(Schema.images).values(dummyThumbnail)
+    await db.insert(Schema.files).values(dummyThumbnail)
 
 
     await db.insert(Schema.classes).values(updatedDummyClasses)
