@@ -9,7 +9,7 @@ import {
     ClipboardList,
 } from 'lucide-react';
 
-export const StudentMenu = [
+export const STUDENT_MENU = [
     {
         name: 'Dashboard',
         href: '/dashboard',
@@ -32,19 +32,19 @@ export const StudentMenu = [
     },
 ];
 
-export const TeacherMenu = [
+export const TEACHER_MENU = [
     {
         name: 'Dashboard',
         href: '/dashboard',
         icon: Home,
     },
     {
-        name: 'Classes',
+        name: 'Manage Classes',
         href: '/classes',
         icon: School2,
     },
     {
-        name: 'Modules',
+        name: 'Manage Modules',
         href: '/modules',
         icon: Library,
     },

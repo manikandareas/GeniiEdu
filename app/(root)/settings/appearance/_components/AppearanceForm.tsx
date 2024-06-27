@@ -19,6 +19,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/common/components/ui/radio-group';
 import { toast } from 'sonner';
 import { ChevronDownIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const appearanceFormSchema = z.object({
     theme: z.enum(['light', 'dark'], {
@@ -33,14 +34,17 @@ const appearanceFormSchema = z.object({
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
 // This can come from your database or API.
-const defaultValues: Partial<AppearanceFormValues> = {
-    theme: 'light',
-};
+// const defaultValues: Partial<AppearanceFormValues> = {
+//     theme: 'light',
+// };
 
 export function AppearanceForm() {
+    const { setTheme, theme } = useTheme();
     const form = useForm<AppearanceFormValues>({
         resolver: zodResolver(appearanceFormSchema),
-        defaultValues,
+        defaultValues: {
+            theme: (theme as 'light' | 'dark') || 'dark',
+        },
     });
 
     function onSubmit(data: AppearanceFormValues) {
@@ -53,6 +57,8 @@ export function AppearanceForm() {
                 </pre>
             ),
         });
+
+        setTheme(data.theme);
     }
 
     return (

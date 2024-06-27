@@ -1,6 +1,7 @@
 'use client';
 import { saveFilesToDB } from '@/actions/storage.actions';
 import { UploadDropzone } from '@/common/components/elements/Uploadthing';
+
 import { Button, buttonVariants } from '@/common/components/ui/button';
 import {
     Dialog,
@@ -14,6 +15,8 @@ import { File } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import { toast } from 'sonner';
 import { useLearningMaterialContext } from '../context/learningMaterialContext';
+import { LM_FILE_TYPE } from '@/common/constants/LMFileType';
+
 type UploadDialogProps = {};
 
 const UploadDialog: React.FC<UploadDialogProps> = () => {
@@ -83,7 +86,9 @@ const UploadDialog: React.FC<UploadDialogProps> = () => {
                             res.map((r) => ({
                                 key: r.key,
                                 url: r.url,
-                                type: 'pdf',
+                                type: LM_FILE_TYPE[
+                                    r.type as keyof typeof LM_FILE_TYPE
+                                ] as any,
                             })),
                         );
                     }}

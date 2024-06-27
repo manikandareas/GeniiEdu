@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm';
 import {
     boolean,
+    integer,
     numeric,
     pgEnum,
     pgTable,
@@ -258,8 +259,10 @@ export const materialModules = pgTable('material_modules', {
     moduleId: text('module_id')
         .references(() => modules.id, { onDelete: 'cascade' })
         .notNull(),
+    position: integer('position').notNull(),
     isPublished: boolean('is_published').default(false).notNull(),
     publishedAt: timestamp('published_at', { withTimezone: true }),
+
     createdAt,
     updatedAt,
 });
@@ -289,6 +292,7 @@ export const classModules = pgTable('class_modules', {
     moduleId: text('module_id')
         .references(() => modules.id, { onDelete: 'cascade' })
         .notNull(),
+    position: integer('position').notNull(),
     isPublished: boolean('is_published').default(false).notNull(),
     createdAt,
     updatedAt,

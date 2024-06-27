@@ -4,7 +4,7 @@ import { LearningMaterialsModel, Schema } from '@/common/models';
 import { teacherActionClient } from '.';
 import { ActRes } from '@/common/types/Action.type';
 import db from '@/common/libs/DB';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const createLearningMaterial = teacherActionClient
@@ -70,12 +70,29 @@ export const createLearningMaterial = teacherActionClient
                         console.log('Success insert learning material files');
                     }
 
+                    const maxPositionResult = await tx
+                        .select({
+                            maxPosition: sql`MAX(${Schema.materialModules.position}) AS maxPosition`,
+                        })
+                        .from(Schema.materialModules)
+                        .where(
+                            eq(
+                                Schema.materialModules.moduleId,
+                                existingModule.id,
+                            ),
+                        );
+
+                    const maxPosition = maxPositionResult[0].maxPosition;
+                    const nextPosition =
+                        maxPosition !== null ? (maxPosition as number) + 1 : 0;
+
                     // ? Bind learning material to module
                     const linkedLearningMaterialModule = await tx
                         .insert(Schema.materialModules)
                         .values({
                             materialId: insertedLearningMaterial[0].id,
                             moduleId: existingModule.id,
+                            position: nextPosition,
                         });
 
                     if (linkedLearningMaterialModule.count === 0) {
@@ -85,7 +102,6 @@ export const createLearningMaterial = teacherActionClient
                         );
                     }
 
-                    console.log('Success bind learning material to module');
                     return {
                         success: true,
                         data: insertedLearningMaterial[0],

@@ -1,27 +1,17 @@
 'use client';
-import { StudentMenu, TeacherMenu } from '@/common/constants/SidebarMenus';
+import { STUDENT_MENU, TEACHER_MENU } from '@/common/constants/SidebarMenus';
+import { cn } from '@/common/libs/utils';
 import { nanoid } from 'nanoid';
-import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { SiDuolingo } from 'react-icons/si';
 import { useSession } from '../providers/SessionProvider';
-import { Button } from '../ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/common/libs/utils';
 import DropdownProfile from './DropdownProfile';
 
 type SidebarProps = {};
@@ -40,10 +30,10 @@ const Sidebar: React.FC<SidebarProps> = () => {
                 </Link>
 
                 {user?.role === 'student'
-                    ? StudentMenu.map((menu) => (
+                    ? STUDENT_MENU.map((menu) => (
                           <SidebarItem key={nanoid(5)} {...menu} />
                       ))
-                    : TeacherMenu.map((menu) => (
+                    : TEACHER_MENU.map((menu) => (
                           <SidebarItem key={nanoid(5)} {...menu} />
                       ))}
             </nav>
