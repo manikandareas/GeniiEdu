@@ -2,8 +2,8 @@
 
 import { redirect, usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
-import Header from './Header';
-import { useMemo } from 'react';
+import Header, { HeaderSkeleton } from './Header';
+import { Suspense, useMemo } from 'react';
 import { useHeaderStore } from '@/common/stores/header-store';
 import useCurrentSession from '@/common/hooks/useCurrentSession';
 

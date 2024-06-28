@@ -1,7 +1,6 @@
 'use client';
 
 import { Search } from 'lucide-react';
-
 import { Input } from '../ui/input';
 import DropdownProfile from './DropdownProfile';
 import GenerateBreadcrumb from './GenerateBreadcrumb';
@@ -52,7 +51,7 @@ const Header: React.FC<HeaderProps> = () => {
 };
 export default Header;
 
-const HeaderSkeleton = () => (
+export const HeaderSkeleton = () => (
     <div className='flex w-full items-center justify-between px-4 sm:px-6'>
         <div className='space-y-1.5'>
             <Skeleton className='h-6 w-40' />

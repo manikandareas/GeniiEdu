@@ -15,7 +15,7 @@ const urls = [
         href: '/dashboard',
     },
     {
-        name: 'Modules',
+        name: 'Manage Modules',
         href: '/modules',
     },
 ];
@@ -30,7 +30,7 @@ const ModulesPage: React.FC<ModulesPageProps> = async () => {
 
     return (
         <>
-            <HeaderOptions title='Modules' urls={urls} />
+            <HeaderOptions title='Manage Modules' urls={urls} />
             <div className='flex min-h-screen w-full flex-col bg-background'>
                 {/* <div className='flex flex-col sm:gap-4 sm:py-4 sm:pl-14'> */}
 

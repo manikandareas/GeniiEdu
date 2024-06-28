@@ -1,25 +1,17 @@
 'use client';
-import { Button, buttonVariants } from '@/common/components/ui/button';
+import { Button } from '@/common/components/ui/button';
 import {
     Card,
     CardDescription,
     CardHeader,
     CardTitle,
 } from '@/common/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/common/components/ui/dropdown-menu';
 import { webDevelopmentToC } from '@/common/constants/DummyTOC';
 import { Reorder } from 'framer-motion';
-import { Grip, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Grip } from 'lucide-react';
 
 import { useState } from 'react';
-import { SiGitbook, SiTask } from 'react-icons/si';
+import { SiGitbook } from 'react-icons/si';
 
 type ReorderMaterialsProps = {
     slug: string;
