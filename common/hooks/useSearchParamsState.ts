@@ -25,6 +25,7 @@ const useSearchParamsState = () => {
 
     return {
         handleChange,
+        searchParams
     };
 };
 

@@ -12,11 +12,19 @@ import {
 import { Label } from '@/common/components/ui/label';
 import { Switch } from '@/common/components/ui/switch';
 import { DUMMY_CLASSES } from '@/common/constants/DummyClasses';
-import { Grip, MoreHorizontal, Plus, PlusCircle, Save } from 'lucide-react';
+import {
+    ChevronDown,
+    Grip,
+    MoreHorizontal,
+    Plus,
+    PlusCircle,
+    Save,
+} from 'lucide-react';
 import Image from 'next/image';
 import { SiGitbook, SiGoogleclassroom, SiTask } from 'react-icons/si';
 import CreateLMForm from './_components/CreateLMForm';
 import ReorderMaterials from './_components/ReorderMaterials';
+import { Input } from '@/common/components/ui/input';
 
 type DetailModulePageProps = {
     params: {
@@ -44,41 +52,6 @@ const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
         <>
             <HeaderOptions title='Details Module' urls={urls} />
             <main className='grid min-h-screen px-6 md:grid-cols-3 xl:grid-cols-4 xl:gap-4'>
-                {/* <Card className='hidden space-y-4 border-none md:block'>
-                    <div className='flex items-center justify-between'>
-                        <CardHeader className='p-0'>
-                            <CardTitle className='text-xl font-semibold'>
-                                Order Materials
-                            </CardTitle>
-                            <CardDescription>
-                                Drag and drop to reorder materials.
-                            </CardDescription>
-                        </CardHeader>
-                        <Button
-                            className='rounded-full py-1 text-blue-500 hover:bg-blue-500/10 hover:text-blue-600'
-                            variant={'ghost'}
-                            title='Save new order'
-                        >
-                            <Save className='mr-2 inline' size={16} /> Save
-                        </Button>
-                    </div>
-                    <CardContent className='p-0'>
-                        {webDevelopmentToC[0].subSections.map((item, index) => (
-                            <div
-                                key={index}
-                                className='flex items-center justify-between rounded-md border border-border bg-background p-2 text-xs'
-                            >
-                                <div className='flex items-center gap-2'>
-                                    <SiGitbook size={16} />
-                                    <p>{item.title}</p>
-                                </div>
-
-                                <Grip size={20} />
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card> */}
-
                 <div className='relative flex-1 space-y-4 md:col-span-3'>
                     <h1 className='text-xl font-semibold'>
                         Introduction to Web Development
@@ -108,10 +81,7 @@ const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
                         </div>
                         <div className='flex items-center justify-between gap-2'>
                             <CreateLMForm />
-                            <Button
-                                className='border-rose-500/40 bg-rose-600/10 text-rose-500 hover:bg-rose-600/20 hover:text-rose-600'
-                                variant={'outline'}
-                            >
+                            <Button variant={'gummy'}>
                                 <PlusCircle className='mr-2 inline' size={16} />
                                 Assignment
                             </Button>
@@ -121,20 +91,22 @@ const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
                 </div>
                 <div className='hidden w-full xl:block'>
                     <Card>
-                        <CardHeader className='flex flex-row items-center justify-between'>
-                            <div>
-                                <CardTitle className='text-xl font-semibold'>
-                                    Class(es) Used
-                                </CardTitle>
-                                <CardDescription>
-                                    Class(es) that used this module
-                                </CardDescription>
-                            </div>
-                            <Button>
-                                <Plus size={16} /> Add to class
-                            </Button>
+                        <CardHeader>
+                            <CardTitle className='text-xl font-semibold'>
+                                Class(es) Used
+                            </CardTitle>
+                            <CardDescription>
+                                Class(es) that used this module
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
+                            <div className='flex items-center gap-2'>
+                                <Input type='search' placeholder='Search' />
+                                <Button size={'sm'}>
+                                    Add Class{' '}
+                                    <ChevronDown size={18} className='ml-2' />
+                                </Button>
+                            </div>
                             {DUMMY_CLASSES.map((itm, idx) => (
                                 <div
                                     key={idx}

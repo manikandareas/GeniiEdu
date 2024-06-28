@@ -1,7 +1,7 @@
 'use client';
 
 import Tiptap from '@/common/components/elements/Tiptap';
-import { Button } from '@/common/components/ui/button';
+import { Button, buttonVariants } from '@/common/components/ui/button';
 import {
     Form,
     FormControl,
@@ -21,15 +21,27 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/common/components/ui/sheet';
+import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { LearningMaterialsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircle } from 'lucide-react';
 import { ElementRef, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@/common/components/ui/tabs';
+import { UploadDropzone } from '@/common/components/elements/Uploadthing';
 
 const CreateLMForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
+
+    const { handleChange, searchParams } = useSearchParamsState();
+
+    const isOpen = searchParams.get('add') === 'learning-material';
 
     const createLMForm = useForm<
         z.infer<typeof LearningMaterialsModel.insertLearningMaterialsSchema>
@@ -50,13 +62,18 @@ const CreateLMForm = () => {
         >,
     ) => {};
 
+    const onOpenChange = (open: boolean) => {
+        if (!open) {
+            handleChange('add', '');
+            return;
+        }
+        handleChange('add', 'learning-material');
+    };
+
     return (
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
-                <Button
-                    variant={'outline'}
-                    className='border-teal-500/40 bg-teal-600/10 text-teal-500 hover:bg-teal-600/20 hover:text-teal-600'
-                >
+                <Button variant={'neon'}>
                     <PlusCircle className='mr-2 inline' size={16} />
                     Learning Material
                 </Button>
@@ -116,6 +133,56 @@ const CreateLMForm = () => {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={createLMForm.control}
+                            name='files'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Files</FormLabel>
+                                    <FormControl>
+                                        <div>
+                                            <Tabs
+                                                defaultValue='document'
+                                                className=''
+                                            >
+                                                <TabsList className='bg-transparent'>
+                                                    <TabsTrigger value='document'>
+                                                        Document
+                                                    </TabsTrigger>
+                                                    <TabsTrigger value='youtube'>
+                                                        Youtube
+                                                    </TabsTrigger>
+                                                </TabsList>
+                                                <TabsContent value='document'>
+                                                    <UploadDropzone
+                                                        endpoint='learningMaterialsFileUploader'
+                                                        appearance={{
+                                                            button: buttonVariants(
+                                                                {
+                                                                    variant:
+                                                                        'outline',
+                                                                    className:
+                                                                        'z-20',
+                                                                },
+                                                            ),
+                                                            label: 'text-primary hover:text-primary/80',
+                                                        }}
+                                                    />
+                                                </TabsContent>
+                                                <TabsContent value='youtube'>
+                                                    Change your youtube here.
+                                                </TabsContent>
+                                            </Tabs>
+                                            <SelectedFiles />
+                                        </div>
+                                    </FormControl>
+                                    <FormDescription>
+                                        Attach files up to 2 MB in size.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <SheetFooter>
                             <Button
@@ -144,3 +211,7 @@ const CreateLMForm = () => {
 };
 
 export default CreateLMForm;
+
+const SelectedFiles = () => {
+    return <div></div>;
+};

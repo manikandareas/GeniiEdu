@@ -13,17 +13,6 @@ import HeaderOptions from '@/common/components/elements/HeaderOptions';
 
 type ClassesPageProps = {};
 
-const urls = [
-    {
-        name: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        name: 'Classes',
-        href: '/classes',
-    },
-];
-
 const ClassesPage: React.FC<ClassesPageProps> = async () => {
     const { user } = await validateRequest();
 
@@ -36,9 +25,22 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
         queryFn: getStudentClasses,
     });
 
+    const titlePage = user.role !== 'teacher' ? 'Classes' : 'Manage Classes';
+
+    const urls = [
+        {
+            name: 'Dashboard',
+            href: '/dashboard',
+        },
+        {
+            name: titlePage,
+            href: '/classes',
+        },
+    ];
+
     return (
         <GridContainer>
-            <HeaderOptions title='Classes' urls={urls} />
+            <HeaderOptions title={titlePage} urls={urls} />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <StudentSection />
             </HydrationBoundary>
