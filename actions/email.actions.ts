@@ -3,7 +3,7 @@
 import { Env } from '@/common/libs/Env';
 import { Resend } from 'resend';
 import { z } from 'zod';
-import { actionClient } from '.';
+import { actionProcedure } from '.';
 
 const resend = new Resend(Env.RESEND_API_KEY);
 
@@ -13,7 +13,7 @@ const sendEmailSchema = z.object({
     subject: z.string(),
     react: z.any(),
 });
-export const sendEmail = actionClient
+export const sendEmail = actionProcedure
     .metadata({
         actionName: 'sendEmail',
     })
