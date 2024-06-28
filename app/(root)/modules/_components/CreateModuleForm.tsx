@@ -37,9 +37,11 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import CreateModuleSuccessDialog from './CreateModuleSuccessDialog';
+import { useQueryClient } from '@tanstack/react-query';
 
 const CreateModuleForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
+    const queryClient = useQueryClient();
 
     const createModuleForm = useForm<
         z.infer<typeof ModulesModel.createModuleSchema>
@@ -69,6 +71,8 @@ const CreateModuleForm = () => {
 
                 setIsCreateModuleSuccess(true);
                 createModuleForm.setValue('slug', data.data.slug);
+
+                queryClient.invalidateQueries({ queryKey: ['modules'] });
 
                 toast.success(data.message);
             },

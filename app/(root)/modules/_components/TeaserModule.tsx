@@ -126,28 +126,32 @@ function Teaser({ module }: TeaserProps) {
             </div>
 
             <ScrollArea className='mt-2 h-48 p-4 md:p-0'>
-                <div className='space-y-4 md:mt-4'>
-                    {module.materials.length === 0
-                        ? 'No Learning Materials and Assignments yet'
-                        : module.materials.map((itm, idx) => (
-                              <div
-                                  key={idx}
-                                  className='flex items-center gap-x-2 rounded-md border p-2'
-                              >
-                                  {idx > 2 ? (
-                                      <SiTask className='inline' size={16} />
-                                  ) : (
-                                      <SiGoogleclassroom
-                                          className='inline'
-                                          size={16}
-                                      />
-                                  )}{' '}
-                                  <h2 className='text-sm'>
-                                      {itm.material.title}
-                                  </h2>
-                              </div>
-                          ))}
-                </div>
+                {module.materials.length === 0 ? (
+                    <div className='flex h-32 items-center justify-center text-sm text-muted-foreground'>
+                        No Learning Materials and Assignments exists 🫥
+                    </div>
+                ) : (
+                    <div className='space-y-4 md:mt-4'>
+                        {module.materials.map((itm, idx) => (
+                            <div
+                                key={idx}
+                                className='flex items-center gap-x-2 rounded-md border p-2'
+                            >
+                                {idx > 2 ? (
+                                    <SiTask className='inline' size={16} />
+                                ) : (
+                                    <SiGoogleclassroom
+                                        className='inline'
+                                        size={16}
+                                    />
+                                )}{' '}
+                                <h2 className='text-sm'>
+                                    {itm.material.title}
+                                </h2>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </ScrollArea>
         </div>
     );
