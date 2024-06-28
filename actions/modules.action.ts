@@ -6,6 +6,7 @@ import { teacherActionClient } from '.';
 import { eq } from 'drizzle-orm';
 import { ActRes } from '@/common/types/Action.type';
 import { validateRequest } from '@/common/libs/lucia';
+import { revalidatePath } from 'next/cache';
 
 export const createModule = teacherActionClient
     .metadata({
@@ -46,6 +47,8 @@ export const createModule = teacherActionClient
             if (insertedModule.length === 0) {
                 throw new Error('Something went wrong, please try again.');
             }
+
+            revalidatePath('/modules');
 
             return {
                 success: true,
