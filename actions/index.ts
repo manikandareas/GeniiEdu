@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 class ActionError extends Error {}
 
-export const actionClient = createSafeActionClient({
+export const actionProcedure = createSafeActionClient({
     handleReturnedServerError: (e) => {
         if (e instanceof ActionError) {
             return e.message;
@@ -34,7 +34,7 @@ export const actionClient = createSafeActionClient({
     return result;
 });
 
-export const authActionClient = actionClient.use(async ({ next }) => {
+export const authActionClient = actionProcedure.use(async ({ next }) => {
     const { user, session } = await validateRequest();
     if (!session) {
         throw new ActionError('Unauthorized');

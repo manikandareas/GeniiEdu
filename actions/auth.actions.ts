@@ -17,12 +17,12 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import React from 'react';
 import { z } from 'zod';
-import { actionClient, authActionClient } from '.';
+import { actionProcedure, authActionClient } from '.';
 import { sendEmail } from './email.actions';
 
 // * Actions running expectedly
 const resendEmailVerificationSchema = z.string().email();
-export const resendEmailVerification = actionClient
+export const resendEmailVerification = actionProcedure
     .metadata({ actionName: 'resendEmailVerification' })
     .schema(resendEmailVerificationSchema)
     .action(async ({ parsedInput: email }) => {
@@ -97,7 +97,7 @@ export const resendEmailVerification = actionClient
 
 // * Actions running expectedly
 const isEmailVerifiedSchema = z.string().email();
-export const isEmailVerified = actionClient
+export const isEmailVerified = actionProcedure
     .metadata({ actionName: 'isEmailVerified' })
     .schema(isEmailVerifiedSchema)
     .action(async ({ parsedInput: email }) => {
@@ -129,7 +129,7 @@ export const isEmailVerified = actionClient
     });
 
 // * Actions running expectedly
-export const signUp = actionClient
+export const signUp = actionProcedure
     .metadata({ actionName: 'signUp' })
     .schema(AuthModel.insertUserSchema)
     .action(async ({ parsedInput }) => {
@@ -199,7 +199,7 @@ export const signUp = actionClient
     });
 
 // * Actions running expectedly
-export const signIn = actionClient
+export const signIn = actionProcedure
     .metadata({ actionName: 'signIn' })
     .schema(AuthModel.loginUserSchema)
     .action(async ({ parsedInput }) => {
@@ -281,7 +281,7 @@ export const signOut = authActionClient
     });
 
 // * Actions running expectedly
-export const verifyEmail = actionClient
+export const verifyEmail = actionProcedure
     .metadata({ actionName: 'verifyEmail' })
     .schema(AuthModel.verifyEmailSchema)
     .bindArgsSchemas<[email: z.ZodString]>([z.string().email()])

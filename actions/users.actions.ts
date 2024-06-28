@@ -8,7 +8,7 @@ import { ActRes } from '@/common/types/Action.type';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { actionClient } from '.';
+import { actionProcedure } from '.';
 
 export const onboardingProfile = async (
     values: z.infer<typeof UsersModel.onboardingSchema>,
@@ -62,7 +62,7 @@ export const onboardingProfile = async (
 const isEmailExistSchema = z.object({
     email: z.string().email(),
 });
-export const isEmailExist = actionClient
+export const isEmailExist = actionProcedure
     .metadata({ actionName: 'findUserByEmail' })
     .schema(isEmailExistSchema)
     .action(async ({ parsedInput }) => {
