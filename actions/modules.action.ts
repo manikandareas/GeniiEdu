@@ -7,12 +7,12 @@ import {
     insertModule,
 } from '@/common/data-access/module';
 import { validateRequest } from '@/common/libs/lucia';
-import { teacherActionClient } from '@/common/libs/safe-action';
+import { teacherProcedure } from '@/common/libs/safe-action';
 import { ModulesModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
 
-export const createModule = teacherActionClient
+export const createModule = teacherProcedure
     .metadata({
         actionName: 'createModule',
     })

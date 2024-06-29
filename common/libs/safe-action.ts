@@ -4,7 +4,6 @@ import {
     createSafeActionClient,
 } from 'next-safe-action';
 import { z } from 'zod';
-import db from './DB';
 
 class ActionError extends Error {}
 
@@ -54,7 +53,7 @@ export const authenticatedProcedure = actionProcedure.use(async ({ next }) => {
     });
 });
 
-export const teacherActionClient = authenticatedProcedure.use(
+export const teacherProcedure = authenticatedProcedure.use(
     async ({ next, ctx }) => {
         const { user } = ctx;
         if (user.role !== 'teacher') {
@@ -65,7 +64,7 @@ export const teacherActionClient = authenticatedProcedure.use(
     },
 );
 
-export const studentActionClient = authenticatedProcedure.use(
+export const studentProcedure = authenticatedProcedure.use(
     async ({ next, ctx }) => {
         const { user } = ctx;
         if (user.role !== 'student') {

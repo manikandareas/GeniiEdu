@@ -8,12 +8,12 @@ import {
 } from '@/common/data-access/learning-materials';
 import { findModuleBySlug } from '@/common/data-access/module';
 import db from '@/common/libs/DB';
-import { teacherActionClient } from '@/common/libs/safe-action';
+import { teacherProcedure } from '@/common/libs/safe-action';
 import { LearningMaterialsModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { z } from 'zod';
 
-export const createLearningMaterial = teacherActionClient
+export const createLearningMaterial = teacherProcedure
     .metadata({
         actionName: 'createLearningMaterial',
     })
