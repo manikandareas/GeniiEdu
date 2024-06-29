@@ -11,8 +11,8 @@ import {
 import { findFileByKey, insertFile } from '@/common/data-access/files';
 import {
     authenticatedProcedure,
-    studentActionClient,
-    teacherActionClient,
+    studentProcedure,
+    teacherProcedure,
 } from '@/common/libs/safe-action';
 import { ClassesModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
@@ -20,7 +20,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 // * Actions running expectedly
-export const createClass = teacherActionClient
+export const createClass = teacherProcedure
     .metadata({
         actionName: 'createClass',
     })
@@ -114,7 +114,7 @@ const uploadClassThumbnailSchema = z.object({
     url: z.string().url(),
     key: z.string(),
 });
-export const uploadClassThumbnail = teacherActionClient
+export const uploadClassThumbnail = teacherProcedure
     .metadata({
         actionName: 'uploadClassThumbnail',
     })
@@ -172,7 +172,7 @@ export const getClassBySlug = authenticatedProcedure
     });
 
 // * Actions running expectedly
-export const joinClass = studentActionClient
+export const joinClass = studentProcedure
     .metadata({
         actionName: 'joinClass',
     })
