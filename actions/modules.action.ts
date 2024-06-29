@@ -106,6 +106,6 @@ export const getDetailModuleBySlug = async (slug: string) => {
     }
 };
 
-export type GetModuleBySlug = Awaited<
+export type GetDetailModuleBySlug = Awaited<
     ReturnType<typeof getDetailModuleBySlug>
 >['data'];
