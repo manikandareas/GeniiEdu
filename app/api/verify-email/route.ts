@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Env } from '@/common/libs/Env';
 import { and, eq } from 'drizzle-orm';
 import db from '@/common/libs/DB';
-import { emailVerifications, users } from '@/common/models/Schema';
+import { emailVerifications, users } from '@/common/models/schema.model';
 import { lucia } from '@/common/libs/lucia';
 import { cookies } from 'next/headers';
 

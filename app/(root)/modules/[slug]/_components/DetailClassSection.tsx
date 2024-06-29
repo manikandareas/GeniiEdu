@@ -10,7 +10,7 @@ import { SiGitbook, SiGoogleclassroom, SiTask } from 'react-icons/si';
 import CreateLMForm from './CreateLMForm';
 import ReorderMaterials from './ReorderMaterials';
 import { useQuery } from '@tanstack/react-query';
-import { getModuleBySlug } from '@/actions/modules.action';
+import { getDetailModuleBySlug } from '@/actions/modules.action';
 
 type DetailClassSectionProps = {
     slug: string;
@@ -19,7 +19,7 @@ type DetailClassSectionProps = {
 const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
     const moduleQuery = useQuery({
         queryKey: ['modules', slug],
-        queryFn: () => getModuleBySlug(slug),
+        queryFn: () => getDetailModuleBySlug(slug),
     });
 
     return (

@@ -20,7 +20,10 @@ import {
 } from '@/common/components/ui/drawer';
 import { ScrollArea } from '@/common/components/ui/scroll-area';
 
-import { GetModuleBySlug, getModuleBySlug } from '@/actions/modules.action';
+import {
+    GetModuleBySlug,
+    getDetailModuleBySlug,
+} from '@/actions/modules.action';
 import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -44,7 +47,8 @@ export function TeaserModule() {
 
     const { data: module } = useQuery({
         queryKey: ['modules', searchParams.get('active')],
-        queryFn: () => getModuleBySlug(searchParams.get('active') as string),
+        queryFn: () =>
+            getDetailModuleBySlug(searchParams.get('active') as string),
     });
 
     if (!module?.success) {

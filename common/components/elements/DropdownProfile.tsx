@@ -49,8 +49,10 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
     });
 
     const onSignOutClick = () => {
+        // @ts-ignore
         execute();
     };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

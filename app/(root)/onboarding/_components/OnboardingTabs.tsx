@@ -66,7 +66,7 @@ export function OnboardingTabs() {
         addAttributesFromOauth();
 
         return () => {};
-    }, [user]);
+    }, [user, pathname, searchParams, replace]);
 
     switch (activeForm) {
         case 0:

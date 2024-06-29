@@ -51,8 +51,9 @@ const VerifyEmail: React.FC<VerifyEmailProps> = (props) => {
             stopCountdown();
             resetCountdown();
         }
-    }, [count]);
+    }, [count, stopCountdown, resetCountdown]);
 
+    // @ts-ignore
     const boundEmailWithFn = verifyEmail.bind(null, props.email);
 
     const { executeAsync: executeVerifyEmail, status: verifyEmailStatus } =
@@ -109,7 +110,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = (props) => {
 
     useEffect(() => {
         startCountdown();
-    }, []);
+    }, [startCountdown]);
     return (
         <div className='z-10 mx-auto w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8'>
             <h2 className='text-xl font-bold text-neutral-800 dark:text-neutral-200'>
@@ -167,7 +168,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = (props) => {
                         Verify Email
                     </Button>
                     <span className='text-xs text-muted-foreground'>
-                        Don't receive the code?{' '}
+                        Don&apos;t receive the code?{' '}
                         <Button
                             type='button'
                             disabled={

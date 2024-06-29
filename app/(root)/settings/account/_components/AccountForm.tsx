@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { CalendarIcon, CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -182,7 +181,10 @@ export function AccountForm() {
                                         {...field}
                                     >
                                         {languages.map((language) => (
-                                            <option value={language.value}>
+                                            <option
+                                                key={language.value}
+                                                value={language.value}
+                                            >
                                                 {language.label}
                                             </option>
                                         ))}

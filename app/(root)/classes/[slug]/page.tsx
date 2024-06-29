@@ -1,4 +1,4 @@
-import { findClassBySlug } from '@/actions/classes.actions';
+import { getClassBySlug } from '@/actions/classes.actions';
 import { Badge } from '@/common/components/elements/Badge';
 import {
     Accordion,
@@ -39,7 +39,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
 
     if (!session) return redirect('/login');
 
-    const dataClass = await findClassBySlug(params.slug).then((response) => {
+    const dataClass = await getClassBySlug(params.slug).then((response) => {
         if (!response || !response.data) {
             throw new Error('Something went wrong');
         }
