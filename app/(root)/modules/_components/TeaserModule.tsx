@@ -21,7 +21,7 @@ import {
 import { ScrollArea } from '@/common/components/ui/scroll-area';
 
 import {
-    GetModuleBySlug,
+    type GetDetailModuleBySlug,
     getDetailModuleBySlug,
 } from '@/actions/modules.action';
 import useSearchParamsState from '@/common/hooks/useSearchParamsState';
@@ -106,7 +106,7 @@ export function TeaserModule() {
 }
 
 type TeaserProps = {
-    module: GetModuleBySlug;
+    module: GetDetailModuleBySlug;
 };
 function Teaser({ module }: TeaserProps) {
     if (!module) {
