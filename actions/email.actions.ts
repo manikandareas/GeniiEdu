@@ -3,7 +3,7 @@
 import { Env } from '@/common/libs/Env';
 import { Resend } from 'resend';
 import { z } from 'zod';
-import { actionProcedure } from '.';
+import { actionProcedure } from '@/common/libs/safe-action';
 
 const resend = new Resend(Env.RESEND_API_KEY);
 

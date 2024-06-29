@@ -522,3 +522,5 @@ export const studentProgressRelations = relations(
         }),
     }),
 );
+
+export type FilesType = typeof files._.inferInsert;

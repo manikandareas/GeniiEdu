@@ -29,15 +29,15 @@ const StudentClassesTabs: React.FC<StudentClassesTabsProps> = () => {
         queryKey: ['classes'],
     });
 
-    if (!data?.success) return null;
+    const params = searchParams.get('sort');
 
-    const [sortedData, setSortedData] = useState(data.data.classes);
+    const [sortedData, setSortedData] = useState(data?.data?.classes);
 
     useEffect(() => {
         switch (searchParams.get('sort')) {
             case 'newest_to_oldest':
                 setSortedData(
-                    data.data.classes.sort(
+                    data?.data?.classes?.sort(
                         (a, b) =>
                             new Date(b.joinedAt).getTime() -
                             new Date(a.joinedAt).getTime(),
@@ -48,7 +48,9 @@ const StudentClassesTabs: React.FC<StudentClassesTabsProps> = () => {
                 setSortedData([]);
                 break;
         }
-    }, [searchParams.get('sort')]);
+    }, [params, searchParams, data?.data?.classes]);
+
+    if (!data?.success) return null;
 
     return (
         <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
@@ -110,10 +112,10 @@ const StudentClassesTabs: React.FC<StudentClassesTabsProps> = () => {
                         value='all'
                         className='grid grid-cols-1 gap-4 lg:grid-cols-4'
                     >
-                        {(sortedData.length > 0
+                        {(sortedData!.length > 0
                             ? sortedData
-                            : data.data.classes
-                        ).map((classData) => (
+                            : data?.data?.classes
+                        )?.map((classData) => (
                             <StudentCard
                                 key={nanoid(5)}
                                 classData={{

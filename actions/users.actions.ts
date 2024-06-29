@@ -8,7 +8,12 @@ import { ActRes } from '@/common/types/Action.type';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { actionProcedure } from '.';
+import { actionProcedure } from '@/common/libs/safe-action';
+import {
+    patchUser,
+    findUserByEmail,
+    findStudentClasses,
+} from '@/common/data-access/users';
 
 export const onboardingProfile = async (
     values: z.infer<typeof UsersModel.onboardingSchema>,
@@ -29,18 +34,18 @@ export const onboardingProfile = async (
             return redirect('/login');
         }
 
-        const response = await db
-            .update(Schema.users)
-            .set({
+        const response = await patchUser(
+            {
                 name: values.name,
                 username: values.username,
                 role: values.role,
                 onBoardingComplete: true,
                 updatedAt: new Date(),
-            })
-            .where(eq(Schema.users.id, user.id));
+            },
+            user.id,
+        );
 
-        if (response.count === 0) {
+        if (response.length === 0) {
             return {
                 success: false,
                 error: 'User not found',
@@ -63,13 +68,11 @@ const isEmailExistSchema = z.object({
     email: z.string().email(),
 });
 export const isEmailExist = actionProcedure
-    .metadata({ actionName: 'findUserByEmail' })
+    .metadata({ actionName: 'isEmailExist' })
     .schema(isEmailExistSchema)
     .action(async ({ parsedInput }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, parsedInput.email),
-            });
+            const existingUser = findUserByEmail(parsedInput.email);
 
             if (!existingUser) {
                 return {
@@ -91,25 +94,16 @@ export const isEmailExist = actionProcedure
     });
 
 export const getStudentClasses = async () => {
-    const { user } = await validateRequest();
+    const { user: student } = await validateRequest();
 
-    if (!user) {
+    if (!student) {
         throw new Error('Unauthorized');
     }
 
     try {
-        const userClasses = await db.query.classMembers.findMany({
-            where: eq(Schema.classMembers.userId, user.id),
-            with: {
-                class: {
-                    with: {
-                        teacher: true,
-                    },
-                },
-            },
-        });
+        const studentClasses = await findStudentClasses(student.id);
 
-        if (userClasses.length === 0) {
+        if (studentClasses.length === 0) {
             return {
                 success: true,
                 data: {
@@ -128,18 +122,18 @@ export const getStudentClasses = async () => {
         return {
             success: true,
             data: {
-                classes: userClasses,
+                classes: studentClasses,
                 metadata: {
-                    all: userClasses.length,
-                    ongoing: userClasses.filter(
+                    all: studentClasses.length,
+                    ongoing: studentClasses.filter(
                         (classMember) =>
                             classMember.statusCompletion === 'ongoing',
                     ).length,
-                    completed: userClasses.filter(
+                    completed: studentClasses.filter(
                         (classMember) =>
                             classMember.statusCompletion === 'completed',
                     ).length,
-                    archived: userClasses.filter(
+                    archived: studentClasses.filter(
                         (classMember) =>
                             classMember.statusCompletion === 'archived',
                     ).length,

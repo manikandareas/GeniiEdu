@@ -1,12 +1,23 @@
 'use server';
 
-import db from '@/common/libs/DB';
-import { ClassesModel, Schema } from '@/common/models';
+import {
+    findClassWithThumbnailTeacher,
+    findClassByCode,
+    findClassBySlug,
+    insertClass,
+    insertClassMember,
+    findStudentInClass,
+} from '@/common/data-access/classes';
+import { findFileByKey, insertFile } from '@/common/data-access/files';
+import {
+    authenticatedProcedure,
+    studentActionClient,
+    teacherActionClient,
+} from '@/common/libs/safe-action';
+import { ClassesModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
-import { and, eq } from 'drizzle-orm';
-import { z } from 'zod';
-import { authActionClient, studentActionClient, teacherActionClient } from '.';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
 // * Actions running expectedly
 export const createClass = teacherActionClient
@@ -26,15 +37,8 @@ export const createClass = teacherActionClient
 
             const [existingClassBySlug, existingClassByClassCode] =
                 await Promise.all([
-                    db.query.classes.findFirst({
-                        where: eq(Schema.classes.slug, parsedInput.slug),
-                    }),
-                    await db.query.classes.findFirst({
-                        where: eq(
-                            Schema.classes.classCode,
-                            parsedInput.classCode,
-                        ),
-                    }),
+                    await findClassBySlug(parsedInput.slug),
+                    await findClassByCode(parsedInput.classCode),
                 ]);
 
             if (existingClassBySlug) {
@@ -53,23 +57,19 @@ export const createClass = teacherActionClient
 
             // ? Upload default thumbnail to database if not provided
             if (!parsedInput.thumbnailKey && parsedInput.thumbnail) {
-                const uploadedDefaultThumbnail = await db
-                    .insert(Schema.files)
-                    .values({
-                        url: parsedInput.thumbnail,
-                        key: parsedInput.slug,
-                        userId: teacher.id,
-                    })
-                    .returning({
-                        id: Schema.files.id,
-                    });
+                const uploadedDefaultThumbnail = await insertFile({
+                    url: parsedInput.thumbnail,
+                    key: parsedInput.slug,
+                    userId: teacher.id,
+                    type: 'image',
+                });
 
                 classThumbnailId = uploadedDefaultThumbnail[0].id;
             } else if (parsedInput.thumbnailKey && parsedInput.thumbnail) {
                 // ? Get inserted thumbnail id from database
-                const classThumbnail = await db.query.files.findFirst({
-                    where: eq(Schema.files.key, parsedInput.thumbnailKey),
-                });
+                const classThumbnail = await findFileByKey(
+                    parsedInput.thumbnailKey,
+                );
 
                 classThumbnailId = classThumbnail?.id;
             } else {
@@ -80,20 +80,15 @@ export const createClass = teacherActionClient
                 throw new Error('Something went wrong, please try again.');
             }
 
-            const insertedClass = await db
-                .insert(Schema.classes)
-                .values({
-                    className: parsedInput.className,
-                    slug: parsedInput.slug,
-                    description: parsedInput.description,
-                    teacherId: teacher.id,
-                    classCode: parsedInput.classCode,
-                    accessType: parsedInput.accessType,
-                    thumbnailId: classThumbnailId,
-                })
-                .returning({
-                    slug: Schema.classes.slug,
-                });
+            const insertedClass = await insertClass({
+                className: parsedInput.className,
+                slug: parsedInput.slug,
+                description: parsedInput.description,
+                teacherId: teacher.id,
+                classCode: parsedInput.classCode,
+                accessType: parsedInput.accessType,
+                thumbnailId: classThumbnailId,
+            });
 
             if (!insertedClass) {
                 throw new Error('Something went wrong, please try again.');
@@ -128,14 +123,14 @@ export const uploadClassThumbnail = teacherActionClient
         try {
             const { user } = ctx;
 
-            const response = await db.insert(Schema.files).values({
+            const response = await insertFile({
                 url: parsedInput.url,
                 key: parsedInput.key,
                 type: 'image',
                 userId: user.id,
             });
 
-            if (response.count === 0) {
+            if (response.length === 0) {
                 throw new Error('Something went wrong, please try again.');
             }
 
@@ -152,20 +147,14 @@ export const uploadClassThumbnail = teacherActionClient
     });
 
 // * Actions running expectedly
-export const findClassBySlug = authActionClient
+export const getClassBySlug = authenticatedProcedure
     .metadata({
-        actionName: 'findClassBySlug',
+        actionName: 'getClassBySlug',
     })
     .schema(z.string())
     .action(async ({ parsedInput: slug }) => {
         try {
-            const existingClass = await db.query.classes.findFirst({
-                where: eq(Schema.classes.slug, slug),
-                with: {
-                    thumbnail: true,
-                    teacher: true,
-                },
-            });
+            const existingClass = await findClassWithThumbnailTeacher(slug);
 
             if (!existingClass) {
                 throw new Error('Class not found');
@@ -192,30 +181,22 @@ export const joinClass = studentActionClient
         try {
             const { user: student } = ctx;
 
-            const classToJoin = await db.query.classes.findFirst({
-                where: eq(Schema.classes.classCode, parsedInput.classCode),
-            });
+            const classToJoin = await findClassByCode(parsedInput.classCode);
 
             if (!classToJoin) {
                 throw new Error('Class not found');
             }
 
-            const isStudentAlreadyInClass =
-                await db.query.classMembers.findFirst({
-                    where: and(
-                        eq(Schema.classMembers.classId, classToJoin.id),
-                        eq(Schema.classMembers.userId, student.id),
-                    ),
-                });
+            const isStudentAlreadyInClass = await findStudentInClass(
+                student.id,
+                classToJoin.id,
+            );
 
             if (isStudentAlreadyInClass) {
                 throw new Error('Your already in this class');
             }
 
-            await db.insert(Schema.classMembers).values({
-                classId: classToJoin.id,
-                userId: student.id,
-            });
+            await insertClassMember(student.id, classToJoin.id);
 
             revalidatePath('/classes');
 

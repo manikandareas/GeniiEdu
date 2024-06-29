@@ -1,23 +1,36 @@
 'use server';
 
 import { DefaultProfile } from '@/common/constants/DefaultProfile';
-import db from '@/common/libs/DB';
+import {
+    deleteEmailVerificationByUserId,
+    findEmailVerificationByUserId,
+    findEmailVerificationByUserIdAndCode,
+    insertEmailVerification,
+    patchEmailVerification,
+} from '@/common/data-access/email-verifications';
+import {
+    insertUser,
+    patchUser,
+    findUserByEmail,
+} from '@/common/data-access/users';
+import GeniiEduVerificationEmail from '@/common/emails/verify-email';
 import { Env } from '@/common/libs/Env';
 import { lucia } from '@/common/libs/lucia';
 import { github, google } from '@/common/libs/lucia/oauth';
+import {
+    actionProcedure,
+    authenticatedProcedure,
+} from '@/common/libs/safe-action';
 import { generateRandomNumber } from '@/common/libs/utils';
-import { AuthModel, Schema } from '@/common/models';
-import GeniiEduVerificationEmail from '@/common/emails/verify-email';
+import { AuthModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { generateCodeVerifier, generateState } from 'arctic';
 import * as argon from 'argon2';
-import { and, eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import React from 'react';
 import { z } from 'zod';
-import { actionProcedure, authActionClient } from '.';
 import { sendEmail } from './email.actions';
 
 // * Actions running expectedly
@@ -27,10 +40,7 @@ export const resendEmailVerification = actionProcedure
     .schema(resendEmailVerificationSchema)
     .action(async ({ parsedInput: email }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, email),
-            });
-
+            const existingUser = await findUserByEmail(email);
             if (!existingUser) {
                 throw new Error('User not found');
             }
@@ -39,9 +49,9 @@ export const resendEmailVerification = actionProcedure
                 throw new Error('Email is already verified');
             }
 
-            const existedCode = await db.query.emailVerifications.findFirst({
-                where: eq(Schema.emailVerifications.userId, existingUser.id),
-            });
+            const existedCode = await findEmailVerificationByUserId(
+                existingUser.id,
+            );
 
             if (!existedCode) {
                 throw new Error('Code not found');
@@ -60,10 +70,10 @@ export const resendEmailVerification = actionProcedure
 
             const code = generateRandomNumber(6);
 
-            await db
-                .update(Schema.emailVerifications)
-                .set({ code, sentAt: new Date() })
-                .where(eq(Schema.emailVerifications.userId, existingUser.id));
+            await patchEmailVerification({
+                code,
+                sentAt: new Date(),
+            });
 
             const token = jwt.sign(
                 { email: email, userId: existingUser.id, code },
@@ -102,9 +112,8 @@ export const isEmailVerified = actionProcedure
     .schema(isEmailVerifiedSchema)
     .action(async ({ parsedInput: email }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, email),
-            });
+            const existingUser = await findUserByEmail(email);
+
             if (!existingUser) {
                 throw new Error('User not found');
             }
@@ -134,9 +143,7 @@ export const signUp = actionProcedure
     .schema(AuthModel.insertUserSchema)
     .action(async ({ parsedInput }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, parsedInput.email),
-            });
+            const existingUser = await findUserByEmail(parsedInput.email);
 
             if (existingUser) {
                 throw new Error('Email already used');
@@ -144,29 +151,23 @@ export const signUp = actionProcedure
 
             const hashedPassword = await argon.hash(parsedInput.password);
 
-            const registeredUserId = await db
-                .insert(Schema.users)
-                .values({
-                    email: parsedInput.email,
-                    passwordHash: hashedPassword,
-                    profilePicture: DefaultProfile.profilePicture,
-                })
-                .returning({
-                    userId: Schema.users.id,
-                })
-                .then((res) => res[0].userId);
+            const registeredUser = await insertUser({
+                email: parsedInput.email,
+                passwordHash: hashedPassword,
+                profilePicture: DefaultProfile.profilePicture,
+            }).then((res) => res[0]);
 
             // Random String for email verification
             const code = generateRandomNumber(6);
 
-            await db.insert(Schema.emailVerifications).values({
+            await insertEmailVerification({
                 code,
-                userId: registeredUserId,
+                userId: registeredUser.id,
                 sentAt: new Date(),
             });
 
             const token = jwt.sign(
-                { email: parsedInput.email, userId: registeredUserId, code },
+                { email: parsedInput.email, userId: registeredUser.id, code },
                 Env.JWT_SECRET as string,
                 { expiresIn: '5h' },
             );
@@ -204,9 +205,7 @@ export const signIn = actionProcedure
     .schema(AuthModel.loginUserSchema)
     .action(async ({ parsedInput }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, parsedInput.email),
-            });
+            const existingUser = await findUserByEmail(parsedInput.email);
 
             if (!existingUser) {
                 throw new Error('Incorrect email or password');
@@ -254,7 +253,7 @@ export const signIn = actionProcedure
     });
 
 // * Actions running expectedly
-export const signOut = authActionClient
+export const signOut = authenticatedProcedure
     .metadata({ actionName: 'signOut' })
     .action(async ({ ctx }) => {
         try {
@@ -287,9 +286,7 @@ export const verifyEmail = actionProcedure
     .bindArgsSchemas<[email: z.ZodString]>([z.string().email()])
     .action(async ({ parsedInput, bindArgsParsedInputs: [email] }) => {
         try {
-            const existingUser = await db.query.users.findFirst({
-                where: eq(Schema.users.email, email),
-            });
+            const existingUser = await findUserByEmail(email);
 
             if (!existingUser) {
                 throw new Error('Invalid Code');
@@ -300,26 +297,28 @@ export const verifyEmail = actionProcedure
             }
 
             // ? Check if code is valid and match
-            const existingCode = await db.query.emailVerifications.findFirst({
-                where: and(
-                    eq(Schema.emailVerifications.userId, existingUser.id),
-                    eq(Schema.emailVerifications.code, parsedInput.code),
-                ),
-            });
+            const existingCode = await findEmailVerificationByUserIdAndCode(
+                existingUser.id,
+                parsedInput.code,
+            );
 
             if (!existingCode) {
                 throw new Error('Invalid Code');
             }
 
-            await db
-                .delete(Schema.emailVerifications)
-                .where(eq(Schema.emailVerifications.userId, existingUser.id));
+            await deleteEmailVerificationByUserId(existingUser.id);
 
-            await db
-                .update(Schema.users)
-                .set({ isEmailVerified: true })
-                .where(eq(Schema.users.id, existingUser.id));
+            // await db
+            //     .update(Schema.users)
+            //     .set({ isEmailVerified: true })
+            //     .where(eq(Schema.users.id, existingUser.id));
 
+            await patchUser(
+                {
+                    isEmailVerified: true,
+                },
+                existingUser.id,
+            );
             return {
                 success: true,
                 message: 'Email verified successfully',

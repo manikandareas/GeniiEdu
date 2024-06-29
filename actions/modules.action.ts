@@ -1,11 +1,15 @@
 'use server';
 
-import { ModulesModel, Schema } from '@/common/models';
-import db from '@/common/libs/DB';
-import { teacherActionClient } from '.';
-import { eq } from 'drizzle-orm';
-import { ActRes } from '@/common/types/Action.type';
+import {
+    findDetailModuleBySlug,
+    findModuleBySlug,
+    findTeacherModules,
+    insertModule,
+} from '@/common/data-access/module';
 import { validateRequest } from '@/common/libs/lucia';
+import { teacherActionClient } from '@/common/libs/safe-action';
+import { ModulesModel } from '@/common/models';
+import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
 
 export const createModule = teacherActionClient
@@ -22,9 +26,9 @@ export const createModule = teacherActionClient
         }
 
         try {
-            const registeredModuleBySlug = await db.query.modules.findFirst({
-                where: eq(Schema.modules.slug, parsedInput.slug),
-            });
+            const registeredModuleBySlug = await findModuleBySlug(
+                parsedInput.slug,
+            );
 
             if (registeredModuleBySlug) {
                 throw new Error(
@@ -32,17 +36,12 @@ export const createModule = teacherActionClient
                 );
             }
 
-            const insertedModule = await db
-                .insert(Schema.modules)
-                .values({
-                    moduleName: parsedInput.moduleName,
-                    slug: parsedInput.slug,
-                    description: parsedInput.description,
-                    authorId: ctx.user.id,
-                })
-                .returning({
-                    slug: Schema.modules.slug,
-                });
+            const insertedModule = await insertModule({
+                moduleName: parsedInput.moduleName,
+                slug: parsedInput.slug,
+                description: parsedInput.description,
+                authorId: ctx.user.id,
+            });
 
             if (insertedModule.length === 0) {
                 throw new Error('Something went wrong, please try again.');
@@ -67,15 +66,13 @@ export const createModule = teacherActionClient
 
 export const getTeacherModules = async () => {
     try {
-        const { user } = await validateRequest();
+        const { user: teacher } = await validateRequest();
 
-        if (!user) {
+        if (!teacher) {
             throw new Error('Unauthorized');
         }
 
-        const teacherModules = await db.query.modules.findMany({
-            where: eq(Schema.modules.authorId, user.id),
-        });
+        const teacherModules = await findTeacherModules(teacher.id);
 
         return {
             success: true,
@@ -89,19 +86,9 @@ export const getTeacherModules = async () => {
     }
 };
 
-export const getModuleBySlug = async (slug: string) => {
+export const getDetailModuleBySlug = async (slug: string) => {
     try {
-        const existingModule = await db.query.modules.findFirst({
-            where: eq(Schema.modules.slug, slug),
-            with: {
-                materials: {
-                    with: {
-                        material: true,
-                    },
-                },
-                assignments: true,
-            },
-        });
+        const existingModule = await findDetailModuleBySlug(slug);
 
         if (!existingModule) {
             throw new Error('Module not found');
@@ -120,5 +107,5 @@ export const getModuleBySlug = async (slug: string) => {
 };
 
 export type GetModuleBySlug = Awaited<
-    ReturnType<typeof getModuleBySlug>
+    ReturnType<typeof getDetailModuleBySlug>
 >['data'];

@@ -7,7 +7,7 @@ import {
     QueryClient,
     dehydrate,
 } from '@tanstack/react-query';
-import { getModuleBySlug } from '@/actions/modules.action';
+import { getDetailModuleBySlug } from '@/actions/modules.action';
 
 type DetailModulePageProps = {
     params: {
@@ -35,7 +35,7 @@ const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
 
     queryClient.prefetchQuery({
         queryKey: ['modules', props.params.slug],
-        queryFn: () => getModuleBySlug(props.params.slug),
+        queryFn: () => getDetailModuleBySlug(props.params.slug),
     });
 
     return (

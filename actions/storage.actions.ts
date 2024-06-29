@@ -1,20 +1,18 @@
 'use server';
 
-import db from '@/common/libs/DB';
+import { deleteFilesByKey, insertFiles } from '@/common/data-access/files';
 import { utapi } from '@/common/libs/Uploadthing';
-import { Schema } from '@/common/models';
-import { ActRes } from '@/common/types/Action.type';
-import { eq, inArray } from 'drizzle-orm';
-import { authActionClient } from '.';
-import { z } from 'zod';
+import { authenticatedProcedure } from '@/common/libs/safe-action';
 import { FilesTypeEnum } from '@/common/models/schema.model';
+import { ActRes } from '@/common/types/Action.type';
+import { z } from 'zod';
 
 export const removeFiles = async (key: string[]) => {
     try {
         // ? Delete file from uploadthing and database
         const [utapiRes, sqlRes] = await Promise.all([
             utapi.deleteFiles(key),
-            db.delete(Schema.files).where(inArray(Schema.files.key, key)),
+            await deleteFilesByKey(key),
         ]);
 
         if (!utapiRes.success || sqlRes.count === 0) {
@@ -42,7 +40,7 @@ const saveFilesToDBSchema = z
         }),
     )
     .optional();
-export const saveFilesToDB = authActionClient
+export const saveFilesToDB = authenticatedProcedure
     .metadata({
         actionName: 'saveFilesToDB',
     })
@@ -55,17 +53,15 @@ export const saveFilesToDB = authActionClient
         try {
             const { user } = ctx;
 
-            const res = await db
-                .insert(Schema.files)
-                .values(
-                    parsedInput.map((file) => ({
-                        userId: user.id,
-                        key: file.key!,
-                        type: file.type!,
-                        url: file.url!,
-                    })),
-                )
-                .returning();
+            // @ts-ignore
+            const mappedFiles = parsedInput.map((file) => ({
+                userId: user.id,
+                key: file.key!,
+                type: file.type!,
+                url: file.url!,
+            }));
+
+            const res = await insertFiles(mappedFiles);
 
             return {
                 success: true,

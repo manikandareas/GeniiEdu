@@ -29,7 +29,7 @@ const LearningMaterialForm: React.FC<LearningMaterialFormProps> = ({
     moduleSlug,
 }) => {
     const { form } = useLearningMaterialContext();
-
+    // @ts-ignore
     const boundSlugWithFn = createLearningMaterial.bind(null, moduleSlug);
 
     const { executeAsync, status } = useAction(boundSlugWithFn, {
