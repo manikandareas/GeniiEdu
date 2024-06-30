@@ -32,8 +32,6 @@ if (process.env.NODE_ENV === 'production') {
     db = global.db;
 }
 
-export { db, pg };
-
 export type TypeDB = typeof db;
 
 export default db;

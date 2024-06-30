@@ -1,7 +1,5 @@
 'use client';
 
-import { webDevelopmentToC } from '@/common/constants/DummyTOC';
-
 import { Button } from '@/common/components/ui/button';
 import { Label } from '@/common/components/ui/label';
 import { Switch } from '@/common/components/ui/switch';
@@ -10,7 +8,12 @@ import { SiGitbook, SiGoogleclassroom, SiTask } from 'react-icons/si';
 import CreateLMForm from './CreateLMForm';
 import ReorderMaterials from './ReorderMaterials';
 import { useQuery } from '@tanstack/react-query';
-import { getDetailModuleBySlug } from '@/actions/modules.action';
+import {
+    getDetailModuleBySlug,
+    togglePublishedModule,
+} from '@/actions/modules.action';
+import { useAction } from 'next-safe-action/hooks';
+import { toast } from 'sonner';
 
 type DetailClassSectionProps = {
     slug: string;
@@ -21,6 +24,22 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
         queryKey: ['modules', slug],
         queryFn: () => getDetailModuleBySlug(slug),
     });
+
+    const { execute: executeTogglePublished, status: statusTogglePublished } =
+        useAction(togglePublishedModule, {
+            onSuccess: ({ data }) => {
+                if (!data) throw new Error('Something went wrong');
+
+                if (!data.success) {
+                    toast.error(data.error);
+                    return;
+                }
+
+                toast.success(data.message);
+
+                moduleQuery.refetch();
+            },
+        });
 
     return (
         <div className='relative flex-1 space-y-4 md:col-span-3'>
@@ -48,8 +67,9 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
                 <div className='flex items-center space-x-2'>
                     <Switch
                         id='publish'
+                        onCheckedChange={() => executeTogglePublished(slug)}
+                        disabled={statusTogglePublished === 'executing'}
                         defaultChecked={moduleQuery.data?.data?.isPublished}
-                        // checked={moduleQuery.data?.data?.isPublished}
                     />
                     <Label htmlFor='publish'>Published</Label>
                 </div>
@@ -61,7 +81,7 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
                     </Button>
                 </div>
             </div>
-            <ReorderMaterials slug={slug} />
+            <ReorderMaterials data={moduleQuery.data?.data} />
         </div>
     );
 };

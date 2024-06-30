@@ -1,6 +1,7 @@
+import { eq } from 'drizzle-orm';
 import db from '../libs/DB';
 import { Schema } from '../models';
-import { DataAccessConfig, InsertModuleInput } from './types';
+import { DataAccessConfig, InsertModuleInput, PatchModuleInput } from './types';
 
 export const findModuleBySlug = (
     slug: string,
@@ -42,4 +43,15 @@ export const findDetailModuleBySlug = async (slug: string) => {
             assignments: true,
         },
     });
+};
+
+export const patchModule = async (
+    input: PatchModuleInput,
+    moduleId: string,
+) => {
+    return await db
+        .update(Schema.modules)
+        .set(input)
+        .where(eq(Schema.modules.id, moduleId))
+        .returning();
 };

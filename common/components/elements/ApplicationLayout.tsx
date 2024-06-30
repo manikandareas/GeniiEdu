@@ -1,11 +1,10 @@
 'use client';
 
-import { redirect, usePathname } from 'next/navigation';
-import Sidebar from './Sidebar';
-import Header, { HeaderSkeleton } from './Header';
-import { Suspense, useMemo } from 'react';
-import { useHeaderStore } from '@/common/stores/header-store';
 import useCurrentSession from '@/common/hooks/useCurrentSession';
+import { useHeaderStore } from '@/common/stores/header-store';
+import { redirect, usePathname } from 'next/navigation';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
 type ApplicationLayoutProps = {
     children: React.ReactNode;

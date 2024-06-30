@@ -304,7 +304,8 @@ export const files = pgTable('files', {
         .primaryKey()
         .$defaultFn(() => uuidv7()),
     url: text('url').notNull(),
-    key: text('key'),
+    key: text('key').notNull(),
+    name: text('name').notNull(),
     type: FilesTypeEnum('type').notNull().default('image'),
     userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
     createdAt,

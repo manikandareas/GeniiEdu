@@ -36,6 +36,7 @@ const saveFilesToDBSchema = z
         z.object({
             url: z.string(),
             key: z.string(),
+            name: z.string(),
             type: z.enum(FilesTypeEnum.enumValues),
         }),
     )
@@ -59,6 +60,7 @@ export const saveFilesToDB = authenticatedProcedure
                 key: file.key!,
                 type: file.type!,
                 url: file.url!,
+                name: file.name!,
             }));
 
             const res = await insertFiles(mappedFiles);
@@ -69,6 +71,7 @@ export const saveFilesToDB = authenticatedProcedure
                 data: res,
             } satisfies ActRes<typeof res>;
         } catch (error: any) {
+            console.log(JSON.stringify(error, null, 2));
             return {
                 error: error.message,
                 success: false,
