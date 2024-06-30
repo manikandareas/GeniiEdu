@@ -9,7 +9,7 @@ import {
 import { findModuleBySlug } from '@/common/data-access/module';
 import db from '@/common/libs/DB';
 import { teacherProcedure } from '@/common/libs/safe-action';
-import { LearningMaterialsModel } from '@/common/models';
+import { LearningMaterialsModel, Schema } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { z } from 'zod';
 

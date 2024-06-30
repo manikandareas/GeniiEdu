@@ -5,12 +5,14 @@ import {
     findModuleBySlug,
     findTeacherModules,
     insertModule,
+    patchModule,
 } from '@/common/data-access/module';
 import { validateRequest } from '@/common/libs/lucia';
 import { teacherProcedure } from '@/common/libs/safe-action';
 import { ModulesModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
 export const createModule = teacherProcedure
     .metadata({
@@ -109,3 +111,44 @@ export const getDetailModuleBySlug = async (slug: string) => {
 export type GetDetailModuleBySlug = Awaited<
     ReturnType<typeof getDetailModuleBySlug>
 >['data'];
+
+export const togglePublishedModule = teacherProcedure
+    .metadata({
+        actionName: 'togglePublishedModule',
+    })
+    .schema(z.string())
+    .action(async ({ parsedInput: slug, ctx }) => {
+        try {
+            const ownModule = await findModuleBySlug(slug);
+
+            if (!ownModule) {
+                throw new Error('Module not found');
+            }
+
+            if (ownModule.authorId !== ctx.user.id) {
+                throw new Error('Unauthorized');
+            }
+
+            const updatedModule = await patchModule(
+                {
+                    isPublished: !ownModule.isPublished,
+                },
+                ownModule.id,
+            );
+
+            if (updatedModule.length === 0) {
+                throw new Error('Something went wrong, please try again.');
+            }
+
+            revalidatePath(`/modules/${slug}`);
+            return {
+                success: true,
+                message: `Module ${ownModule.moduleName} has been ${updatedModule[0].isPublished ? 'published' : 'unpublished'}`,
+            } satisfies ActRes;
+        } catch (error: any) {
+            return {
+                error: error.message,
+                success: false,
+            } satisfies ActRes;
+        }
+    });

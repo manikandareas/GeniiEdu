@@ -121,7 +121,3 @@ export const updatedDummyClasses = DUMMY_CLASSES.map((cls, index) => ({
     ...cls,
     thumbnailId: dummyThumbnail[index].id,
 }));
-
-// Output hasil
-console.log('dummyThumbnail:', dummyThumbnail);
-console.log('updatedDummyClasses:', updatedDummyClasses);

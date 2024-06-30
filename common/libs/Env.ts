@@ -20,9 +20,11 @@ export const Env = createEnv({
         GOOGLE_CLIENT_SECRET: z.string().min(1),
         UPLOADTHING_APP_ID: z.string().min(1),
         UPLOADTHING_SECRET: z.string().min(1),
+
     },
     client: {
         NEXT_PUBLIC_APP_URL: z.string().optional(),
+        NEXT_PUBLIC_AUTH_ROOT_PAGE: z.string().min(1),
     },
     // You need to destructure all the keys manually
     runtimeEnv: {
@@ -43,5 +45,6 @@ export const Env = createEnv({
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
         UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
         UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+        NEXT_PUBLIC_AUTH_ROOT_PAGE: process.env.NEXT_PUBLIC_AUTH_ROOT_PAGE,
     },
 });

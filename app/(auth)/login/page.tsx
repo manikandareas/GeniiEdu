@@ -5,6 +5,7 @@ import RetroGrid from '@/common/components/ui/retro-grid';
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
 import Login from './_components/Login';
+import { Env } from '@/common/libs/Env';
 
 export const metadata: Metadata = {
     title: 'Login',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 const LoginPage = async () => {
     const { session } = await validateRequest();
     if (session) {
-        return redirect('/');
+        return redirect(Env.NEXT_PUBLIC_AUTH_ROOT_PAGE);
     }
     return (
         <main className='flex h-screen items-center justify-center'>

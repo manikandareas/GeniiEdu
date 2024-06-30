@@ -1,6 +1,9 @@
 'use client';
 
+import { createLearningMaterial } from '@/actions/learning-materials.actions';
+import { removeFiles, saveFilesToDB } from '@/actions/storage.actions';
 import Tiptap from '@/common/components/elements/Tiptap';
+import { UploadDropzone } from '@/common/components/elements/Uploadthing';
 import { Button, buttonVariants } from '@/common/components/ui/button';
 import {
     Form,
@@ -21,27 +24,46 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/common/components/ui/sheet';
-import useSearchParamsState from '@/common/hooks/useSearchParamsState';
-import { LearningMaterialsModel } from '@/common/models';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { PlusCircle } from 'lucide-react';
-import { ElementRef, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import {
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import { UploadDropzone } from '@/common/components/elements/Uploadthing';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/common/components/ui/tooltip';
+import { insertFile } from '@/common/data-access/files';
+import useSearchParamsState from '@/common/hooks/useSearchParamsState';
+import { LearningMaterialsModel } from '@/common/models';
+import YoutubeLink from '@/public/youtube-link.png';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PlusCircle, X } from 'lucide-react';
+import { nanoid } from 'nanoid';
+import { useAction } from 'next-safe-action/hooks';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { ElementRef, FormEvent, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 const CreateLMForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
 
     const { handleChange, searchParams } = useSearchParamsState();
 
+    const params = useParams();
+
     const isOpen = searchParams.get('add') === 'learning-material';
+
+    const [youtubeLink, setYoutubeLink] = useState('');
+
+    const [youtubeName, setYoutubeName] = useState('');
 
     const createLMForm = useForm<
         z.infer<typeof LearningMaterialsModel.insertLearningMaterialsSchema>
@@ -56,11 +78,36 @@ const CreateLMForm = () => {
         },
     });
 
+    // @ts-ignore
+    const boundSlugWithFn = createLearningMaterial.bind(null, params.slug);
+
+    const { executeAsync: executeInsertLM, status: statusInsertLM } = useAction(
+        boundSlugWithFn,
+        {
+            onSuccess: ({ data }) => {
+                if (!data) throw new Error('Something went wrong');
+
+                if (!data.success) {
+                    toast.error(data.error);
+                    return;
+                }
+
+                toast.success(data.message);
+
+                createLMForm.reset();
+
+                closeSheetRef.current?.click();
+            },
+        },
+    );
+
     const onCreateModuleClicked = async (
         values: z.infer<
             typeof LearningMaterialsModel.insertLearningMaterialsSchema
         >,
-    ) => {};
+    ) => {
+        await executeInsertLM(values);
+    };
 
     const onOpenChange = (open: boolean) => {
         if (!open) {
@@ -68,6 +115,84 @@ const CreateLMForm = () => {
             return;
         }
         handleChange('add', 'learning-material');
+    };
+
+    const onXClicked = async (key: string) => {
+        createLMForm.setValue(
+            'files',
+            createLMForm.getValues('files')?.filter((f) => f.key !== key),
+        );
+        await removeFiles([key]);
+    };
+
+    const { executeAsync: executeSaveFile, status: statusSaveFile } = useAction(
+        saveFilesToDB,
+        {
+            onSuccess: ({ data }) => {
+                if (!data) throw new Error('Something went wrong');
+
+                if (!data.success) {
+                    toast.error(data.error);
+                    return;
+                }
+
+                toast.success(data.message);
+                console.log(JSON.stringify(data, null, 2));
+
+                const prevFiles = createLMForm.getValues('files')!;
+                createLMForm.setValue(
+                    'files',
+                    prevFiles.concat(
+                        data.data.map((f) => ({
+                            key: f.key!,
+                            id: f.id,
+                            type: f.type,
+                            url: f.url,
+                            name: f.name!,
+                        })),
+                    ),
+                );
+
+                setYoutubeLink('');
+                setYoutubeName('');
+            },
+            onError: ({ error }) => {
+                console.error(JSON.stringify(error, null, 2));
+                // toast.error(error);
+            },
+        },
+    );
+
+    const onClientUploadSuccess = async (
+        data: {
+            url: string;
+            key: string;
+            type: 'image' | 'video' | 'pdf' | 'youtube';
+            name: string;
+        }[],
+    ) => {
+        // do save to database file
+        await executeSaveFile(data);
+    };
+
+    const onAddYoutubeClicked = async () => {
+        if (!youtubeName) {
+            toast.error('Please input youtube name first');
+            return;
+        }
+        if (!youtubeLink) {
+            toast.error('Youtube link cannot be empty');
+            return;
+        }
+
+        await executeSaveFile([
+            {
+                key: nanoid(),
+                type: 'youtube',
+                url: youtubeLink,
+                name: youtubeName,
+            },
+        ]);
     };
 
     return (
@@ -140,45 +265,147 @@ const CreateLMForm = () => {
                                 <FormItem>
                                     <FormLabel>Files</FormLabel>
                                     <FormControl>
-                                        <div>
-                                            <Tabs
-                                                defaultValue='document'
-                                                className=''
+                                        <Tabs
+                                            defaultValue='document'
+                                            className=''
+                                        >
+                                            <TabsList className='bg-transparent'>
+                                                <TabsTrigger value='document'>
+                                                    Document
+                                                </TabsTrigger>
+                                                <TabsTrigger value='youtube'>
+                                                    Youtube
+                                                </TabsTrigger>
+                                            </TabsList>
+
+                                            {field.value && (
+                                                <div className='flex gap-2'>
+                                                    {field.value.map((file) => (
+                                                        <SelectedFiles
+                                                            keyName={file.key}
+                                                            type={file.type}
+                                                            url={file.url}
+                                                            name={file.name}
+                                                            key={nanoid()}
+                                                            onXClicked={() =>
+                                                                onXClicked(
+                                                                    file.key,
+                                                                )
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <TabsContent value='document'>
+                                                <UploadDropzone
+                                                    disabled={
+                                                        statusSaveFile ===
+                                                            'executing' ||
+                                                        statusInsertLM ===
+                                                            'executing'
+                                                    }
+                                                    endpoint='learningMaterialsFileUploader'
+                                                    appearance={{
+                                                        button: buttonVariants({
+                                                            variant: 'outline',
+                                                            className: 'z-20',
+                                                        }),
+                                                        label: 'text-primary hover:text-primary/80',
+                                                    }}
+                                                    onClientUploadComplete={async (
+                                                        res,
+                                                    ) => {
+                                                        await onClientUploadSuccess(
+                                                            res.map((r) => ({
+                                                                key: r.key,
+                                                                url: r.url,
+                                                                type: 'pdf',
+                                                                name: r.name,
+                                                            })),
+                                                        );
+                                                    }}
+                                                />
+                                                <FormDescription>
+                                                    Attach files up to 2 MB in
+                                                    size.
+                                                </FormDescription>
+                                            </TabsContent>
+                                            <TabsContent
+                                                value='youtube'
+                                                className='space-y-4'
                                             >
-                                                <TabsList className='bg-transparent'>
-                                                    <TabsTrigger value='document'>
-                                                        Document
-                                                    </TabsTrigger>
-                                                    <TabsTrigger value='youtube'>
-                                                        Youtube
-                                                    </TabsTrigger>
-                                                </TabsList>
-                                                <TabsContent value='document'>
-                                                    <UploadDropzone
-                                                        endpoint='learningMaterialsFileUploader'
-                                                        appearance={{
-                                                            button: buttonVariants(
-                                                                {
-                                                                    variant:
-                                                                        'outline',
-                                                                    className:
-                                                                        'z-20',
-                                                                },
-                                                            ),
-                                                            label: 'text-primary hover:text-primary/80',
-                                                        }}
+                                                <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                                                    <Input
+                                                        name='youtube-name'
+                                                        placeholder='Name'
+                                                        onChange={(e) =>
+                                                            setYoutubeName(
+                                                                e.target.value,
+                                                            )
+                                                        }
                                                     />
-                                                </TabsContent>
-                                                <TabsContent value='youtube'>
-                                                    Change your youtube here.
-                                                </TabsContent>
-                                            </Tabs>
-                                            <SelectedFiles />
-                                        </div>
+                                                    <Input
+                                                        name='youtube-link'
+                                                        placeholder='Your Youtube Link'
+                                                        onChange={(e) =>
+                                                            setYoutubeLink(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                    />
+                                                    <Button
+                                                        variant={'secondary'}
+                                                        type='button'
+                                                        disabled={
+                                                            statusSaveFile ===
+                                                                'executing' ||
+                                                            statusInsertLM ===
+                                                                'executing'
+                                                        }
+                                                        onClick={
+                                                            onAddYoutubeClicked
+                                                        }
+                                                    >
+                                                        Add Youtube
+                                                    </Button>
+                                                </div>
+
+                                                <FormDescription>
+                                                    Add youtube video via link.
+                                                    hover{' '}
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <span className='bg-primary/10 italic text-primary underline'>
+                                                                    here
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className='w-[350px] space-y-2'>
+                                                                <Image
+                                                                    src={
+                                                                        YoutubeLink
+                                                                    }
+                                                                    alt='Youtube'
+                                                                />
+                                                                <p>
+                                                                    Copy the
+                                                                    youtube
+                                                                    share link
+                                                                    like image
+                                                                    above .
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>{' '}
+                                                    to learn more.
+                                                </FormDescription>
+                                            </TabsContent>
+                                        </Tabs>
                                     </FormControl>
-                                    <FormDescription>
-                                        Attach files up to 2 MB in size.
-                                    </FormDescription>
+
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -186,6 +413,10 @@ const CreateLMForm = () => {
 
                         <SheetFooter>
                             <Button
+                                disabled={
+                                    statusSaveFile === 'executing' ||
+                                    statusInsertLM === 'executing'
+                                }
                                 type='button'
                                 onClick={() => createLMForm.reset()}
                                 variant='ghost'
@@ -195,6 +426,10 @@ const CreateLMForm = () => {
                             <Button type='submit'>Create</Button>
                             <SheetClose asChild>
                                 <Button
+                                    disabled={
+                                        statusSaveFile === 'executing' ||
+                                        statusInsertLM === 'executing'
+                                    }
                                     variant='ghost'
                                     className='sr-only'
                                     ref={closeSheetRef}
@@ -212,6 +447,39 @@ const CreateLMForm = () => {
 
 export default CreateLMForm;
 
-const SelectedFiles = () => {
-    return <div></div>;
+type SelectedFilesProps = {
+    onXClicked: () => void;
+    url: string;
+    keyName: string;
+    type: string;
+    name: string;
+};
+const SelectedFiles: React.FC<SelectedFilesProps> = ({
+    onXClicked,
+    keyName,
+    type,
+    url,
+    name,
+}) => {
+    return (
+        <div className='relative h-24 w-44 overflow-hidden rounded bg-muted'>
+            <Button
+                type='button'
+                onClick={onXClicked}
+                variant={'secondary'}
+                size={'sm'}
+                className='absolute right-1 top-1 z-10 size-8 rounded-full p-0'
+            >
+                <X size={16} />
+            </Button>
+            <div className='relative h-16 w-full'>
+                <iframe src={url} className='h-full w-full' />
+            </div>
+            <div className='p-2'>
+                <p className='my-auto text-xs'>
+                    {name.length > 10 ? `${name.slice(0, 10)}...` : name}
+                </p>
+            </div>
+        </div>
+    );
 };

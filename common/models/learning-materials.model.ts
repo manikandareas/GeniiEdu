@@ -13,6 +13,7 @@ export const insertLearningMaterialsSchema = z.object({
                 key: z.string(),
                 type: z.enum(FilesTypeEnum.enumValues),
                 id: z.string(),
+                name: z.string(),
             }),
         )
         .optional(),
