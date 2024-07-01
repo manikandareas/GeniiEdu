@@ -25,3 +25,9 @@ export const joinClassSchema = z.object({
         .string()
         .min(6, 'Invitation code must be at least 6 characters'),
 });
+
+export const addModuleSchema = z.object({
+    moduleId: z.string().min(6, 'Module ID must be at least 6 characters'),
+    classId: z.string().min(6, 'Class ID must be at least 6 characters'),
+    publishedAt: z.string().optional(),
+});

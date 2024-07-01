@@ -12,6 +12,12 @@ export const findModuleBySlug = (
     });
 };
 
+export const findModuleById = async (id: string) => {
+    return await db.query.modules.findFirst({
+        where: (modules, { eq }) => eq(modules.id, id),
+    });
+};
+
 export const insertModule = (
     input: InsertModuleInput,
     config: DataAccessConfig = {},

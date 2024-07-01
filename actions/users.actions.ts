@@ -170,18 +170,15 @@ export const getTeacherClasses = async () => {
         if (teacherClasses.length === 0) {
             return {
                 success: true,
-                data: {
-                    classes: [],
-                    metadata: {
-                        all: 0,
-                        ongoing: 0,
-                        completed: 0,
-                        archived: 0,
-                    },
-                },
+                data: [],
                 message: "You don't have any classes 😢",
             } satisfies ActRes;
         }
+
+        return {
+            success: true,
+            data: teacherClasses,
+        };
     } catch (error: any) {
         return {
             success: false,

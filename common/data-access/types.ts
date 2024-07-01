@@ -35,3 +35,8 @@ export type InsertModuleInput = typeof Schema.modules._.inferInsert;
 export type SelectModule = typeof Schema.modules._.inferSelect;
 
 export type PatchModuleInput = Partial<SelectModule>;
+
+export type InsertModuleIntoClassInput = Omit<
+    typeof Schema.classModules._.inferInsert,
+    'position'
+>;
