@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/common/components/ui/button';
 import {
     Card,
@@ -10,6 +12,7 @@ import { Input } from '@/common/components/ui/input';
 import { DUMMY_CLASSES } from '@/common/constants/DummyClasses';
 import { ChevronDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import { AddToClassForm } from './AddToClassForm';
 
 type ClassesUsedListProps = {};
 
@@ -28,9 +31,7 @@ const ClassesUsedList: React.FC<ClassesUsedListProps> = () => {
                 <CardContent>
                     <div className='flex items-center gap-2'>
                         <Input type='search' placeholder='Search' />
-                        <Button size={'sm'}>
-                            Add Class <ChevronDown size={18} className='ml-2' />
-                        </Button>
+                        <AddToClassForm />
                     </div>
                     {DUMMY_CLASSES.map((itm, idx) => (
                         <div
