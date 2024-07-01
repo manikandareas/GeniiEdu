@@ -1,45 +1,31 @@
 'use client';
 
+import {
+    GetDetailModuleBySlug,
+    getDetailModuleBySlug,
+} from '@/actions/modules.action';
 import { Button } from '@/common/components/ui/button';
-import { Label } from '@/common/components/ui/label';
-import { Switch } from '@/common/components/ui/switch';
+import { useQuery } from '@tanstack/react-query';
 import { PlusCircle } from 'lucide-react';
 import { SiGitbook, SiGoogleclassroom, SiTask } from 'react-icons/si';
 import CreateLMForm from './CreateLMForm';
 import ReorderMaterials from './ReorderMaterials';
-import { useQuery } from '@tanstack/react-query';
-import {
-    getDetailModuleBySlug,
-    togglePublishedModule,
-} from '@/actions/modules.action';
-import { useAction } from 'next-safe-action/hooks';
-import { toast } from 'sonner';
+import TogglePublish from './TogglePublish';
 
 type DetailClassSectionProps = {
     slug: string;
+    initialData: GetDetailModuleBySlug;
 };
 
-const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
+const DetailClassSection: React.FC<DetailClassSectionProps> = ({
+    slug,
+    initialData,
+}) => {
     const moduleQuery = useQuery({
+        initialData,
         queryKey: ['modules', slug],
         queryFn: () => getDetailModuleBySlug(slug),
     });
-
-    const { execute: executeTogglePublished, status: statusTogglePublished } =
-        useAction(togglePublishedModule, {
-            onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-
-                if (!data.success) {
-                    toast.error(data.error);
-                    return;
-                }
-
-                toast.success(data.message);
-
-                moduleQuery.refetch();
-            },
-        });
 
     return (
         <div className='relative flex-1 space-y-4 md:col-span-3'>
@@ -51,11 +37,13 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
             </p>
             <div className='flex items-center gap-4 p-4 text-xs text-primary md:p-0'>
                 <span>
-                    <SiGitbook className='inline' size={16} /> 10 Learning
-                    Materials
+                    <SiGitbook className='inline' size={16} />{' '}
+                    {moduleQuery.data?.data?.materials.length} Learning
+                    Material(s)
                 </span>
                 <span>
-                    <SiTask className='inline' size={16} /> 4 Assignments
+                    <SiTask className='inline' size={16} />{' '}
+                    {moduleQuery.data.data?.assignments.length} Assignment(s)
                 </span>
                 <span>
                     <SiGoogleclassroom className='inline' size={16} /> 3 Class
@@ -64,15 +52,12 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
             </div>
 
             <div className='flex w-full items-center justify-between'>
-                <div className='flex items-center space-x-2'>
-                    <Switch
-                        id='publish'
-                        onCheckedChange={() => executeTogglePublished(slug)}
-                        disabled={statusTogglePublished === 'executing'}
-                        defaultChecked={moduleQuery.data?.data?.isPublished}
-                    />
-                    <Label htmlFor='publish'>Published</Label>
-                </div>
+                <TogglePublish
+                    defaultChecked={
+                        moduleQuery.data?.data?.isPublished ?? false
+                    }
+                    slug={slug}
+                />
                 <div className='flex items-center justify-between gap-2'>
                     <CreateLMForm />
                     <Button variant={'gummy'}>
@@ -81,7 +66,7 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({ slug }) => {
                     </Button>
                 </div>
             </div>
-            <ReorderMaterials data={moduleQuery.data?.data} />
+            <ReorderMaterials data={moduleQuery.data} />
         </div>
     );
 };

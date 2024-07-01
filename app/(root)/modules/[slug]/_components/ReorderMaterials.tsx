@@ -18,7 +18,7 @@ type ReorderMaterialsProps = {
 };
 
 const ReorderMaterials: React.FC<ReorderMaterialsProps> = ({ data }) => {
-    const [items, setItems] = useState(data?.materials || []);
+    const [items, setItems] = useState(data?.data!.materials || []);
     return (
         <div className='mt-6 space-y-4'>
             {items.length === 0 ? (
@@ -40,14 +40,11 @@ const ReorderMaterials: React.FC<ReorderMaterialsProps> = ({ data }) => {
                                         <CardTitle className='text-lg'>
                                             {item.material.title}
                                         </CardTitle>
-                                        <CardDescription>
-                                            <div
-                                                dangerouslySetInnerHTML={{
-                                                    __html: item.material
-                                                        .content,
-                                                }}
-                                            />
-                                        </CardDescription>
+                                        <CardDescription
+                                            dangerouslySetInnerHTML={{
+                                                __html: item.material.content,
+                                            }}
+                                        ></CardDescription>
                                         <span className='text-xs text-muted-foreground'>
                                             <SiGitbook
                                                 className='mr-1.5 inline'

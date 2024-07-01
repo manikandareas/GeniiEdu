@@ -110,7 +110,7 @@ export const getDetailModuleBySlug = async (slug: string) => {
 
 export type GetDetailModuleBySlug = Awaited<
     ReturnType<typeof getDetailModuleBySlug>
->['data'];
+>;
 
 export const togglePublishedModule = teacherProcedure
     .metadata({
