@@ -11,6 +11,7 @@ import db from '@/common/libs/DB';
 import { teacherProcedure } from '@/common/libs/safe-action';
 import { LearningMaterialsModel, Schema } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export const createLearningMaterial = teacherProcedure
@@ -106,6 +107,8 @@ export const createLearningMaterial = teacherProcedure
                             'Failed to link learning material to module',
                         );
                     }
+
+                    revalidatePath(`/modules/${moduleSlug}`);
 
                     return {
                         success: true,

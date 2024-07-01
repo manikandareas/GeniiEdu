@@ -195,6 +195,9 @@ const CreateLMForm = () => {
         ]);
     };
 
+    const isLoading =
+        statusInsertLM === 'executing' || statusSaveFile === 'executing';
+
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
@@ -282,8 +285,6 @@ const CreateLMForm = () => {
                                                 <div className='flex gap-2'>
                                                     {field.value.map((file) => (
                                                         <SelectedFiles
-                                                            keyName={file.key}
-                                                            type={file.type}
                                                             url={file.url}
                                                             name={file.name}
                                                             key={nanoid()}
@@ -299,12 +300,7 @@ const CreateLMForm = () => {
 
                                             <TabsContent value='document'>
                                                 <UploadDropzone
-                                                    disabled={
-                                                        statusSaveFile ===
-                                                            'executing' ||
-                                                        statusInsertLM ===
-                                                            'executing'
-                                                    }
+                                                    disabled={isLoading}
                                                     endpoint='learningMaterialsFileUploader'
                                                     appearance={{
                                                         button: buttonVariants({
@@ -357,12 +353,7 @@ const CreateLMForm = () => {
                                                     <Button
                                                         variant={'secondary'}
                                                         type='button'
-                                                        disabled={
-                                                            statusSaveFile ===
-                                                                'executing' ||
-                                                            statusInsertLM ===
-                                                                'executing'
-                                                        }
+                                                        disabled={isLoading}
                                                         onClick={
                                                             onAddYoutubeClicked
                                                         }
@@ -413,10 +404,7 @@ const CreateLMForm = () => {
 
                         <SheetFooter>
                             <Button
-                                disabled={
-                                    statusSaveFile === 'executing' ||
-                                    statusInsertLM === 'executing'
-                                }
+                                disabled={isLoading}
                                 type='button'
                                 onClick={() => createLMForm.reset()}
                                 variant='ghost'
@@ -426,10 +414,7 @@ const CreateLMForm = () => {
                             <Button type='submit'>Create</Button>
                             <SheetClose asChild>
                                 <Button
-                                    disabled={
-                                        statusSaveFile === 'executing' ||
-                                        statusInsertLM === 'executing'
-                                    }
+                                    disabled={isLoading}
                                     variant='ghost'
                                     className='sr-only'
                                     ref={closeSheetRef}
@@ -450,14 +435,10 @@ export default CreateLMForm;
 type SelectedFilesProps = {
     onXClicked: () => void;
     url: string;
-    keyName: string;
-    type: string;
     name: string;
 };
 const SelectedFiles: React.FC<SelectedFilesProps> = ({
     onXClicked,
-    keyName,
-    type,
     url,
     name,
 }) => {

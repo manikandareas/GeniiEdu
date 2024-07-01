@@ -15,25 +15,30 @@ type DetailModulePageProps = {
     };
 };
 
-const urls = [
-    {
-        name: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        name: 'Modules',
-        href: '/modules',
-    },
-    {
-        name: 'Introduction to Web Development',
-        href: '/modules/introduction-to-web-development',
-    },
-];
-
-const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
+const DetailModulePage: React.FC<DetailModulePageProps> = async (props) => {
     const queryClient = new QueryClient();
 
+    const initialData = await getDetailModuleBySlug(props.params.slug);
+
+    if (!initialData.success) return null;
+
+    const urls = [
+        {
+            name: 'Dashboard',
+            href: '/dashboard',
+        },
+        {
+            name: 'Modules',
+            href: '/modules',
+        },
+        {
+            name: initialData.data.moduleName,
+            href: `/modules/${props.params.slug}`,
+        },
+    ];
+
     queryClient.prefetchQuery({
+        initialData,
         queryKey: ['modules', props.params.slug],
         queryFn: () => getDetailModuleBySlug(props.params.slug),
     });
@@ -44,7 +49,10 @@ const DetailModulePage: React.FC<DetailModulePageProps> = (props) => {
 
             <main className='grid min-h-screen px-6 md:grid-cols-3 xl:grid-cols-4 xl:gap-4'>
                 <HydrationBoundary state={dehydrate(queryClient)}>
-                    <DetailClassSection slug={props.params.slug} />
+                    <DetailClassSection
+                        initialData={initialData}
+                        slug={props.params.slug}
+                    />
                     <ClassesUsedList />
                 </HydrationBoundary>
             </main>

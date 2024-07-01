@@ -62,6 +62,7 @@ export const createClass = teacherProcedure
                     key: parsedInput.slug,
                     userId: teacher.id,
                     type: 'image',
+                    name: parsedInput.className,
                 });
 
                 classThumbnailId = uploadedDefaultThumbnail[0].id;
@@ -128,6 +129,7 @@ export const uploadClassThumbnail = teacherProcedure
                 key: parsedInput.key,
                 type: 'image',
                 userId: user.id,
+                name: parsedInput.key,
             });
 
             if (response.length === 0) {
