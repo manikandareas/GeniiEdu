@@ -11,6 +11,12 @@ import { SiGitbook, SiGoogleclassroom, SiTask } from 'react-icons/si';
 import CreateLMForm from './CreateLMForm';
 import ReorderMaterials from './ReorderMaterials';
 import TogglePublish from './TogglePublish';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@/common/components/ui/tabs';
 
 type DetailClassSectionProps = {
     slug: string;
@@ -66,7 +72,23 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
                     </Button>
                 </div>
             </div>
-            <ReorderMaterials data={moduleQuery.data} />
+
+            <Tabs defaultValue='learning-materials' className=''>
+                <TabsList className='w-full'>
+                    <TabsTrigger className='flex-1' value='learning-materials'>
+                        Learning Materials
+                    </TabsTrigger>
+                    <TabsTrigger className='flex-1' value='assignments'>
+                        Assignments
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value='learning-materials'>
+                    <ReorderMaterials data={moduleQuery.data} />
+                </TabsContent>
+                <TabsContent value='assignments'>
+                    Change your password here.
+                </TabsContent>
+            </Tabs>
         </div>
     );
 };
