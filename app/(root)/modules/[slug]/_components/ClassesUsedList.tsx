@@ -1,6 +1,4 @@
-'use client';
-
-import { Button } from '@/common/components/ui/button';
+import { GetDetailModuleBySlug } from '@/actions/modules.action';
 import {
     Card,
     CardContent,
@@ -10,13 +8,15 @@ import {
 } from '@/common/components/ui/card';
 import { Input } from '@/common/components/ui/input';
 import { DUMMY_CLASSES } from '@/common/constants/DummyClasses';
-import { ChevronDown, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
-import { AddToClassForm } from './AddToClassForm';
+import AddToClassForm from './AddToClassForm';
 
-type ClassesUsedListProps = {};
+type ClassesUsedListProps = {
+    initialData: GetDetailModuleBySlug;
+};
 
-const ClassesUsedList: React.FC<ClassesUsedListProps> = () => {
+const ClassesUsedList: React.FC<ClassesUsedListProps> = ({ initialData }) => {
     return (
         <div className='hidden w-full xl:block'>
             <Card>
@@ -31,7 +31,10 @@ const ClassesUsedList: React.FC<ClassesUsedListProps> = () => {
                 <CardContent>
                     <div className='flex items-center gap-2'>
                         <Input type='search' placeholder='Search' />
-                        <AddToClassForm />
+                        <AddToClassForm
+                            moduleName={initialData.data?.moduleName ?? ''}
+                            moduleId={initialData.data?.id ?? ''}
+                        />
                     </div>
                     {DUMMY_CLASSES.map((itm, idx) => (
                         <div

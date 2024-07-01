@@ -53,7 +53,7 @@ const DetailModulePage: React.FC<DetailModulePageProps> = async (props) => {
                         initialData={initialData}
                         slug={props.params.slug}
                     />
-                    <ClassesUsedList />
+                    <ClassesUsedList initialData={initialData} />
                 </HydrationBoundary>
             </main>
         </>

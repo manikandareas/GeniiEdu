@@ -1,4 +1,3 @@
-import ApplicationLayout from '@/common/components/elements/ApplicationLayout';
 import ReactQueryProvider from '@/common/components/providers/ReactQueryProvider';
 import SessionProvider from '@/common/components/providers/SessionProvider';
 import { ThemeProvider } from '@/common/components/providers/ThemeProvider';
@@ -9,6 +8,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import NextTopLoader from 'nextjs-toploader';
 import type { Metadata } from 'next';
 import './globals.css';
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
 
 export const metadata: Metadata = {
     title: 'GeniiEdu',

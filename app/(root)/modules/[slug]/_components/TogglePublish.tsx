@@ -1,3 +1,4 @@
+'use client';
 import { togglePublishedModule } from '@/actions/modules.action';
 import { Label } from '@/common/components/ui/label';
 import { Switch } from '@/common/components/ui/switch';

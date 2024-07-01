@@ -7,8 +7,11 @@ import {
     insertClass,
     insertClassMember,
     findStudentInClass,
+    findClassById,
+    insertModuleIntoClass,
 } from '@/common/data-access/classes';
 import { findFileByKey, insertFile } from '@/common/data-access/files';
+import { findModuleById } from '@/common/data-access/module';
 import {
     authenticatedProcedure,
     studentProcedure,
@@ -210,6 +213,52 @@ export const joinClass = studentProcedure
             return {
                 success: false,
                 error: error.message,
+            } satisfies ActRes;
+        }
+    });
+
+export const addModule = teacherProcedure
+    .metadata({
+        actionName: 'addModule',
+    })
+    .schema(ClassesModel.addModuleSchema)
+    .action(async ({ parsedInput, ctx }) => {
+        try {
+            const { user: teacher } = ctx;
+
+            const [existingClass, existingModule] = await Promise.all([
+                await findClassById(parsedInput.classId),
+                await findModuleById(parsedInput.moduleId),
+            ]);
+
+            if (!existingClass || !existingModule) {
+                throw new Error('Class or Module not found');
+            }
+
+            if (
+                existingClass.teacherId !== teacher.id ||
+                existingModule.authorId !== teacher.id
+            ) {
+                throw new Error('Unauthorized');
+            }
+
+            const linkingModuleWithClass = await insertModuleIntoClass({
+                classId: parsedInput.classId,
+                moduleId: parsedInput.moduleId,
+            });
+
+            if (linkingModuleWithClass.length === 0) {
+                throw new Error('Something went wrong, please try again.');
+            }
+
+            return {
+                success: true,
+                message: 'Module added successfully',
+            };
+        } catch (error: any) {
+            return {
+                error: error.message,
+                success: false,
             } satisfies ActRes;
         }
     });
