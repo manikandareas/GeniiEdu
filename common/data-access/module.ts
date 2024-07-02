@@ -61,3 +61,20 @@ export const patchModule = async (
         .where(eq(Schema.modules.id, moduleId))
         .returning();
 };
+
+export const findClassesUsedModule = async (moduleId: string) => {
+    const response = await db.query.classModules.findMany({
+        where: (classModules, { eq }) => eq(classModules.moduleId, moduleId),
+        with: {
+            class: {
+                with: {
+                    thumbnail: true,
+                },
+            },
+        },
+    });
+
+    const classes = response.map((classModule) => classModule.class);
+
+    return classes;
+};

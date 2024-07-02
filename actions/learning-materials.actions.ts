@@ -7,9 +7,9 @@ import {
     insertMaterialModule,
 } from '@/common/data-access/learning-materials';
 import { findModuleBySlug } from '@/common/data-access/module';
-import db from '@/common/libs/DB';
+import { createTransaction } from '@/common/data-access/utils';
 import { teacherProcedure } from '@/common/libs/safe-action';
-import { LearningMaterialsModel, Schema } from '@/common/models';
+import { LearningMaterialsModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -25,7 +25,7 @@ export const createLearningMaterial = teacherProcedure
             try {
                 const { user } = ctx;
 
-                return await db.transaction(async (tx) => {
+                return await createTransaction(async (tx) => {
                     // ? Find module
                     const existingModule = await findModuleBySlug(moduleSlug, {
                         tx,
