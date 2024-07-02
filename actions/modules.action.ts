@@ -1,6 +1,7 @@
 'use server';
 
 import {
+    findClassesUsedModule,
     findDetailModuleBySlug,
     findModuleBySlug,
     findTeacherModules,
@@ -96,10 +97,17 @@ export const getDetailModuleBySlug = async (slug: string) => {
             throw new Error('Module not found');
         }
 
+        const classes = await findClassesUsedModule(existingModule.id);
+
+        const existingModuleWithClasses = {
+            ...existingModule,
+            classes,
+        };
+
         return {
             success: true,
-            data: existingModule,
-        } satisfies ActRes<typeof existingModule>;
+            data: existingModuleWithClasses,
+        } satisfies ActRes<typeof existingModuleWithClasses>;
     } catch (error: any) {
         return {
             error: error.message,
