@@ -174,7 +174,10 @@ const CreateClassForm = () => {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button size={'sm'}>
+                <Button
+                    className='fixed bottom-4 right-4 z-[20] md:static'
+                    size={'sm'}
+                >
                     <PlusCircle size={16} className='mr-1.5' />
                     Create Class
                 </Button>

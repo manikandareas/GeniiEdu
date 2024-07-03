@@ -164,6 +164,7 @@ export const getTeacherClasses = async () => {
             where: eq(Schema.classes.teacherId, user.id),
             with: {
                 teacher: true,
+                thumbnail: true,
             },
         });
 
@@ -186,3 +187,5 @@ export const getTeacherClasses = async () => {
         };
     }
 };
+
+export type GetTeacherClasses = Awaited<ReturnType<typeof getTeacherClasses>>;

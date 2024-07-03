@@ -77,3 +77,25 @@ export const insertModuleIntoClass = async (
         })
         .returning();
 };
+
+export const findClassModulesWithDetails = async (classId: string) => {
+    return await db.query.classModules.findMany({
+        where: (classModules, { eq }) => eq(classModules.classId, classId),
+        with: {
+            module: {
+                with: {
+                    materials: {
+                        with: {
+                            material: true,
+                        },
+                    },
+                    assignments: {
+                        with: {
+                            assignment: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+};
