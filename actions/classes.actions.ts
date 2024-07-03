@@ -9,6 +9,7 @@ import {
     findStudentInClass,
     findClassById,
     insertModuleIntoClass,
+    findClassModulesWithDetails,
 } from '@/common/data-access/classes';
 import { findFileByKey, insertFile } from '@/common/data-access/files';
 import { findModuleById } from '@/common/data-access/module';
@@ -152,29 +153,36 @@ export const uploadClassThumbnail = teacherProcedure
     });
 
 // * Actions running expectedly
-export const getClassBySlug = authenticatedProcedure
-    .metadata({
-        actionName: 'getClassBySlug',
-    })
-    .schema(z.string())
-    .action(async ({ parsedInput: slug }) => {
-        try {
-            const existingClass = await findClassWithThumbnailTeacher(slug);
+export const getDetailedClassBySlug = async (slug: string) => {
+    try {
+        const existingClass = await findClassWithThumbnailTeacher(slug);
 
-            if (!existingClass) {
-                throw new Error('Class not found');
-            }
-            return {
-                success: true,
-                data: existingClass,
-            } satisfies ActRes;
-        } catch (error: any) {
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        if (!existingClass) {
+            throw new Error('Class not found');
         }
-    });
+
+        const modules = await findClassModulesWithDetails(existingClass.id);
+
+        const existingClassWithModules = {
+            ...existingClass,
+            modules,
+        };
+
+        return {
+            success: true,
+            data: existingClassWithModules,
+        } satisfies ActRes<typeof existingClassWithModules>;
+    } catch (error: any) {
+        return {
+            error: error.message,
+            success: false,
+        } satisfies ActRes;
+    }
+};
+
+export type GetDetailedClassBySlug = Awaited<
+    ReturnType<typeof getDetailedClassBySlug>
+>['data'];
 
 // * Actions running expectedly
 export const joinClass = studentProcedure
