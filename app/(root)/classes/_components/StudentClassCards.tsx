@@ -1,4 +1,4 @@
-import { GetTeacherClasses } from '@/actions/users.actions';
+import { GetStudentClasses, GetTeacherClasses } from '@/actions/users.actions';
 import { Badge } from '@/common/components/elements/Badge';
 import { buttonVariants } from '@/common/components/ui/button';
 import {
@@ -13,49 +13,57 @@ import useCurrentUser from '@/common/hooks/useCurrentUser';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type TeacherClassCardsProps = {
-    data: GetTeacherClasses['data'];
+type StudentClassCardsProps = {
+    data: GetStudentClasses['data'];
 };
 
-const TeacherClassCards: React.FC<TeacherClassCardsProps> = ({ data = [] }) => {
-    if (!data) return <div>Loading...</div>;
-    if (data.length === 0) return <div>No data</div>;
+const StudentClassCards: React.FC<StudentClassCardsProps> = ({ data }) => {
+    if (!data || !data.classes) return <div>Loading...</div>;
 
     return (
         <section className='flex flex-wrap gap-3'>
-            {data.map((item) => (
-                <TeacherClassCardItem
-                    title={item.className}
-                    key={item.id}
-                    slug={item.slug}
-                    updatedAt={item.updatedAt ?? new Date()}
-                    description={item.description ?? ''}
-                    thumbnail={item.thumbnail?.url ?? ''}
+            {data.classes.map((item) => (
+                <StudentClassCardItem
+                    title={item.class.className}
+                    key={item.classId}
+                    slug={item.class.slug}
+                    updatedAt={item.class.updatedAt ?? new Date()}
+                    description={item.class.description ?? ''}
+                    thumbnail={item.class.thumbnail?.url ?? ''}
+                    statusCompletion={item.statusCompletion}
                 />
             ))}
         </section>
     );
 };
-export default TeacherClassCards;
+export default StudentClassCards;
 
-type TeacherClassCardItemProps = {
+type StudentClassCardItemProps = {
     slug: string;
     title: string;
     thumbnail: string;
     updatedAt: Date;
     description: string;
+    statusCompletion: 'ongoing' | 'completed' | 'archived';
 };
-export const TeacherClassCardItem: React.FC<TeacherClassCardItemProps> = ({
+export const StudentClassCardItem: React.FC<StudentClassCardItemProps> = ({
     slug,
     title,
     thumbnail,
     description,
     updatedAt,
+    statusCompletion,
 }) => {
     const teacher = useCurrentUser();
     return (
-        <Card x-chunk='dashboard-05-chunk-2' className='group/card max-w-sm'>
+        <Card
+            x-chunk='dashboard-05-chunk-2'
+            className='group/card w-full max-w-sm'
+        >
             <CardHeader className='space-y-3'>
+                <Badge className='capitalize' variant={statusCompletion}>
+                    {statusCompletion}
+                </Badge>
                 <div className='relative aspect-video h-36'>
                     <Image
                         src={thumbnail}
@@ -66,6 +74,7 @@ export const TeacherClassCardItem: React.FC<TeacherClassCardItemProps> = ({
                 </div>
 
                 <CardTitle className='transition-transform ease-in-out group-hover/card:translate-x-1'>
+                    {/* <Typography variant={'h3'}>{title}</Typography> */}
                     {title}
                 </CardTitle>
             </CardHeader>

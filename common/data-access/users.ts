@@ -28,6 +28,7 @@ export const findStudentClasses = async (studentId: string) => {
             class: {
                 with: {
                     teacher: true,
+                    thumbnail: true,
                 },
             },
         },

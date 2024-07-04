@@ -21,17 +21,20 @@ import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { cn } from '@/common/libs/utils';
 import { useSearchParams } from 'next/navigation';
 
-import { getTeacherClasses } from '@/actions/users.actions';
+import { GetTeacherClasses, getTeacherClasses } from '@/actions/users.actions';
 import { useQuery } from '@tanstack/react-query';
 import CreateClassForm from './CreateClassForm';
 import TeacherClassCards from './TeacherClassCards';
 
-type TeacherTabsProps = {};
+type TeacherTabsProps = {
+    initialData: GetTeacherClasses;
+};
 
-const TeacherTabs: React.FC<TeacherTabsProps> = () => {
+const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
     const searchParams = useSearchParams();
 
     const { data: classes } = useQuery({
+        initialData,
         queryKey: ['classes'],
         queryFn: getTeacherClasses,
     });
@@ -72,13 +75,12 @@ const TeacherTabs: React.FC<TeacherTabsProps> = () => {
                             </DropdownMenuCheckboxItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-
                     <CreateClassForm />
                 </div>
             </div>
 
             <TabsContent value='all'>
-                <TeacherClassCards data={classes?.data} />
+                <TeacherClassCards data={classes.data} />
             </TabsContent>
         </Tabs>
     );

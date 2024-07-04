@@ -27,6 +27,7 @@ import {
     FormMessage,
 } from '@/common/components/ui/form';
 import { useQueryClient } from '@tanstack/react-query';
+import { PlusSquare } from 'lucide-react';
 
 type JoinClassFormProps = {};
 
@@ -73,7 +74,17 @@ const JoinClassForm: React.FC<JoinClassFormProps> = () => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size={'sm'}>Join Class</Button>
+                <div>
+                    <Button className='hidden sm:block' size={'sm'}>
+                        Join Class
+                    </Button>
+                    <Button
+                        className='fixed bottom-4 right-4 sm:hidden'
+                        size={'icon'}
+                    >
+                        <PlusSquare />
+                    </Button>
+                </div>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[425px]'>
                 <DialogHeader>
