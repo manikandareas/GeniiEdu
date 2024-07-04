@@ -28,7 +28,7 @@ import { Input } from '@/common/components/ui/input';
 import { generateRandomToken } from '@/common/libs/utils';
 import { ClassesModel } from '@/common/models';
 import { useMutation } from '@tanstack/react-query';
-import { Copy, Dices, Plus, PlusCircle, X } from 'lucide-react';
+import { Copy, Dices, Plus, PlusCircle, PlusSquare, X } from 'lucide-react';
 import Image from 'next/image';
 import { ElementRef, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -174,13 +174,17 @@ const CreateClassForm = () => {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button
-                    className='fixed bottom-4 right-4 z-[20] md:static'
-                    size={'sm'}
-                >
-                    <PlusCircle size={16} className='mr-1.5' />
-                    Create Class
-                </Button>
+                <div>
+                    <Button className='hidden sm:block' size={'sm'}>
+                        Create Class
+                    </Button>
+                    <Button
+                        className='fixed bottom-4 right-4 sm:hidden'
+                        size={'icon'}
+                    >
+                        <PlusSquare />
+                    </Button>
+                </div>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-md'>
                 <SheetHeader>

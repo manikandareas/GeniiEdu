@@ -148,6 +148,8 @@ export const getStudentClasses = async () => {
     }
 };
 
+export type GetStudentClasses = Awaited<ReturnType<typeof getStudentClasses>>;
+
 export const getTeacherClasses = async () => {
     const { user } = await validateRequest();
 

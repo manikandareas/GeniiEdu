@@ -1,34 +1,11 @@
 import { getDetailedClassBySlug } from '@/actions/classes.actions';
-import { Badge } from '@/common/components/elements/Badge';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/common/components/ui/accordion';
-import { Button, buttonVariants } from '@/common/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/common/components/ui/card';
-import { webDevelopmentToC } from '@/common/constants/DummyTOC';
-import { cn } from '@/common/libs/utils';
-import { Edit3 } from 'lucide-react';
-import { nanoid } from 'nanoid';
-import Image from 'next/image';
-import Link from 'next/link';
+import HeaderOptions from '@/common/components/elements/HeaderOptions';
+import { validateRequest } from '@/common/libs/lucia';
 import { notFound, redirect } from 'next/navigation';
-import { SiGmail, SiInstagram, SiWhatsapp } from 'react-icons/si';
+import DetailClassSection from './_components/DetailClassSection';
 import StudentsCards from './_components/StudentsCards';
 import TableOfContents from './_components/TableOfContents';
-import { validateRequest } from '@/common/libs/lucia';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
 import TeacherCard from './_components/TeacherCard';
-import DetailClassSection from './_components/DetailClassSection';
 
 type DetailClassPageProps = {
     params: {
