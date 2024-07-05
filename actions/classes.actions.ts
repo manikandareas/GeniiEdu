@@ -10,6 +10,7 @@ import {
     findClassById,
     insertModuleIntoClass,
     findClassModulesWithDetails,
+    findDetailsModuleMaterial,
 } from '@/common/data-access/classes';
 import { findFileByKey, insertFile } from '@/common/data-access/files';
 import { findModuleById } from '@/common/data-access/module';
@@ -270,3 +271,23 @@ export const addModule = teacherProcedure
             } satisfies ActRes;
         }
     });
+
+export const getDetailsModuleMaterial = async (materialModuleId: number) => {
+    try {
+        const moduleMaterial =
+            await findDetailsModuleMaterial(materialModuleId);
+        if (!moduleMaterial) {
+            throw new Error('Module material not found');
+        }
+
+        return {
+            success: true,
+            data: moduleMaterial,
+        } satisfies ActRes<typeof moduleMaterial>;
+    } catch (error: any) {
+        return {
+            error: error.message,
+            success: false,
+        } satisfies ActRes;
+    }
+};

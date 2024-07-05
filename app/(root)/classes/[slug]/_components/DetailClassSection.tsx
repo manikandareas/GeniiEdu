@@ -6,7 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/common/components/ui/accordion';
-import { Button, buttonVariants } from '@/common/components/ui/button';
+import { buttonVariants } from '@/common/components/ui/button';
 import {
     Card,
     CardContent,
@@ -14,8 +14,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/common/components/ui/card';
-import { webDevelopmentToC } from '@/common/constants/DummyTOC';
-import { cn } from '@/common/libs/utils';
+import { cn, encodeId } from '@/common/libs/utils';
 import { Edit3 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import Image from 'next/image';
@@ -110,23 +109,26 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
                                 <AccordionContent className='flex flex-wrap gap-2'>
                                     {item.module.materials &&
                                         item.module.materials.map((sub) => (
-                                            <Card
+                                            <Link
                                                 key={nanoid()}
+                                                href={`/classes/${initialData.slug}/materials/${encodeId(sub.id)}`}
                                                 className='min-w-[50%] flex-1'
                                             >
-                                                <CardHeader>
-                                                    <CardTitle>
-                                                        {sub.material.title}
-                                                    </CardTitle>
-                                                    <CardDescription
-                                                        dangerouslySetInnerHTML={{
-                                                            __html: sub.material
-                                                                .content!,
-                                                        }}
-                                                    />
-                                                </CardHeader>
-                                                <CardContent>
-                                                    {/* <Image
+                                                <Card className=''>
+                                                    <CardHeader>
+                                                        <CardTitle>
+                                                            {sub.material.title}
+                                                        </CardTitle>
+                                                        <CardDescription
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: sub
+                                                                    .material
+                                                                    .content!,
+                                                            }}
+                                                        />
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        {/* <Image
                                       src={
                                           dataClass.teacher
                                               .profilePicture!
@@ -138,8 +140,9 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
                                               .name!
                                       }
                                   /> */}
-                                                </CardContent>
-                                            </Card>
+                                                    </CardContent>
+                                                </Card>
+                                            </Link>
                                         ))}
                                 </AccordionContent>
                             </AccordionItem>

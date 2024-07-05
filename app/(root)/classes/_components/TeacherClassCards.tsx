@@ -1,5 +1,4 @@
 import { GetTeacherClasses } from '@/actions/users.actions';
-import { Badge } from '@/common/components/elements/Badge';
 import { buttonVariants } from '@/common/components/ui/button';
 import {
     Card,
@@ -23,16 +22,17 @@ const TeacherClassCards: React.FC<TeacherClassCardsProps> = ({ data = [] }) => {
 
     return (
         <section className='flex flex-wrap gap-3'>
-            {data.map((item) => (
-                <TeacherClassCardItem
-                    title={item.className}
-                    key={item.id}
-                    slug={item.slug}
-                    updatedAt={item.updatedAt ?? new Date()}
-                    description={item.description ?? ''}
-                    thumbnail={item.thumbnail?.url ?? ''}
-                />
-            ))}
+            {data &&
+                data.map((item) => (
+                    <TeacherClassCardItem
+                        title={item.className}
+                        key={item.id}
+                        slug={item.slug}
+                        updatedAt={item.updatedAt ?? new Date()}
+                        description={item.description ?? ''}
+                        thumbnail={item.thumbnail?.url ?? ''}
+                    />
+                ))}
         </section>
     );
 };

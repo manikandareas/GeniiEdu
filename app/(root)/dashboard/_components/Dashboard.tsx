@@ -192,7 +192,7 @@ export function Dashboard() {
                                         </p>
                                     </div>
 
-                                    <div className='flex h-full items-start justify-center border'>
+                                    <div className='flex h-full items-start justify-center'>
                                         <AnimatedTooltip items={people} />
                                     </div>
                                 </div>

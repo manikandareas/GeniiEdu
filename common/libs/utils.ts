@@ -30,3 +30,29 @@ export const generateRandomToken = (length: number): string => {
     }
     return token;
 };
+
+import Hashids from 'hashids';
+import { Env } from './Env';
+
+// Buat instans hashids
+const hashids = new Hashids('secret_key', 6); // Ganti 'your_salt' dengan kunci rahasia yang aman
+
+// Fungsi untuk mengenkripsi ID
+export function encodeId(id: number): string {
+    return hashids.encode(id);
+}
+
+// Fungsi untuk mendekripsi ID
+export function decodeId(encodedId: string): number | null {
+    const decoded = hashids.decode(encodedId);
+    // @ts-ignore
+    return decoded.length > 0 ? decoded[0] : null;
+}
+
+// // Contoh penggunaan
+// const id = 12345;
+// const encodedId = encodeId(id);
+// console.log('Encoded ID:', encodedId);
+
+// const decodedId = decodeId(encodedId);
+// console.log('Decoded ID:', decodedId);
