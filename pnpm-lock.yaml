@@ -131,6 +131,9 @@ dependencies:
   framer-motion:
     specifier: ^11.2.12
     version: 11.2.12(react-dom@18.3.1)(react@18.3.1)
+  hashids:
+    specifier: ^2.3.0
+    version: 2.3.0
   input-otp:
     specifier: ^1.2.4
     version: 1.2.4(react-dom@18.3.1)(react@18.3.1)
@@ -6793,6 +6796,10 @@ packages:
     dependencies:
       has-symbols: 1.0.3
     dev: true
+
+  /hashids@2.3.0:
+    resolution: {integrity: sha512-ljM73TE/avEhNnazxaj0Dw3BbEUuLC5yYCQ9RSkSUcT4ZSU6ZebdKCIBJ+xT/DnSYW36E9k82GH1Q6MydSIosQ==}
+    dev: false
 
   /hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}

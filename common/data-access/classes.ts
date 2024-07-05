@@ -99,3 +99,22 @@ export const findClassModulesWithDetails = async (classId: string) => {
         },
     });
 };
+
+export const findDetailsModuleMaterial = async (moduleMaterialId: number) => {
+    return await db.query.materialModules.findFirst({
+        where: (materials, { eq }) => eq(materials.id, moduleMaterialId),
+        with: {
+            material: {
+                with: {
+                    files: {
+                        with: {
+                            file: true,
+                        },
+                    },
+                    uploadedBy: true,
+                },
+            },
+            module: true,
+        },
+    });
+};

@@ -41,7 +41,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
         },
         {
             name: dataClass.className,
-            href: `classes/${params}`,
+            href: `classes/${params.slug}`,
         },
     ];
 
