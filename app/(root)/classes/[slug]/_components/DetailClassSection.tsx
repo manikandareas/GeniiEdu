@@ -94,8 +94,8 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
 
                 {initialData.modules.length > 0 && (
                     <Accordion
-                        type='single'
-                        collapsible
+                        // collapsible
+                        type='multiple'
                         className='w-full space-y-2'
                     >
                         {initialData.modules.map((item, idx) => (

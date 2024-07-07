@@ -291,3 +291,7 @@ export const getDetailsModuleMaterial = async (materialModuleId: number) => {
         } satisfies ActRes;
     }
 };
+
+export type GetDetailsModuleMaterial = Awaited<
+    ReturnType<typeof getDetailsModuleMaterial>
+>['data'];
