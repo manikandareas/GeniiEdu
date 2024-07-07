@@ -9,9 +9,9 @@ import { Button } from '@/common/components/ui/button';
 import { Plus, SendHorizonal, User2 } from 'lucide-react';
 import { Input } from '@/common/components/ui/input';
 
-type SubmissionSectionProps = {};
+type SubmissionAssignmentProps = {};
 
-const SubmissionSection: React.FC<SubmissionSectionProps> = () => {
+const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = () => {
     return (
         <aside className='mx-auto w-full max-w-sm space-y-4 md:mx-0'>
             <Card>
@@ -46,4 +46,4 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = () => {
         </aside>
     );
 };
-export default SubmissionSection;
+export default SubmissionAssignment;

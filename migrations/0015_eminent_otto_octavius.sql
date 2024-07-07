@@ -1,0 +1,1 @@
+ALTER TABLE "submissions" ALTER COLUMN "class_modules_id" SET DATA TYPE numeric;

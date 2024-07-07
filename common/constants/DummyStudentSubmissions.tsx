@@ -1,7 +1,6 @@
-import { columns, SubmissionsAssignment } from './Columns';
-import { DataTable } from './DataTable';
+import { SubmissionsAssignment } from '@/app/(root)/classes/[slug]/assignments/[assignmentSlug]/components/teacher/Columns';
 
-export const DUMMY_STUDENTS: SubmissionsAssignment[] = [
+export const DUMMY_STUDENT_SUBMISSIONS: SubmissionsAssignment[] = [
     {
         id: 'd3f1296d-77d1-475f-b1e3-9bdbbd36bda7',
         user: {
@@ -66,9 +65,3 @@ export const DUMMY_STUDENTS: SubmissionsAssignment[] = [
         },
     },
 ];
-
-const SubmissionsTable = () => {
-    return <DataTable columns={columns} data={DUMMY_STUDENTS} />;
-};
-
-export default SubmissionsTable;
