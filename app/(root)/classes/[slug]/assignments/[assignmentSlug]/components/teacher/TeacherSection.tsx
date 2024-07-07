@@ -14,7 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/common/components/ui/select';
-import SubmissionsTable, { DUMMY_STUDENTS } from './SubmissionsTable';
+
 import Typography from '@/common/components/ui/typography';
 import { Switch } from '@/common/components/ui/switch';
 
@@ -26,6 +26,9 @@ import {
     CardTitle,
 } from '@/common/components/ui/card';
 import Image from 'next/image';
+import { DataTable } from './DataTable';
+import { columns } from './Columns';
+import { DUMMY_STUDENT_SUBMISSIONS } from '@/common/constants/DummyStudentSubmissions';
 
 type TeacherSectionProps = {};
 
@@ -77,7 +80,10 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
 
                         <section className='flex'>
                             <div className='h-screen w-full lg:max-w-sm'>
-                                <SubmissionsTable />
+                                <DataTable
+                                    columns={columns}
+                                    data={DUMMY_STUDENT_SUBMISSIONS}
+                                />
                             </div>
                             <div className='hidden h-screen w-full lg:block'>
                                 <div className='space-y-2 p-4'>
@@ -203,7 +209,7 @@ const OverviewSubmissionCard: React.FC<OverviewSubmissionCardProps> = ({
 const OverviewSubmissionCards = () => {
     return (
         <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-4'>
-            {DUMMY_STUDENTS.map((item) => (
+            {DUMMY_STUDENT_SUBMISSIONS.map((item) => (
                 <OverviewSubmissionCard key={item.id} {...item.user} />
             ))}
         </div>

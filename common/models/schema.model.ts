@@ -320,6 +320,9 @@ export const submissions = pgTable('submissions', {
     assignmentId: text('assignment_id')
         .references(() => assignments.id, { onDelete: 'cascade' })
         .notNull(),
+    classModulesId: integer('class_modules_id')
+        .references(() => classModules.id, { onDelete: 'cascade' })
+        .notNull(),
     studentId: text('student_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
@@ -499,6 +502,14 @@ export const submissionsRelations = relations(submissions, ({ one }) => ({
     student: one(users, {
         fields: [submissions.studentId],
         references: [users.id],
+    }),
+    file: one(files, {
+        fields: [submissions.filePath],
+        references: [files.id],
+    }),
+    classModule: one(classModules, {
+        fields: [submissions.classModulesId],
+        references: [classModules.id],
     }),
 }));
 
