@@ -39,6 +39,7 @@
     "@tabler/icons-react": "^3.7.0",
     "@tanstack/react-query": "^5.48.0",
     "@tanstack/react-query-devtools": "^5.48.0",
+    "@tanstack/react-table": "^8.19.2",
     "@tiptap/extension-bullet-list": "^2.4.0",
     "@tiptap/extension-heading": "^2.4.0",
     "@tiptap/pm": "^2.4.0",

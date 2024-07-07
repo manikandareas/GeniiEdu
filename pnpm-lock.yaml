@@ -80,6 +80,9 @@ dependencies:
   '@tanstack/react-query-devtools':
     specifier: ^5.48.0
     version: 5.48.0(@tanstack/react-query@5.48.0)(react@18.3.1)
+  '@tanstack/react-table':
+    specifier: ^8.19.2
+    version: 8.19.2(react-dom@18.3.1)(react@18.3.1)
   '@tiptap/extension-bullet-list':
     specifier: ^2.4.0
     version: 2.4.0(@tiptap/core@2.4.0)
@@ -3838,6 +3841,23 @@ packages:
     dependencies:
       '@tanstack/query-core': 5.48.0
       react: 18.3.1
+    dev: false
+
+  /@tanstack/react-table@8.19.2(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-itoSIAkA/Vsg+bjY23FSemcTyPhc5/1YjYyaMsr9QSH/cdbZnQxHVWrpWn0Sp2BWN71qkzR7e5ye8WuMmwyOjg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.19.2
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@tanstack/table-core@8.19.2:
+    resolution: {integrity: sha512-KpRjhgehIhbfH78ARm/GJDXGnpdw4bCg3qas6yjWSi7czJhI/J6pWln7NHtmBkGE9ZbohiiNtLqwGzKmBfixig==}
+    engines: {node: '>=12'}
     dev: false
 
   /@tiptap/core@2.4.0(@tiptap/pm@2.4.0):

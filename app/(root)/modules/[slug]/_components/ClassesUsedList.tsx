@@ -47,7 +47,7 @@ const ClassesUsedList: React.FC<ClassesUsedListProps> = ({ initialData }) => {
                         initialData.data.classes.map((itm, idx) => (
                             <div
                                 key={idx}
-                                className='flex items-center justify-between rounded-md bg-background py-4 text-sm'
+                                className='flex items-center justify-between rounded-md py-4 text-sm'
                             >
                                 <div className='flex items-center gap-2'>
                                     <Image
