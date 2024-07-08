@@ -127,6 +127,20 @@
       "when": 1720361447155,
       "tag": "0017_unusual_wallop",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1720417400716,
+      "tag": "0018_glamorous_magik",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1720428316071,
+      "tag": "0019_bizarre_killraven",
+      "breakpoints": true
     }
   ]
 }

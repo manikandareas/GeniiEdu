@@ -1,4 +1,4 @@
-import { GetDetailedClassBySlug } from '@/actions/classes.actions';
+import { GetDetailsClassResponse } from '@/actions/classes.actions';
 import { Badge } from '@/common/components/elements/Badge';
 import {
     Accordion,
@@ -20,19 +20,19 @@ import { nanoid } from 'nanoid';
 import Image from 'next/image';
 import Link from 'next/link';
 type DetailClassSectionProps = {
-    initialData: GetDetailedClassBySlug;
+    initialData: GetDetailsClassResponse;
 };
 
 const DetailClassSection: React.FC<DetailClassSectionProps> = ({
     initialData,
 }) => {
-    if (!initialData) {
+    if (!initialData.success) {
         return null;
     }
     return (
         <div className='relative flex-1 md:col-span-2'>
             <Link
-                href={`/classes/${initialData.slug}/editor`}
+                href={`/classes/${initialData.data.slug}/editor`}
                 className={cn(
                     buttonVariants({
                         className: 'absolute right-4 top-4',
@@ -45,15 +45,15 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
             {/* Head */}
             <div className='space-y-6'>
                 <Image
-                    src={initialData.thumbnail?.url ?? ''}
+                    src={initialData.data.thumbnail?.url ?? ''}
                     width={1600}
                     height={900}
-                    alt={initialData.thumbnail?.key ?? ''}
+                    alt={initialData.data.thumbnail?.key ?? ''}
                     className='h-[300px] w-full rounded-md object-cover'
                 />
 
                 <h1 className='mt-4 text-3xl font-semibold md:text-4xl'>
-                    {initialData.className}
+                    {initialData.data.className}
                 </h1>
 
                 <div className='flex items-center gap-4'>
@@ -76,79 +76,19 @@ const DetailClassSection: React.FC<DetailClassSectionProps> = ({
                 </div>
 
                 <p className='text-muted-foreground'>
-                    {initialData.description}
+                    {initialData.data.description}
                 </p>
             </div>
 
             {/* Content */}
             <div className='mt-8'>
                 <div className='flex items-center justify-between'>
-                    <h2 className='text-2xl font-medium'>Modules</h2>
+                    <h2 className='text-2xl font-medium'>Learning Materials</h2>
                 </div>
 
-                {initialData.modules.length === 0 && (
-                    <p className='text-muted-foreground'>
-                        No modules for this class
-                    </p>
-                )}
-
-                {initialData.modules.length > 0 && (
-                    <Accordion
-                        // collapsible
-                        type='multiple'
-                        className='w-full space-y-2'
-                    >
-                        {initialData.modules.map((item, idx) => (
-                            <AccordionItem
-                                key={nanoid(5)}
-                                value={idx.toString()}
-                            >
-                                <AccordionTrigger className='text-xl'>
-                                    {item.module.moduleName}
-                                </AccordionTrigger>
-                                <AccordionContent className='flex flex-wrap gap-2'>
-                                    {item.module.materials &&
-                                        item.module.materials.map((sub) => (
-                                            <Link
-                                                key={nanoid()}
-                                                href={`/classes/${initialData.slug}/materials/${encodeId(sub.id)}`}
-                                                className='min-w-[50%] flex-1'
-                                            >
-                                                <Card className=''>
-                                                    <CardHeader>
-                                                        <CardTitle>
-                                                            {sub.material.title}
-                                                        </CardTitle>
-                                                        <CardDescription
-                                                            dangerouslySetInnerHTML={{
-                                                                __html: sub
-                                                                    .material
-                                                                    .content!,
-                                                            }}
-                                                        />
-                                                    </CardHeader>
-                                                    <CardContent>
-                                                        {/* <Image
-                                      src={
-                                          dataClass.teacher
-                                              .profilePicture!
-                                      }
-                                      width={50}
-                                      height={50}
-                                      alt={
-                                          dataClass.teacher
-                                              .name!
-                                      }
-                                  /> */}
-                                                    </CardContent>
-                                                </Card>
-                                            </Link>
-                                        ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                )}
+                {initialData.data.learningMaterials &&
+                    initialData.data.learningMaterials.length > 0 &&
+                    JSON.stringify(initialData.data.learningMaterials)}
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import db from '../libs/DB';
 import { Schema } from '../models';
-import { InsertClassesInput, InsertModuleIntoClassInput } from './types';
+import { InsertClassesInput } from './types';
 
 export const findClassBySlug = async (slug: string) => {
     return await db.query.classes.findFirst({
@@ -31,13 +31,6 @@ export const findStudentInClass = async (userId: string, classId: string) => {
     });
 };
 
-export const insertClassMember = async (userId: string, classId: string) => {
-    return await db.insert(Schema.classMembers).values({
-        classId,
-        userId,
-    });
-};
-
 export const insertClass = async (classData: InsertClassesInput) => {
     return await db.insert(Schema.classes).values(classData).returning();
 };
@@ -52,69 +45,37 @@ export const findClassWithThumbnailTeacher = async (slug: string) => {
     });
 };
 
-export const getMaximumPositionModule = async (moduleId: string) => {
-    return await db
-        .select({
-            maxPosition: sql`MAX(${Schema.classModules.position}) AS maxPosition`,
-        })
-        .from(Schema.classModules)
-        .where(eq(Schema.classModules.moduleId, moduleId));
-};
-
-export const insertModuleIntoClass = async (
-    input: InsertModuleIntoClassInput,
-) => {
-    const maxPositionResult = await getMaximumPositionModule(input.moduleId);
-
-    const maxPosition = maxPositionResult[0].maxPosition;
-    const nextPosition = maxPosition !== null ? (maxPosition as number) + 1 : 0;
-
-    return await db
-        .insert(Schema.classModules)
-        .values({
-            ...input,
-            position: nextPosition,
-        })
-        .returning();
-};
-
-export const findClassModulesWithDetails = async (classId: string) => {
-    return await db.query.classModules.findMany({
-        where: (classModules, { eq }) => eq(classModules.classId, classId),
+/**
+ * Find details of a class by slug including learning materials, assignments, teacher, thumbnail, and members' user data.
+ *
+ * @param {string} slug - The slug of the class to find details for.
+ * @return {Promise} The details of the class including learning materials, assignments, teacher, thumbnail, announcements and members.
+ */
+export const findDetailsClass = async (slug: string) => {
+    return await db.query.classes.findFirst({
+        where: (classData, { eq }) => eq(classData.slug, slug),
         with: {
-            module: {
+            learningMaterials: {
                 with: {
-                    materials: {
-                        with: {
-                            material: true,
-                        },
-                    },
-                    assignments: {
-                        with: {
-                            assignment: true,
+                    files: true,
+                },
+            },
+            assignments: true,
+            teacher: true,
+            thumbnail: true,
+            members: {
+                with: {
+                    user: {
+                        columns: {
+                            name: true,
+                            username: true,
+                            profilePicture: true,
+                            email: true,
                         },
                     },
                 },
             },
-        },
-    });
-};
-
-export const findDetailsModuleMaterial = async (moduleMaterialId: number) => {
-    return await db.query.materialModules.findFirst({
-        where: (materials, { eq }) => eq(materials.id, moduleMaterialId),
-        with: {
-            material: {
-                with: {
-                    files: {
-                        with: {
-                            file: true,
-                        },
-                    },
-                    uploadedBy: true,
-                },
-            },
-            module: true,
+            announcements: true,
         },
     });
 };

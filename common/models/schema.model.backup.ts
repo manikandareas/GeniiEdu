@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm';
 import {
     boolean,
+    integer,
     numeric,
     pgEnum,
     pgTable,
@@ -169,7 +170,6 @@ export const classMembers = pgTable('class_members', {
     statusCompletion: ClassCompletionStatusEnum('status_completion')
         .default('ongoing')
         .notNull(),
-    role: RoleEnum('status_role').default('student').notNull(),
     joinedAt: timestamp('joined_at', { withTimezone: true })
         .defaultNow()
         .notNull(),
@@ -187,7 +187,7 @@ export const announcements = pgTable('announcements', {
     postedAt: timestamp('posted_at', { withTimezone: true })
         .defaultNow()
         .notNull(),
-    authorId: text('author_id')
+    postedById: text('posted_by_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
     updatedAt,
@@ -201,17 +201,25 @@ export const assignments = pgTable('assignments', {
     title: text('title').notNull(),
     description: text('description').notNull(),
     filePath: text('file_path'),
-    authorId: text('author_id')
+    postedById: text('posted_by_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
-    dueDate: timestamp('due_date', { withTimezone: true }).notNull(),
-    classId: text('class_id')
-        .references(() => classes.id, { onDelete: 'cascade' })
+    createdAt,
+    updatedAt,
+});
+
+// Assignment Modules Table
+export const assignmentModules = pgTable('assignment_modules', {
+    id: serial('assignment_module_id').primaryKey(),
+    assignmentId: text('assignment_id')
+        .references(() => assignments.id, { onDelete: 'cascade' })
         .notNull(),
-    isOpen: boolean('is_open').default(true).notNull(),
-    publishedAt: timestamp('published_at', { withTimezone: true })
-        .defaultNow()
+    moduleId: text('module_id')
+        .references(() => modules.id, { onDelete: 'cascade' })
         .notNull(),
+    isPublished: boolean('is_published').default(false).notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    dueDate: timestamp('due_date', { withTimezone: true }),
     createdAt,
     updatedAt,
 });
@@ -223,14 +231,8 @@ export const learningMaterials = pgTable('learning_materials', {
         .$defaultFn(() => uuidv7()),
     title: text('title').notNull(),
     content: text('content').notNull(),
-    authorId: text('author_id')
+    postedById: text('posted_by_id')
         .references(() => users.id, { onDelete: 'cascade' })
-        .notNull(),
-    classId: text('class_id')
-        .references(() => classes.id, { onDelete: 'cascade' })
-        .notNull(),
-    publishedAt: timestamp('published_at', { withTimezone: true })
-        .defaultNow()
         .notNull(),
     createdAt,
     updatedAt,
@@ -244,6 +246,54 @@ export const learningMaterialFiles = pgTable('learning_material_files', {
     fileId: text('file_id')
         .references(() => files.id, { onDelete: 'cascade' })
         .notNull(),
+    createdAt,
+    updatedAt,
+});
+
+// Material Modules Table
+export const materialModules = pgTable('material_modules', {
+    id: serial('material_module_id').primaryKey(),
+    materialId: text('material_id')
+        .references(() => learningMaterials.id, { onDelete: 'cascade' })
+        .notNull(),
+    moduleId: text('module_id')
+        .references(() => modules.id, { onDelete: 'cascade' })
+        .notNull(),
+    position: integer('position').notNull(),
+    isPublished: boolean('is_published').default(false).notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+
+    createdAt,
+    updatedAt,
+});
+
+// Modules Table
+export const modules = pgTable('modules', {
+    id: text('module_id')
+        .primaryKey()
+        .$defaultFn(() => uuidv7()),
+    moduleName: text('module_name').notNull(),
+    description: text('description'),
+    slug: text('slug').unique().notNull(),
+    isPublished: boolean('is_published').default(false).notNull(),
+    authorId: text('author_id')
+        .references(() => users.id, { onDelete: 'cascade' })
+        .notNull(),
+    createdAt,
+    updatedAt,
+});
+
+// Class Modules Table -> attach modules to classes
+export const classModules = pgTable('class_modules', {
+    id: serial('class_module_id').primaryKey(),
+    classId: text('class_id')
+        .references(() => classes.id, { onDelete: 'cascade' })
+        .notNull(),
+    moduleId: text('module_id')
+        .references(() => modules.id, { onDelete: 'cascade' })
+        .notNull(),
+    position: integer('position').notNull(),
+    isPublished: boolean('is_published').default(false).notNull(),
     createdAt,
     updatedAt,
 });
@@ -270,10 +320,8 @@ export const submissions = pgTable('submissions', {
     assignmentId: text('assignment_id')
         .references(() => assignments.id, { onDelete: 'cascade' })
         .notNull(),
-    classId: text('class_id')
-        .references(() => classes.id, {
-            onDelete: 'cascade',
-        })
+    classModulesId: integer('class_modules_id')
+        .references(() => classModules.id, { onDelete: 'cascade' })
         .notNull(),
     studentId: text('student_id')
         .references(() => users.id, { onDelete: 'cascade' })
@@ -316,6 +364,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
         references: [userContacts.userId],
     }),
     classes: many(classes),
+    announcements: many(announcements),
     submissions: many(submissions),
     studentProgress: many(studentProgress),
 }));
@@ -335,10 +384,8 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
     }),
     members: many(classMembers),
     announcements: many(announcements),
+    classModules: many(classModules),
     studentProgress: many(studentProgress),
-    submissions: many(submissions),
-    assignments: many(assignments),
-    learningMaterials: many(learningMaterials),
 }));
 
 export const classMembersRelations = relations(classMembers, ({ one }) => ({
@@ -354,38 +401,46 @@ export const announcementsRelations = relations(announcements, ({ one }) => ({
         fields: [announcements.classId],
         references: [classes.id],
     }),
-    author: one(users, {
-        fields: [announcements.authorId],
+    postedBy: one(users, {
+        fields: [announcements.postedById],
         references: [users.id],
     }),
 }));
 
 export const assignmentsRelations = relations(assignments, ({ many, one }) => ({
+    modules: many(assignmentModules),
     submissions: many(submissions),
     studentProgress: many(studentProgress),
-    author: one(users, {
-        fields: [assignments.authorId],
+    uploadedBy: one(users, {
+        fields: [assignments.postedById],
         references: [users.id],
     }),
-    class: one(classes, {
-        fields: [assignments.classId],
-        references: [classes.id],
-    }),
 }));
+
+export const assignmentModulesRelations = relations(
+    assignmentModules,
+    ({ one }) => ({
+        assignment: one(assignments, {
+            fields: [assignmentModules.assignmentId],
+            references: [assignments.id],
+        }),
+        module: one(modules, {
+            fields: [assignmentModules.moduleId],
+            references: [modules.id],
+        }),
+    }),
+);
 
 export const learningMaterialsRelations = relations(
     learningMaterials,
     ({ one, many }) => ({
-        author: one(users, {
-            fields: [learningMaterials.authorId],
+        uploadedBy: one(users, {
+            fields: [learningMaterials.postedById],
             references: [users.id],
         }),
+        modules: many(materialModules),
         studentProgress: many(studentProgress),
         files: many(learningMaterialFiles),
-        class: one(classes, {
-            fields: [learningMaterials.classId],
-            references: [classes.id],
-        }),
     }),
 );
 
@@ -402,6 +457,38 @@ export const learningMaterialsFilesRelations = relations(
         }),
     }),
 );
+
+export const materialModulesRelations = relations(
+    materialModules,
+    ({ one }) => ({
+        material: one(learningMaterials, {
+            fields: [materialModules.materialId],
+            references: [learningMaterials.id],
+        }),
+        module: one(modules, {
+            fields: [materialModules.moduleId],
+            references: [modules.id],
+        }),
+    }),
+);
+
+export const modulesRelations = relations(modules, ({ many, one }) => ({
+    materials: many(materialModules),
+    assignments: many(assignmentModules),
+    classModules: many(classModules),
+    author: one(users, { fields: [modules.authorId], references: [users.id] }),
+}));
+
+export const classModulesRelations = relations(classModules, ({ one }) => ({
+    class: one(classes, {
+        fields: [classModules.classId],
+        references: [classes.id],
+    }),
+    module: one(modules, {
+        fields: [classModules.moduleId],
+        references: [modules.id],
+    }),
+}));
 
 export const filesRelations = relations(files, ({ one }) => ({
     user: one(users, { fields: [files.userId], references: [users.id] }),
@@ -420,9 +507,9 @@ export const submissionsRelations = relations(submissions, ({ one }) => ({
         fields: [submissions.filePath],
         references: [files.id],
     }),
-    class: one(classes, {
-        fields: [submissions.classId],
-        references: [classes.id],
+    classModule: one(classModules, {
+        fields: [submissions.classModulesId],
+        references: [classModules.id],
     }),
 }));
 

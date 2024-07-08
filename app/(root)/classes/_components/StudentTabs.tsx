@@ -21,13 +21,16 @@ import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { cn } from '@/common/libs/utils';
 import { useSearchParams } from 'next/navigation';
 
-import { GetStudentClasses, getStudentClasses } from '@/actions/users.actions';
+import {
+    getUserClasses,
+    GetUserClassesResponse,
+} from '@/actions/users.actions';
 import { useQuery } from '@tanstack/react-query';
+import { ClassesCard, ClassesCardWrapper } from './ClassesCard';
 import JoinClassForm from './JoinClassForm';
-import StudentClassCards from './StudentClassCards';
 
 type StudentTabsProps = {
-    initialData: GetStudentClasses;
+    initialData: GetUserClassesResponse;
 };
 
 const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
@@ -36,16 +39,31 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
     const { data: classes } = useQuery({
         initialData,
         queryKey: ['classes'],
-        queryFn: getStudentClasses,
+        queryFn: getUserClasses,
     });
+
+    if (!classes.success) return null;
 
     return (
         <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
             <div className='flex items-center'>
                 <TabsList className='bg-transparent'>
-                    <StudentTabsTrigger keyType='all' />
-                    <StudentTabsTrigger keyType='published' />
-                    <StudentTabsTrigger keyType='archived' />
+                    <StudentTabsTrigger
+                        count={classes.data.metadata.total}
+                        keyType='all'
+                    />
+                    <StudentTabsTrigger
+                        count={classes.data.metadata.ongoing}
+                        keyType='ongoing'
+                    />
+                    <StudentTabsTrigger
+                        count={classes.data.metadata.completed}
+                        keyType='completed'
+                    />
+                    <StudentTabsTrigger
+                        count={classes.data.metadata.archived}
+                        keyType='archived'
+                    />
                 </TabsList>
                 <div className='ml-auto flex items-center gap-2'>
                     <DropdownMenu>
@@ -80,7 +98,67 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
             </div>
 
             <TabsContent value='all'>
-                <StudentClassCards data={classes.data} />
+                <ClassesCardWrapper>
+                    {classes.data.classes.map((item) => (
+                        <ClassesCard
+                            key={item.id}
+                            description={item.class.description ?? ''}
+                            slug={item.class.slug}
+                            title={item.class.className}
+                            updatedAt={item.class.updatedAt ?? new Date()}
+                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            statusCompletion={item.statusCompletion}
+                        />
+                    ))}
+                </ClassesCardWrapper>
+            </TabsContent>
+            <TabsContent value='ongoing'>
+                <ClassesCardWrapper>
+                    {classes.data.classes.map((item) => (
+                        <ClassesCard
+                            key={item.id}
+                            description={item.class.description ?? ''}
+                            slug={item.class.slug}
+                            title={item.class.className}
+                            updatedAt={item.class.updatedAt ?? new Date()}
+                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            tab='ongoing'
+                            statusCompletion={item.statusCompletion}
+                        />
+                    ))}
+                </ClassesCardWrapper>
+            </TabsContent>
+            <TabsContent value='completed'>
+                <ClassesCardWrapper>
+                    {classes.data.classes.map((item) => (
+                        <ClassesCard
+                            key={item.id}
+                            description={item.class.description ?? ''}
+                            slug={item.class.slug}
+                            title={item.class.className}
+                            updatedAt={item.class.updatedAt ?? new Date()}
+                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            tab='completed'
+                            statusCompletion={item.statusCompletion}
+                        />
+                    ))}
+                </ClassesCardWrapper>
+            </TabsContent>
+            <TabsContent value='archived'>
+                <ClassesCardWrapper>
+                    {classes.data.classes.map((item) => (
+                        <ClassesCard
+                            key={item.id}
+                            description={item.class.description ?? ''}
+                            slug={item.class.slug}
+                            title={item.class.className}
+                            updatedAt={item.class.updatedAt ?? new Date()}
+                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            tab='archived'
+                            statusCompletion={item.statusCompletion}
+                        />
+                    ))}
+                </ClassesCardWrapper>
             </TabsContent>
         </Tabs>
     );
@@ -88,8 +166,9 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
 export default StudentTabs;
 
 type StudentTabsTriggerProps = {
-    keyType: 'all' | 'published' | 'archived';
+    keyType: 'all' | 'ongoing' | 'completed' | 'archived';
     disabled?: boolean;
+    count: number;
 };
 
 const StudentTabsTrigger: React.FC<StudentTabsTriggerProps> = ({
@@ -110,18 +189,22 @@ const StudentTabsTrigger: React.FC<StudentTabsTriggerProps> = ({
             onClick={() => handleChange('tab', key)}
             className={cn('capitalize', {
                 'border-blue-600': props.keyType === 'all',
-                'border-green-600': props.keyType === 'published',
-                'border-yellow-600': props.keyType === 'archived',
+                'border-green-600': props.keyType === 'completed',
+                'border-zinc-600': props.keyType === 'archived',
+                'border-yellow-600': props.keyType === 'ongoing',
                 'border-b':
                     props.keyType === 'all' && !active
                         ? true
-                        : props.keyType === 'published' &&
-                            active === 'published'
+                        : props.keyType === 'completed' &&
+                            active === 'completed'
                           ? true
                           : props.keyType === 'archived' &&
                               active === 'archived'
                             ? true
-                            : false,
+                            : props.keyType === 'ongoing' &&
+                                active === 'ongoing'
+                              ? true
+                              : false,
             })}
         >
             <span
@@ -130,15 +213,19 @@ const StudentTabsTrigger: React.FC<StudentTabsTriggerProps> = ({
                     { 'bg-blue-300/10 text-blue-500': props.keyType === 'all' },
                     {
                         'bg-green-300/10 text-green-500':
-                            props.keyType === 'published',
+                            props.keyType === 'completed',
                     },
                     {
                         'bg-yellow-300/10 text-yellow-500':
+                            props.keyType === 'ongoing',
+                    },
+                    {
+                        'bg-zinc-300/10 text-zinc-500':
                             props.keyType === 'archived',
                     },
                 )}
             >
-                10
+                {props.count}
             </span>{' '}
             {props.keyType}
         </TabsTrigger>

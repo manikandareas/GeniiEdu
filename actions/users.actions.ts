@@ -1,19 +1,14 @@
 'use server';
 
-import db from '@/common/libs/DB';
+import { findMemberClasses } from '@/common/data-access/class-members';
+import { findUserByEmail, patchUser } from '@/common/data-access/users';
 import { validateRequest } from '@/common/libs/lucia';
-import { Schema } from '@/common/models';
+import { actionProcedure } from '@/common/libs/safe-action';
 import { UsersModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
-import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { actionProcedure } from '@/common/libs/safe-action';
-import {
-    patchUser,
-    findUserByEmail,
-    findStudentClasses,
-} from '@/common/data-access/users';
 
 export const onboardingProfile = async (
     values: z.infer<typeof UsersModel.onboardingSchema>,
@@ -93,51 +88,59 @@ export const isEmailExist = actionProcedure
         }
     });
 
-export const getStudentClasses = async () => {
-    const { user: student } = await validateRequest();
+export type GetUserClassesFilter = 'ongoing' | 'completed' | 'archived' | null;
+export const getUserClasses = async () => {
+    const { user } = await validateRequest();
 
-    if (!student) {
+    if (!user) {
         throw new Error('Unauthorized');
     }
 
     try {
-        const studentClasses = await findStudentClasses(student.id);
+        const userClasses = await findMemberClasses(user.id);
 
-        if (studentClasses.length === 0) {
+        if (userClasses.length === 0) {
+            revalidatePath('/classes');
             return {
                 success: true,
                 data: {
                     classes: [],
                     metadata: {
-                        all: 0,
+                        total: 0,
                         ongoing: 0,
                         completed: 0,
                         archived: 0,
                     },
                 },
-                message: "You don't have any classes 😢",
             } satisfies ActRes;
         }
+
+        const metadata = userClasses.reduce(
+            (acc, curr) => {
+                if (curr.statusCompletion === 'ongoing') {
+                    acc.ongoing += 1;
+                } else if (curr.statusCompletion === 'completed') {
+                    acc.completed += 1;
+                } else if (curr.statusCompletion === 'archived') {
+                    acc.archived += 1;
+                }
+                return acc;
+            },
+            {
+                total: userClasses.length,
+                ongoing: 0,
+                completed: 0,
+                archived: 0,
+            },
+        );
+
+        revalidatePath('/classes');
 
         return {
             success: true,
             data: {
-                classes: studentClasses,
-                metadata: {
-                    all: studentClasses.length,
-                    ongoing: studentClasses.filter(
-                        (classMember) =>
-                            classMember.statusCompletion === 'ongoing',
-                    ).length,
-                    completed: studentClasses.filter(
-                        (classMember) =>
-                            classMember.statusCompletion === 'completed',
-                    ).length,
-                    archived: studentClasses.filter(
-                        (classMember) =>
-                            classMember.statusCompletion === 'archived',
-                    ).length,
-                },
+                classes: userClasses,
+                metadata,
             },
         };
     } catch (error: any) {
@@ -148,46 +151,4 @@ export const getStudentClasses = async () => {
     }
 };
 
-export type GetStudentClasses = Awaited<ReturnType<typeof getStudentClasses>>;
-
-export const getTeacherClasses = async () => {
-    const { user } = await validateRequest();
-
-    if (!user) {
-        throw new Error('Unauthorized');
-    }
-
-    if (user.role !== 'teacher') {
-        throw new Error('Unauthorized');
-    }
-
-    try {
-        const teacherClasses = await db.query.classes.findMany({
-            where: eq(Schema.classes.teacherId, user.id),
-            with: {
-                teacher: true,
-                thumbnail: true,
-            },
-        });
-
-        if (teacherClasses.length === 0) {
-            return {
-                success: true,
-                data: [],
-                message: "You don't have any classes 😢",
-            } satisfies ActRes;
-        }
-
-        return {
-            success: true,
-            data: teacherClasses,
-        };
-    } catch (error: any) {
-        return {
-            success: false,
-            error: error.message,
-        };
-    }
-};
-
-export type GetTeacherClasses = Awaited<ReturnType<typeof getTeacherClasses>>;
+export type GetUserClassesResponse = Awaited<ReturnType<typeof getUserClasses>>;

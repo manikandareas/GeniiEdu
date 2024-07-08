@@ -1,4 +1,3 @@
-import { getDetailsModuleMaterial } from '@/actions/classes.actions';
 import HeaderOptions from '@/common/components/elements/HeaderOptions';
 import { Button, buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
@@ -22,11 +21,11 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
 
     if (!slug) return notFound();
 
-    const initialData = await getDetailsModuleMaterial(slug);
+    // const initialData = await getDetailsModuleMaterial(slug);
 
-    if (!initialData.success) return notFound();
+    // if (!initialData.success) return notFound();
 
-    const materialFiles = initialData.data.material.files;
+    // const materialFiles = initialData.data.material.files;
 
     const urls = [
         {
@@ -38,19 +37,16 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
             href: '/classes',
         },
         {
-            name: initialData.data.module.moduleName,
+            name: 'Details Learning Material',
             href: `classes/${params.slug}`,
         },
     ];
 
     return (
         <>
-            <HeaderOptions
-                title={initialData.data.module.moduleName}
-                urls={urls}
-            />
+            <HeaderOptions title={'Details Learning Material'} urls={urls} />
             <main className='mx-auto min-h-screen w-full max-w-4xl'>
-                <MaterialHeader
+                {/* <MaterialHeader
                     authorName={initialData.data.material.uploadedBy.name ?? ''}
                     createdAt={initialData.data.material.createdAt!.toDateString()}
                     icon='material'
@@ -92,7 +88,8 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
                                 </Typography>
                             </div>
                         ))}
-                </section>
+                </section> */}
+                <h1>Details Learning Materials</h1>
             </main>
         </>
     );

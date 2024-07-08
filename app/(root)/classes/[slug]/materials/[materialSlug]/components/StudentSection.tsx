@@ -1,20 +1,20 @@
-import { GetDetailsModuleMaterial } from '@/actions/classes.actions';
 import MaterialHeader from '../../../_components/MaterialHeader';
 import Typography from '@/common/components/ui/typography';
 import Link from 'next/link';
 import { buttonVariants } from '@/common/components/ui/button';
+import { GetDetailsClassResponse } from '@/actions/classes.actions';
 
 type StudentSectionProps = {
-    initialData: GetDetailsModuleMaterial;
+    initialData: GetDetailsClassResponse;
 };
 
 const StudentSection: React.FC<StudentSectionProps> = ({ initialData }) => {
-    if (!initialData) return null;
+    // if (!initialData) return null;
 
-    const materialFiles = initialData.material.files;
+    // const materialFiles = initialData.material.files;
     return (
         <main className='mx-auto min-h-screen w-full max-w-4xl'>
-            <MaterialHeader
+            {/* <MaterialHeader
                 authorName={initialData.material.uploadedBy.name ?? ''}
                 createdAt={initialData.material.createdAt!.toDateString()}
                 icon='material'
@@ -56,7 +56,9 @@ const StudentSection: React.FC<StudentSectionProps> = ({ initialData }) => {
                             </Typography>
                         </div>
                     ))}
-            </section>
+            </section> */}
+
+            <h1>Student Section</h1>
         </main>
     );
 };

@@ -1,19 +1,16 @@
 'use server';
 
+import { insertClassMember } from '@/common/data-access/class-members';
 import {
     findClassWithThumbnailTeacher,
     findClassByCode,
     findClassBySlug,
     insertClass,
-    insertClassMember,
     findStudentInClass,
     findClassById,
-    insertModuleIntoClass,
-    findClassModulesWithDetails,
-    findDetailsModuleMaterial,
+    findDetailsClass,
 } from '@/common/data-access/classes';
 import { findFileByKey, insertFile } from '@/common/data-access/files';
-import { findModuleById } from '@/common/data-access/module';
 import {
     authenticatedProcedure,
     studentProcedure,
@@ -100,6 +97,13 @@ export const createClass = teacherProcedure
                 throw new Error('Something went wrong, please try again.');
             }
 
+            await insertClassMember({
+                classId: insertedClass[0].id,
+                userId: teacher.id,
+                role: 'teacher',
+            });
+
+            revalidatePath('/classes');
             return {
                 success: true,
                 message: `Class ${parsedInput.className} created successfully`,
@@ -153,26 +157,18 @@ export const uploadClassThumbnail = teacherProcedure
         }
     });
 
-// * Actions running expectedly
-export const getDetailedClassBySlug = async (slug: string) => {
+export const getDetailsClass = async (slug: string) => {
     try {
-        const existingClass = await findClassWithThumbnailTeacher(slug);
+        const existingClass = await findDetailsClass(slug);
 
         if (!existingClass) {
             throw new Error('Class not found');
         }
 
-        const modules = await findClassModulesWithDetails(existingClass.id);
-
-        const existingClassWithModules = {
-            ...existingClass,
-            modules,
-        };
-
         return {
             success: true,
-            data: existingClassWithModules,
-        } satisfies ActRes<typeof existingClassWithModules>;
+            data: existingClass,
+        } satisfies ActRes<typeof existingClass>;
     } catch (error: any) {
         return {
             error: error.message,
@@ -180,10 +176,9 @@ export const getDetailedClassBySlug = async (slug: string) => {
         } satisfies ActRes;
     }
 };
-
-export type GetDetailedClassBySlug = Awaited<
-    ReturnType<typeof getDetailedClassBySlug>
->['data'];
+export type GetDetailsClassResponse = Awaited<
+    ReturnType<typeof getDetailsClass>
+>;
 
 // * Actions running expectedly
 export const joinClass = studentProcedure
@@ -210,7 +205,11 @@ export const joinClass = studentProcedure
                 throw new Error('Your already in this class');
             }
 
-            await insertClassMember(student.id, classToJoin.id);
+            await insertClassMember({
+                classId: classToJoin.id,
+                userId: student.id,
+                role: 'student',
+            });
 
             revalidatePath('/classes');
 
@@ -225,73 +224,3 @@ export const joinClass = studentProcedure
             } satisfies ActRes;
         }
     });
-
-export const addModule = teacherProcedure
-    .metadata({
-        actionName: 'addModule',
-    })
-    .schema(ClassesModel.addModuleSchema)
-    .action(async ({ parsedInput, ctx }) => {
-        try {
-            const { user: teacher } = ctx;
-
-            const [existingClass, existingModule] = await Promise.all([
-                await findClassById(parsedInput.classId),
-                await findModuleById(parsedInput.moduleId),
-            ]);
-
-            if (!existingClass || !existingModule) {
-                throw new Error('Class or Module not found');
-            }
-
-            if (
-                existingClass.teacherId !== teacher.id ||
-                existingModule.authorId !== teacher.id
-            ) {
-                throw new Error('Unauthorized');
-            }
-
-            const linkingModuleWithClass = await insertModuleIntoClass({
-                classId: parsedInput.classId,
-                moduleId: parsedInput.moduleId,
-            });
-
-            if (linkingModuleWithClass.length === 0) {
-                throw new Error('Something went wrong, please try again.');
-            }
-
-            return {
-                success: true,
-                message: 'Module added successfully',
-            };
-        } catch (error: any) {
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
-        }
-    });
-
-export const getDetailsModuleMaterial = async (materialModuleId: number) => {
-    try {
-        const moduleMaterial =
-            await findDetailsModuleMaterial(materialModuleId);
-        if (!moduleMaterial) {
-            throw new Error('Module material not found');
-        }
-
-        return {
-            success: true,
-            data: moduleMaterial,
-        } satisfies ActRes<typeof moduleMaterial>;
-    } catch (error: any) {
-        return {
-            error: error.message,
-            success: false,
-        } satisfies ActRes;
-    }
-};
-
-export type GetDetailsModuleMaterial = Awaited<
-    ReturnType<typeof getDetailsModuleMaterial>
->['data'];
