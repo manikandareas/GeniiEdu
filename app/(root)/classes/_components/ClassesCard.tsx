@@ -1,5 +1,4 @@
-import { GetStudentClasses, GetTeacherClasses } from '@/actions/users.actions';
-import { Badge } from '@/common/components/elements/Badge';
+import { GetUserClassesFilter } from '@/actions/users.actions';
 import { buttonVariants } from '@/common/components/ui/button';
 import {
     Card,
@@ -9,62 +8,52 @@ import {
     CardTitle,
 } from '@/common/components/ui/card';
 import Typography from '@/common/components/ui/typography';
-import useCurrentUser from '@/common/hooks/useCurrentUser';
+import { cn, prettyText } from '@/common/libs/utils';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ComponentProps } from 'react';
 
-type StudentClassCardsProps = {
-    data: GetStudentClasses['data'];
-};
-
-const StudentClassCards: React.FC<StudentClassCardsProps> = ({ data }) => {
-    if (!data || !data.classes) return <div>Loading...</div>;
-
+type ClassesCardWrapperProps = ComponentProps<'section'>;
+export const ClassesCardWrapper: React.FC<ClassesCardWrapperProps> = (
+    props,
+) => {
+    const { className, children, ...rest } = props;
     return (
-        <section className='flex flex-wrap gap-3'>
-            {data.classes.map((item) => (
-                <StudentClassCardItem
-                    title={item.class.className}
-                    key={item.classId}
-                    slug={item.class.slug}
-                    updatedAt={item.class.updatedAt ?? new Date()}
-                    description={item.class.description ?? ''}
-                    thumbnail={item.class.thumbnail?.url ?? ''}
-                    statusCompletion={item.statusCompletion}
-                />
-            ))}
+        <section {...rest} className={cn('flex flex-wrap gap-3', className)}>
+            {children}
         </section>
     );
 };
-export default StudentClassCards;
 
-type StudentClassCardItemProps = {
+type ClassesCardProps = {
     slug: string;
     title: string;
     thumbnail: string;
     updatedAt: Date;
     description: string;
-    statusCompletion: 'ongoing' | 'completed' | 'archived';
+    statusCompletion: GetUserClassesFilter;
+    tab?: 'ongoing' | 'completed' | 'archived';
 };
-export const StudentClassCardItem: React.FC<StudentClassCardItemProps> = ({
+export const ClassesCard: React.FC<ClassesCardProps> = ({
     slug,
     title,
     thumbnail,
     description,
     updatedAt,
     statusCompletion,
+    tab,
 }) => {
-    const teacher = useCurrentUser();
+    if (tab && statusCompletion) {
+        if (statusCompletion !== tab) return null;
+    }
+
     return (
         <Card
             x-chunk='dashboard-05-chunk-2'
             className='group/card w-full max-w-sm'
         >
             <CardHeader className='space-y-3'>
-                <Badge className='capitalize' variant={statusCompletion}>
-                    {statusCompletion}
-                </Badge>
-                <div className='relative aspect-video h-36'>
+                <div className='relative aspect-video h-36 overflow-clip rounded-md'>
                     <Image
                         src={thumbnail}
                         alt={title}
@@ -74,15 +63,12 @@ export const StudentClassCardItem: React.FC<StudentClassCardItemProps> = ({
                 </div>
 
                 <CardTitle className='transition-transform ease-in-out group-hover/card:translate-x-1'>
-                    {/* <Typography variant={'h3'}>{title}</Typography> */}
                     {title}
                 </CardTitle>
             </CardHeader>
             <CardContent className='transition-transform ease-in-out group-hover/card:translate-x-1'>
                 <Typography className='max-w-xs'>
-                    {description.length > 85
-                        ? `${description.slice(0, 85)}...`
-                        : description}
+                    {prettyText(description)}
                 </Typography>
             </CardContent>
             <CardFooter className='flex items-center justify-between'>

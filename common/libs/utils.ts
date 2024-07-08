@@ -49,10 +49,6 @@ export function decodeId(encodedId: string): number | null {
     return decoded.length > 0 ? decoded[0] : null;
 }
 
-// // Contoh penggunaan
-// const id = 12345;
-// const encodedId = encodeId(id);
-// console.log('Encoded ID:', encodedId);
-
-// const decodedId = decodeId(encodedId);
-// console.log('Decoded ID:', decodedId);
+export const prettyText = (text: string) => {
+    return text.length > 85 ? `${text.slice(0, 85)}...` : text;
+};

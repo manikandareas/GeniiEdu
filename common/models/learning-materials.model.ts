@@ -17,12 +17,18 @@ export const insertLearningMaterialsSchema = z.object({
             }),
         )
         .optional(),
+    publishedAt: z.date().default(new Date()),
 });
-
-export const selectMaterialsModules = createSelectSchema(
-    Schema.materialModules,
-);
 
 export const selectLearningMaterials = createSelectSchema(
     Schema.learningMaterials,
 );
+
+// title: string;
+// content: string;
+// authorId: string;
+// classId: string;
+// id?: string | undefined;
+// createdAt?: Date | null | undefined;
+// updatedAt?: Date | null | undefined;
+// publishedAt?: Date | undefined;

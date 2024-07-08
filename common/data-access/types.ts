@@ -36,16 +36,6 @@ export type InsertLearningMaterialInput =
 export type InsertLearningMaterialFilesInput =
     typeof Schema.learningMaterialFiles._.inferInsert;
 
-export type InsertMaterialModuleInput =
-    typeof Schema.materialModules._.inferInsert;
+export type InsertAssignmentInput = typeof Schema.assignments._.inferInsert;
 
-export type InsertModuleInput = typeof Schema.modules._.inferInsert;
-
-export type SelectModule = typeof Schema.modules._.inferSelect;
-
-export type PatchModuleInput = Partial<SelectModule>;
-
-export type InsertModuleIntoClassInput = Omit<
-    typeof Schema.classModules._.inferInsert,
-    'position'
->;
+export type InsertClassMemberInput = typeof Schema.classMembers._.inferInsert;

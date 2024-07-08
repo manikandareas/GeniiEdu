@@ -43,11 +43,6 @@ export const TEACHER_MENU = [
         href: '/classes',
         icon: School2,
     },
-    {
-        name: 'Manage Modules',
-        href: '/modules',
-        icon: Library,
-    },
 
     {
         name: 'Genii Chat',

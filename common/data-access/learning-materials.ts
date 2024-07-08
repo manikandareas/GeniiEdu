@@ -5,7 +5,6 @@ import {
     DataAccessConfig,
     InsertLearningMaterialFilesInput,
     InsertLearningMaterialInput,
-    InsertMaterialModuleInput,
 } from './types';
 
 export const insertLearningMaterial = async (
@@ -24,28 +23,6 @@ export const insertLearningMaterialFiles = async (
 ) => {
     return await (config.tx ? config.tx : db)
         .insert(Schema.learningMaterialFiles)
-        .values(input)
-        .returning();
-};
-
-export const getMaximumPositionMaterial = async (
-    moduleId: string,
-    config: DataAccessConfig = {},
-) => {
-    return await (config.tx ? config.tx : db)
-        .select({
-            maxPosition: sql`MAX(${Schema.materialModules.position}) AS maxPosition`,
-        })
-        .from(Schema.materialModules)
-        .where(eq(Schema.materialModules.moduleId, moduleId));
-};
-
-export const insertMaterialModule = async (
-    input: InsertMaterialModuleInput,
-    config: DataAccessConfig = {},
-) => {
-    return await (config.tx ? config.tx : db)
-        .insert(Schema.materialModules)
         .values(input)
         .returning();
 };

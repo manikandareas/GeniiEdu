@@ -1,11 +1,6 @@
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
-import {
-    GetStudentClasses,
-    GetTeacherClasses,
-    getStudentClasses,
-    getTeacherClasses,
-} from '@/actions/users.actions';
+import { getUserClasses } from '@/actions/users.actions';
 import {
     HydrationBoundary,
     QueryClient,
@@ -15,6 +10,7 @@ import {
 import HeaderOptions from '@/common/components/elements/HeaderOptions';
 import TeacherTabs from './_components/TeacherTabs';
 import StudentTabs from './_components/StudentTabs';
+import ClassesContainer from './_components/ClassesContainer';
 
 type ClassesPageProps = {};
 
@@ -25,26 +21,14 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
 
     const titlePage = user.role !== 'teacher' ? 'Classes' : 'Manage Classes';
 
-    const initialData =
-        user.role === 'teacher'
-            ? await getTeacherClasses()
-            : await getStudentClasses();
+    const initialData = await getUserClasses();
 
     const queryClient = new QueryClient();
 
-    if (user.role === 'teacher') {
-        queryClient.prefetchQuery({
-            initialData,
-            queryKey: ['classes'],
-            queryFn: () => getTeacherClasses(),
-        });
-    } else {
-        queryClient.prefetchQuery({
-            initialData,
-            queryKey: ['classes'],
-            queryFn: () => getStudentClasses(),
-        });
-    }
+    queryClient.prefetchQuery({
+        queryKey: ['classes'],
+        queryFn: () => getUserClasses(),
+    });
 
     const urls = [
         {
@@ -61,23 +45,19 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
         <>
             <HeaderOptions title={titlePage} urls={urls} />
             {user.role === 'student' && (
-                <main className='grid flex-1 items-start gap-4 bg-background p-4 sm:px-6 sm:py-0 md:gap-8'>
+                <ClassesContainer>
                     <HydrationBoundary state={dehydrate(queryClient)}>
-                        <StudentTabs
-                            initialData={initialData as GetStudentClasses}
-                        />
+                        <StudentTabs initialData={initialData} />
                     </HydrationBoundary>
-                </main>
+                </ClassesContainer>
             )}
 
             {user.role === 'teacher' && (
-                <main className='grid flex-1 items-start gap-4 bg-background p-4 sm:px-6 sm:py-0 md:gap-8'>
+                <ClassesContainer>
                     <HydrationBoundary state={dehydrate(queryClient)}>
-                        <TeacherTabs
-                            initialData={initialData as GetTeacherClasses}
-                        />
+                        <TeacherTabs initialData={initialData} />
                     </HydrationBoundary>
-                </main>
+                </ClassesContainer>
             )}
         </>
     );

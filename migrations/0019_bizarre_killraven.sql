@@ -1,0 +1,1 @@
+ALTER TABLE "class_members" ADD COLUMN "status_role" "role" DEFAULT 'student' NOT NULL;
