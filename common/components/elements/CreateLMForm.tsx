@@ -92,7 +92,7 @@ const CreateLMForm = () => {
                     return;
                 }
 
-                toast.success(data.message);
+                toast.success(data.);
 
                 createLMForm.reset();
 

@@ -71,7 +71,7 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                     />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent className='w-56' align='end'>
                 <DropdownMenuLabel>@{user?.username}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

@@ -10,6 +10,15 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+/**
+ * Handles the onboarding profile process for a user.
+ *
+ * @param values - The values submitted for the onboarding profile.
+ * @returns A promise that resolves to an object with the following properties:
+ *   - success: A boolean indicating if the onboarding profile was successful.
+ *   - message: A string message indicating the result of the onboarding profile.
+ *   - error: A string containing the error message if the onboarding profile failed.
+ */
 export const onboardingProfile = async (
     values: z.infer<typeof UsersModel.onboardingSchema>,
 ) => {
@@ -59,9 +68,18 @@ export const onboardingProfile = async (
     }
 };
 
+/**
+ * Schema for checking if an email exists.
+ */
 const isEmailExistSchema = z.object({
     email: z.string().email(),
 });
+/**
+ * Checks if an email already exists in the system.
+ *
+ * @param parsedInput - The parsed input containing the email to check.
+ * @returns A promise that resolves to an object with the success status and data.
+ */
 export const isEmailExist = actionProcedure
     .metadata({ actionName: 'isEmailExist' })
     .schema(isEmailExistSchema)
@@ -89,6 +107,12 @@ export const isEmailExist = actionProcedure
     });
 
 export type GetUserClassesFilter = 'ongoing' | 'completed' | 'archived' | null;
+
+/**
+ * Retrieves the classes associated with the user.
+ * @returns A promise that resolves to an object containing the classes and metadata.
+ * @throws An error if the user is unauthorized or if an error occurs during the retrieval process.
+ */
 export const getUserClasses = async () => {
     const { user } = await validateRequest();
 

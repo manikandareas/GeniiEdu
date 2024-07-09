@@ -49,6 +49,6 @@ export function decodeId(encodedId: string): number | null {
     return decoded.length > 0 ? decoded[0] : null;
 }
 
-export const prettyText = (text: string) => {
-    return text.length > 85 ? `${text.slice(0, 85)}...` : text;
+export const prettyText = (text: string, limit: number = 85) => {
+    return text.length > limit ? `${text.slice(0, limit)}...` : text;
 };

@@ -23,7 +23,6 @@ import { useSearchParams } from 'next/navigation';
 
 import {
     getUserClasses,
-    GetUserClassesFilter,
     GetUserClassesResponse,
 } from '@/actions/users.actions';
 import { useQuery } from '@tanstack/react-query';
@@ -113,6 +112,7 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
                     ))}
                 </ClassesCardWrapper>
             </TabsContent>
+
             <TabsContent value='ongoing'>
                 <ClassesCardWrapper>
                     {classes.data.classes.map((item) => (
@@ -129,6 +129,7 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
                     ))}
                 </ClassesCardWrapper>
             </TabsContent>
+
             <TabsContent value='completed'>
                 <ClassesCardWrapper>
                     {classes.data.classes.map((item) => (
@@ -145,6 +146,7 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
                     ))}
                 </ClassesCardWrapper>
             </TabsContent>
+
             <TabsContent value='archived'>
                 <ClassesCardWrapper>
                     {classes.data.classes.map((item) => (
