@@ -8,9 +8,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-type StudentsCardProps = {};
+type StudentsCardProps = {
+    classSlug: string;
+};
 
-const StudentsCards: React.FC<StudentsCardProps> = () => {
+const StudentsCards: React.FC<StudentsCardProps> = ({ classSlug }) => {
     const dummyStudents = useMemo(() => {
         return DUMMY_STUDENTS.slice(0, 11);
     }, []);
@@ -31,7 +33,10 @@ const StudentsCards: React.FC<StudentsCardProps> = () => {
                 ))}
             </div>
 
-            <Link className='text-sm text-primary' href={'#'}>
+            <Link
+                className='text-sm text-primary'
+                href={`/classes/${classSlug}/students`}
+            >
                 Show more
             </Link>
         </div>
@@ -58,7 +63,7 @@ export const StudentCartItem: React.FC<StudentCartItemProps> = (props) => {
 
                 <div className='space-y-1'>
                     <p className='text-sm'>{props.name}</p>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className='text-xs text-muted-foreground'>
                         @{props.username}
                     </p>
                 </div>

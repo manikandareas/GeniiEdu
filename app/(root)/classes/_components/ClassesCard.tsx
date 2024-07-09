@@ -43,15 +43,10 @@ export const ClassesCard: React.FC<ClassesCardProps> = ({
     statusCompletion,
     tab,
 }) => {
-    if (tab && statusCompletion) {
-        if (statusCompletion !== tab) return null;
-    }
+    if (tab && statusCompletion) statusCompletion !== tab && null;
 
     return (
-        <Card
-            x-chunk='dashboard-05-chunk-2'
-            className='group/card w-full max-w-sm'
-        >
+        <Card className='group/card w-full max-w-sm'>
             <CardHeader className='space-y-3'>
                 <div className='relative aspect-video h-36 overflow-clip rounded-md'>
                     <Image

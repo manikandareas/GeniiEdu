@@ -27,7 +27,7 @@ export default async function RootLayout({
     return (
         <html lang='en' suppressHydrationWarning>
             <body className={fontInter.className}>
-                <NextTopLoader color='#facc15' />
+                <NextTopLoader color='#22c55e' />
                 <SessionProvider data={session}>
                     <ReactQueryProvider>
                         <ThemeProvider
