@@ -47,22 +47,15 @@ const JoinClassForm: React.FC<JoinClassFormProps> = () => {
 
     const { executeAsync, status: joinClassStatus } = useAction(joinClass, {
         onSuccess({ data }) {
-            if (!data) throw new Error('Something went wrong');
-
-            if (!data.success) {
-                toast.error(data.error);
-                return;
-            }
-
-            toast.success(data.message);
+            toast.success(data?.message);
             joinClassForm.reset();
             queryClient.invalidateQueries({
                 queryKey: ['classes'],
             });
             refJoinDialog.current?.click();
         },
-        onError(error) {
-            console.error(JSON.stringify(error, null, 2));
+        onError({ error }) {
+            toast.error(error.serverError);
         },
     });
 

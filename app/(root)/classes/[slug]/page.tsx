@@ -20,12 +20,9 @@ type DetailClassPageProps = {
 };
 
 const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
-    const dataClass = await getDetailsClass(params.slug).then((response) => {
-        if (!response || !response.success) {
-            return notFound();
-        }
-        return response;
-    });
+    const dataClass = await getDetailsClass(params.slug).catch((e) =>
+        notFound(),
+    );
 
     const urls = [
         {

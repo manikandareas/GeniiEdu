@@ -79,19 +79,11 @@ const CreateClassForm = () => {
     const { executeAsync: executeCreateClass, status: createClassStatus } =
         useAction(createClass, {
             onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-                if (!data.success) {
-                    toast.error(data.error);
-                    console.error(JSON.stringify(data.error, null, 2));
-                    return;
-                }
-                toast.success(data.message);
-
+                toast.success(data?.message);
                 setIsCreateClassSuccess(true);
-                return;
             },
-            onError: (error) => {
-                console.error(JSON.stringify(error, null, 2));
+            onError: ({ error }) => {
+                toast.error(error.serverError);
             },
         });
 
@@ -100,23 +92,15 @@ const CreateClassForm = () => {
         status: uploadThumbnailStatus,
     } = useAction(uploadClassThumbnail, {
         onSuccess: ({ data, input }) => {
-            if (!data) throw new Error('Something went wrong');
-            if (!data.success) {
-                toast.error(data.error);
-                console.error(JSON.stringify(data.error, null, 2));
-                createClassForm.setValue('thumbnail', '');
-                createClassForm.setValue('thumbnailKey', '');
-                return;
-            }
-
             createClassForm.setValue('thumbnail', input.url);
             createClassForm.setValue('thumbnailKey', input.key);
 
-            toast.success(data.message);
-            return;
+            toast.success(data?.message);
         },
-        onError: (error) => {
-            console.error(JSON.stringify(error, null, 2));
+        onError: ({ error }) => {
+            toast.error(error.serverError);
+            createClassForm.setValue('thumbnail', '');
+            createClassForm.setValue('thumbnailKey', '');
         },
     });
 
