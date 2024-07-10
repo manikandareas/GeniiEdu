@@ -42,8 +42,6 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
         queryFn: getUserClasses,
     });
 
-    if (!classes.success) return null;
-
     return (
         <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
             <div className='flex items-center overflow-hidden'>

@@ -3,7 +3,7 @@
 import { findMemberClasses } from '@/common/data-access/class-members';
 import { findUserByEmail, patchUser } from '@/common/data-access/users';
 import { validateRequest } from '@/common/libs/lucia';
-import { actionProcedure } from '@/common/libs/safe-action';
+import { ActionError, actionProcedure } from '@/common/libs/safe-action';
 import { UsersModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
@@ -84,26 +84,17 @@ export const isEmailExist = actionProcedure
     .metadata({ actionName: 'isEmailExist' })
     .schema(isEmailExistSchema)
     .action(async ({ parsedInput }) => {
-        try {
-            const existingUser = findUserByEmail(parsedInput.email);
+        const existingUser = findUserByEmail(parsedInput.email);
 
-            if (!existingUser) {
-                return {
-                    success: false,
-                    data: false,
-                } satisfies ActRes<boolean>;
-            }
-
+        if (!existingUser) {
             return {
-                success: true,
-                data: true,
-            } satisfies ActRes<boolean>;
-        } catch (error: any) {
-            return {
-                success: false,
-                error: error.message,
-            } satisfies ActRes;
+                data: false,
+            };
         }
+
+        return {
+            data: true,
+        };
     });
 
 export type GetUserClassesFilter = 'ongoing' | 'completed' | 'archived' | null;
@@ -117,62 +108,53 @@ export const getUserClasses = async () => {
     const { user } = await validateRequest();
 
     if (!user) {
-        throw new Error('Unauthorized');
+        throw new ActionError('Unauthorized');
     }
 
-    try {
-        const userClasses = await findMemberClasses(user.id);
+    const userClasses = await findMemberClasses(user.id);
 
-        if (userClasses.length === 0) {
-            revalidatePath('/classes');
-            return {
-                success: true,
-                data: {
-                    classes: [],
-                    metadata: {
-                        total: 0,
-                        ongoing: 0,
-                        completed: 0,
-                        archived: 0,
-                    },
-                },
-            } satisfies ActRes;
-        }
-
-        const metadata = userClasses.reduce(
-            (acc, curr) => {
-                if (curr.statusCompletion === 'ongoing') {
-                    acc.ongoing += 1;
-                } else if (curr.statusCompletion === 'completed') {
-                    acc.completed += 1;
-                } else if (curr.statusCompletion === 'archived') {
-                    acc.archived += 1;
-                }
-                return acc;
-            },
-            {
-                total: userClasses.length,
-                ongoing: 0,
-                completed: 0,
-                archived: 0,
-            },
-        );
-
+    if (userClasses.length === 0) {
         revalidatePath('/classes');
-
         return {
-            success: true,
             data: {
-                classes: userClasses,
-                metadata,
+                classes: [],
+                metadata: {
+                    total: 0,
+                    ongoing: 0,
+                    completed: 0,
+                    archived: 0,
+                },
             },
         };
-    } catch (error: any) {
-        return {
-            success: false,
-            error: error.message,
-        } satisfies ActRes;
     }
+
+    const metadata = userClasses.reduce(
+        (acc, curr) => {
+            if (curr.statusCompletion === 'ongoing') {
+                acc.ongoing += 1;
+            } else if (curr.statusCompletion === 'completed') {
+                acc.completed += 1;
+            } else if (curr.statusCompletion === 'archived') {
+                acc.archived += 1;
+            }
+            return acc;
+        },
+        {
+            total: userClasses.length,
+            ongoing: 0,
+            completed: 0,
+            archived: 0,
+        },
+    );
+
+    revalidatePath('/classes');
+
+    return {
+        data: {
+            classes: userClasses,
+            metadata,
+        },
+    };
 };
 
 export type GetUserClassesResponse = Awaited<ReturnType<typeof getUserClasses>>;
