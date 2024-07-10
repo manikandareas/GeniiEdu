@@ -59,19 +59,11 @@ const VerifyEmail: React.FC<VerifyEmailProps> = (props) => {
     const { executeAsync: executeVerifyEmail, status: verifyEmailStatus } =
         useAction(boundEmailWithFn, {
             onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-
-                if (!data.success) {
-                    toast.error(data.error);
-                    return;
-                }
-
-                toast.success(data.message);
+                toast.success(data?.message);
                 router.push('/login');
-                return;
             },
             onError: ({ error }) => {
-                console.error(JSON.stringify(error, null, 2));
+                toast.error(error.serverError);
             },
         });
 
@@ -79,19 +71,12 @@ const VerifyEmail: React.FC<VerifyEmailProps> = (props) => {
         resendEmailVerification,
         {
             onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-
-                if (!data.success) {
-                    toast.error(data.error);
-                    startCountdown();
-                    return;
-                }
-
+                toast.success(data?.message);
                 startCountdown();
-                toast.success(data.message);
             },
             onError: ({ error }) => {
-                console.error(JSON.stringify(error, null, 2));
+                toast.error(error.serverError);
+                startCountdown();
             },
         },
     );

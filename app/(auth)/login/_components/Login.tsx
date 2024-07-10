@@ -37,19 +37,10 @@ const Login = () => {
 
     const { executeAsync, status } = useAction(signIn, {
         onSuccess: ({ data }) => {
-            if (!data) throw new Error('Something went wrong');
-
-            if (!data.success) {
-                toast.error(data.error);
-                return;
-            }
-
-            toast.success(data.message);
+            toast.success(data?.message);
         },
         onError: ({ error }) => {
-            console.log({ error });
-
-            toast.error(error.fetchError);
+            toast.error(error.serverError);
         },
     });
 

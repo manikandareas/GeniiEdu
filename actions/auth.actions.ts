@@ -18,6 +18,7 @@ import { Env } from '@/common/libs/Env';
 import { lucia } from '@/common/libs/lucia';
 import { github, google } from '@/common/libs/lucia/oauth';
 import {
+    ActionError,
     actionProcedure,
     authenticatedProcedure,
 } from '@/common/libs/safe-action';
@@ -39,70 +40,61 @@ export const resendEmailVerification = actionProcedure
     .metadata({ actionName: 'resendEmailVerification' })
     .schema(resendEmailVerificationSchema)
     .action(async ({ parsedInput: email }) => {
-        try {
-            const existingUser = await findUserByEmail(email);
-            if (!existingUser) {
-                throw new Error('User not found');
-            }
-
-            if (existingUser.isEmailVerified) {
-                throw new Error('Email is already verified');
-            }
-
-            const existedCode = await findEmailVerificationByUserId(
-                existingUser.id,
-            );
-
-            if (!existedCode) {
-                throw new Error('Code not found');
-            }
-
-            const sentAt = new Date(existedCode.sentAt!);
-
-            const isOneMinuteHasPassed =
-                new Date().getTime() - sentAt.getTime() > 60 * 1000;
-
-            if (!isOneMinuteHasPassed) {
-                throw new Error(
-                    `Code has been sent recently, next email can be sent in ${60 - Math.floor((new Date().getTime() - sentAt.getTime()) / 1000)} seconds`,
-                );
-            }
-
-            const code = generateRandomNumber(6);
-
-            await patchEmailVerification({
-                code,
-                sentAt: new Date(),
-            });
-
-            const token = jwt.sign(
-                { email: email, userId: existingUser.id, code },
-                Env.JWT_SECRET as string,
-                { expiresIn: '5h' },
-            );
-
-            const url = `${Env.NEXT_PUBLIC_APP_URL}/api/verify-email?token=${token}`;
-
-            await sendEmail({
-                to: [existingUser.email!],
-                subject: 'Verify your email address',
-                react: React.createElement(GeniiEduVerificationEmail, {
-                    username: existingUser.username || existingUser.email!,
-                    verificationCode: code,
-                    verificationLink: url,
-                }),
-            });
-            return {
-                success: true,
-                message: 'Email has been sent',
-            };
-        } catch (error: any) {
-            console.error(error);
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        const existingUser = await findUserByEmail(email);
+        if (!existingUser) {
+            throw new ActionError('User not found');
         }
+
+        if (existingUser.isEmailVerified) {
+            throw new ActionError('Email is already verified');
+        }
+
+        const existedCode = await findEmailVerificationByUserId(
+            existingUser.id,
+        );
+
+        if (!existedCode) {
+            throw new ActionError('Code not found');
+        }
+
+        const sentAt = new Date(existedCode.sentAt!);
+
+        const isOneMinuteHasPassed =
+            new Date().getTime() - sentAt.getTime() > 60 * 1000;
+
+        if (!isOneMinuteHasPassed) {
+            throw new ActionError(
+                `Code has been sent recently, next email can be sent in ${60 - Math.floor((new Date().getTime() - sentAt.getTime()) / 1000)} seconds`,
+            );
+        }
+
+        const code = generateRandomNumber(6);
+
+        await patchEmailVerification({
+            code,
+            sentAt: new Date(),
+        });
+
+        const token = jwt.sign(
+            { email: email, userId: existingUser.id, code },
+            Env.JWT_SECRET as string,
+            { expiresIn: '5h' },
+        );
+
+        const url = `${Env.NEXT_PUBLIC_APP_URL}/api/verify-email?token=${token}`;
+
+        await sendEmail({
+            to: [existingUser.email!],
+            subject: 'Verify your email address',
+            react: React.createElement(GeniiEduVerificationEmail, {
+                username: existingUser.username || existingUser.email!,
+                verificationCode: code,
+                verificationLink: url,
+            }),
+        });
+        return {
+            message: 'Email has been sent',
+        };
     });
 
 // * Actions running expectedly
@@ -111,30 +103,19 @@ export const isEmailVerified = actionProcedure
     .metadata({ actionName: 'isEmailVerified' })
     .schema(isEmailVerifiedSchema)
     .action(async ({ parsedInput: email }) => {
-        try {
-            const existingUser = await findUserByEmail(email);
-
-            if (!existingUser) {
-                throw new Error('User not found');
-            }
-
-            if (existingUser.isEmailVerified) {
-                return {
-                    success: true,
-                    data: true,
-                } satisfies ActRes<boolean>;
-            }
-
+        const existingUser = await findUserByEmail(email);
+        if (!existingUser) {
+            throw new ActionError('User not found');
+        }
+        if (existingUser.isEmailVerified) {
             return {
                 success: true,
-                data: false,
-            } satisfies ActRes<boolean>;
-        } catch (error: any) {
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+                data: true,
+            };
         }
+        return {
+            data: false,
+        };
     });
 
 // * Actions running expectedly
@@ -142,61 +123,52 @@ export const signUp = actionProcedure
     .metadata({ actionName: 'signUp' })
     .schema(AuthModel.insertUserSchema)
     .action(async ({ parsedInput }) => {
-        try {
-            const existingUser = await findUserByEmail(parsedInput.email);
+        const existingUser = await findUserByEmail(parsedInput.email);
 
-            if (existingUser) {
-                throw new Error('Email already used');
-            }
-
-            const hashedPassword = await argon.hash(parsedInput.password);
-
-            const registeredUser = await insertUser({
-                email: parsedInput.email,
-                passwordHash: hashedPassword,
-                profilePicture: DEFAULT_PROFILE.profilePicture,
-            }).then((res) => res[0]);
-
-            // Random String for email verification
-            const code = generateRandomNumber(6);
-
-            await insertEmailVerification({
-                code,
-                userId: registeredUser.id,
-                sentAt: new Date(),
-            });
-
-            const token = jwt.sign(
-                { email: parsedInput.email, userId: registeredUser.id, code },
-                Env.JWT_SECRET as string,
-                { expiresIn: '5h' },
-            );
-
-            const url = `${Env.NEXT_PUBLIC_APP_URL}/api/verify-email?token=${token}`;
-            console.log({ url });
-
-            // ? Send an verification email
-            await sendEmail({
-                to: [parsedInput.email],
-                subject: 'Verify your email address',
-                react: React.createElement(GeniiEduVerificationEmail, {
-                    username: parsedInput.email,
-                    verificationCode: code,
-                    verificationLink: url,
-                }),
-            });
-
-            revalidatePath('/register');
-            return {
-                success: true,
-                message: "We've sent you an email. Please verify your email",
-            };
-        } catch (error: any) {
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        if (existingUser) {
+            throw new ActionError('Email already used');
         }
+
+        const hashedPassword = await argon.hash(parsedInput.password);
+
+        const registeredUser = await insertUser({
+            email: parsedInput.email,
+            passwordHash: hashedPassword,
+            profilePicture: DEFAULT_PROFILE.profilePicture,
+        }).then((res) => res[0]);
+
+        // Random String for email verification
+        const code = generateRandomNumber(6);
+
+        await insertEmailVerification({
+            code,
+            userId: registeredUser.id,
+            sentAt: new Date(),
+        });
+
+        const token = jwt.sign(
+            { email: parsedInput.email, userId: registeredUser.id, code },
+            Env.JWT_SECRET as string,
+            { expiresIn: '5h' },
+        );
+
+        const url = `${Env.NEXT_PUBLIC_APP_URL}/api/verify-email?token=${token}`;
+
+        // ? Send an verification email
+        await sendEmail({
+            to: [parsedInput.email],
+            subject: 'Verify your email address',
+            react: React.createElement(GeniiEduVerificationEmail, {
+                username: parsedInput.email,
+                verificationCode: code,
+                verificationLink: url,
+            }),
+        });
+
+        revalidatePath('/register');
+        return {
+            message: "We've sent you an email. Please verify your email",
+        };
     });
 
 // * Actions running expectedly
@@ -204,79 +176,65 @@ export const signIn = actionProcedure
     .metadata({ actionName: 'signIn' })
     .schema(AuthModel.loginUserSchema)
     .action(async ({ parsedInput }) => {
-        try {
-            const existingUser = await findUserByEmail(parsedInput.email);
+        const existingUser = await findUserByEmail(parsedInput.email);
 
-            if (!existingUser) {
-                throw new Error('Incorrect email or password');
-            }
-
-            if (!existingUser.passwordHash) {
-                throw new Error('Incorrect email or password');
-            }
-
-            const isPasswordMatch = await argon.verify(
-                existingUser.passwordHash,
-                parsedInput.password,
-            );
-
-            if (!isPasswordMatch) {
-                throw new Error('Incorrect email or password');
-            }
-
-            const session = lucia.createSession(existingUser.id, {
-                expiresIn: 60 * 60 * 24 * 30,
-            });
-
-            const sessionCookie = lucia.createSessionCookie((await session).id);
-
-            cookies().set(
-                sessionCookie.name,
-                sessionCookie.value,
-                sessionCookie.attributes,
-            );
-
-            revalidatePath('/login');
-
-            return {
-                success: true,
-                message: existingUser.username
-                    ? `Welcome ${existingUser.username}!`
-                    : 'Successfully logged in',
-            } satisfies ActRes;
-        } catch (error: any) {
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        if (!existingUser) {
+            throw new ActionError('Incorrect email or password');
         }
+
+        if (!existingUser.passwordHash) {
+            throw new ActionError('Incorrect email or password');
+        }
+
+        const isPasswordMatch = await argon.verify(
+            existingUser.passwordHash,
+            parsedInput.password,
+        );
+
+        if (!isPasswordMatch) {
+            throw new ActionError('Incorrect email or password');
+        }
+
+        const session = lucia.createSession(existingUser.id, {
+            expiresIn: 60 * 60 * 24 * 30,
+        });
+
+        const sessionCookie = lucia.createSessionCookie((await session).id);
+
+        cookies().set(
+            sessionCookie.name,
+            sessionCookie.value,
+            sessionCookie.attributes,
+        );
+
+        revalidatePath('/login');
+
+        const message = existingUser.username
+            ? `Welcome ${existingUser.username}!`
+            : 'Successfully logged in';
+
+        return {
+            message,
+        };
     });
 
 // * Actions running expectedly
 export const signOut = authenticatedProcedure
     .metadata({ actionName: 'signOut' })
     .action(async ({ ctx }) => {
-        try {
-            await lucia.invalidateSession(ctx.session.id);
+        await lucia.invalidateSession(ctx.session.id);
 
-            const sessionCookie = lucia.createBlankSessionCookie();
+        const sessionCookie = lucia.createBlankSessionCookie();
 
-            cookies().set(
-                sessionCookie.name,
-                sessionCookie.value,
-                sessionCookie.attributes,
-            );
+        cookies().set(
+            sessionCookie.name,
+            sessionCookie.value,
+            sessionCookie.attributes,
+        );
 
-            return {
-                success: true,
-                message: 'Logged out successfully',
-            } satisfies ActRes;
-        } catch (error: any) {
-            return {
-                success: false,
-                error: error.message,
-            } satisfies ActRes;
-        }
+        return {
+            message: 'Logged out successfully',
+        };
     });
 
 // * Actions running expectedly
@@ -285,51 +243,37 @@ export const verifyEmail = actionProcedure
     .schema(AuthModel.verifyEmailSchema)
     .bindArgsSchemas<[email: z.ZodString]>([z.string().email()])
     .action(async ({ parsedInput, bindArgsParsedInputs: [email] }) => {
-        try {
-            const existingUser = await findUserByEmail(email);
+        const existingUser = await findUserByEmail(email);
 
-            if (!existingUser) {
-                throw new Error('Invalid Code');
-            }
-
-            if (existingUser.isEmailVerified) {
-                throw new Error('User is already verified');
-            }
-
-            // ? Check if code is valid and match
-            const existingCode = await findEmailVerificationByUserIdAndCode(
-                existingUser.id,
-                parsedInput.code,
-            );
-
-            if (!existingCode) {
-                throw new Error('Invalid Code');
-            }
-
-            await deleteEmailVerificationByUserId(existingUser.id);
-
-            // await db
-            //     .update(Schema.users)
-            //     .set({ isEmailVerified: true })
-            //     .where(eq(Schema.users.id, existingUser.id));
-
-            await patchUser(
-                {
-                    isEmailVerified: true,
-                },
-                existingUser.id,
-            );
-            return {
-                success: true,
-                message: 'Email verified successfully',
-            } satisfies ActRes;
-        } catch (error: any) {
-            console.error(error);
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        if (!existingUser) {
+            throw new ActionError('Invalid Code');
         }
+
+        if (existingUser.isEmailVerified) {
+            throw new ActionError('User is already verified');
+        }
+
+        // ? Check if code is valid and match
+        const existingCode = await findEmailVerificationByUserIdAndCode(
+            existingUser.id,
+            parsedInput.code,
+        );
+
+        if (!existingCode) {
+            throw new ActionError('Invalid Code');
+        }
+
+        await deleteEmailVerificationByUserId(existingUser.id);
+
+        await patchUser(
+            {
+                isEmailVerified: true,
+            },
+            existingUser.id,
+        );
+        return {
+            message: 'Email verified successfully',
+        };
     });
 
 // * Actions running expectedly
