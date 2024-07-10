@@ -101,18 +101,23 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                 <Plus size={16} />
                             </Button>
                         </div>
-                        <TabsContent value='learningMaterials'>
-                            {dataClass.data.learningMaterials.length === 0 && (
+                        <TabsContent value='learningMaterials' className='py-4'>
+                            {/* {dataClass.data.learningMaterials.length === 0 && (
                                 <EmptyStuff message='No Learning Materials in this class yet. 😪'>
                                     <CreateLMForm />
                                 </EmptyStuff>
-                            )}
+                            )} */}
 
-                            {dataClass.data.learningMaterials.map((item) => {
-                                return (
-                                    <MaterialsCard key={item.id} {...item} />
-                                );
-                            })}
+                            <div className='space-y-6'>
+                                {Array.from({ length: 20 }).map((_, idx) => {
+                                    return (
+                                        <MaterialsCard
+                                            key={idx}
+                                            type='material'
+                                        />
+                                    );
+                                })}
+                            </div>
                         </TabsContent>
                         <TabsContent value='assignments'>
                             {dataClass.data.learningMaterials.length === 0 && (
