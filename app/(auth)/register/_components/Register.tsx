@@ -40,18 +40,11 @@ const Register = () => {
 
     const { status, executeAsync } = useAction(signUp, {
         onSuccess: ({ data, input }) => {
-            if (!data) throw new Error('Something went wrong');
-
-            if (!data.success) {
-                toast.error(data.error);
-                return;
-            }
-
-            toast.success(data.message);
+            toast.success(data?.message);
             router.push(`/verify-email?email=${input.email}`);
         },
         onError: ({ error }) => {
-            console.error(JSON.stringify(error, null, 2));
+            toast.error(error.serverError);
         },
     });
 

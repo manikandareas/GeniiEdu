@@ -5,7 +5,7 @@ import {
 } from 'next-safe-action';
 import { z } from 'zod';
 
-class ActionError extends Error {}
+export class ActionError extends Error {}
 
 export const actionProcedure = createSafeActionClient({
     handleReturnedServerError: (e) => {

@@ -33,18 +33,10 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
     const { user } = useSession();
     const { execute, status } = useAction(signOut, {
         onSuccess: ({ data }) => {
-            if (!data) throw new Error('Something went wrong');
-
-            if (!data.success) {
-                toast.error(data.error);
-                return;
-            }
-
-            toast.success(data.message);
+            toast.success(data?.message);
         },
         onError: ({ error }) => {
-            console.error(JSON.stringify(error, null, 2));
-            // toast.error(error);
+            toast.error(error.serverError);
         },
     });
 
