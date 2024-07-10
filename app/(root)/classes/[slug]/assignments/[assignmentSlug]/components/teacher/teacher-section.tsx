@@ -4,7 +4,7 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import DetailsAssignment from '../DetailsAssignment';
+import DetailsAssignment from '../details-assignment';
 import { Button } from '@/common/components/ui/button';
 import { Info, Mail, Settings } from 'lucide-react';
 import {
@@ -26,9 +26,9 @@ import {
     CardTitle,
 } from '@/common/components/ui/card';
 import Image from 'next/image';
-import { DataTable } from './DataTable';
-import { columns } from './Columns';
-import { DUMMY_STUDENT_SUBMISSIONS } from '@/common/constants/DummyStudentSubmissions';
+import { DataTable } from './data-table';
+import { columns } from './columns';
+import { DUMMY_STUDENT_SUBMISSIONS } from '@/common/constants/dummy-student-submissions';
 
 type TeacherSectionProps = {};
 

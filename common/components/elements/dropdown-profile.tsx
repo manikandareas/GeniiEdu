@@ -10,7 +10,7 @@ import {
 } from '../ui/dropdown-menu';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import { useSession } from '../providers/SessionProvider';
+import { useSession } from '../providers/session-provider';
 import Link from 'next/link';
 import { signOut } from '@/actions/auth.actions';
 import { toast } from 'sonner';

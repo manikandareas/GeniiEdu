@@ -1,13 +1,13 @@
-import { DefaultProfile } from './DefaultProfile';
+import { DEFAULT_PROFILE } from './default-profile';
 
-export const DummyActivities = [
+export const DUMMY_ACTIVITIES = [
     {
         id: 1,
         className: 'Pemrograman Web',
         teacher: 'Sandika Galih',
         activity: 'Added new assignment',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: DefaultProfile.profilePicture,
+        profilePicture: DEFAULT_PROFILE.profilePicture,
     },
     {
         id: 1,
@@ -15,7 +15,7 @@ export const DummyActivities = [
         teacher: 'Jerome Polin',
         activity: 'Deadline approaching',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: DefaultProfile.profilePicture,
+        profilePicture: DEFAULT_PROFILE.profilePicture,
     },
     {
         id: 1,
@@ -23,7 +23,7 @@ export const DummyActivities = [
         teacher: 'Aldy Sambur',
         activity: 'Added new materials',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: DefaultProfile.profilePicture,
+        profilePicture: DEFAULT_PROFILE.profilePicture,
     },
     {
         id: 1,
@@ -31,6 +31,6 @@ export const DummyActivities = [
         teacher: 'Abizar Saputra',
         activity: 'Deadline approaching',
         date: new Date().toLocaleDateString('ID'),
-        profilePicture: DefaultProfile.profilePicture,
+        profilePicture: DEFAULT_PROFILE.profilePicture,
     },
 ];

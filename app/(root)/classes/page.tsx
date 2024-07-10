@@ -6,11 +6,10 @@ import {
     QueryClient,
     dehydrate,
 } from '@tanstack/react-query';
-
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
-import TeacherTabs from './_components/TeacherTabs';
-import StudentTabs from './_components/StudentTabs';
-import ClassesContainer from './_components/ClassesContainer';
+import TeacherTabs from './_components/teacher-tabs';
+import StudentTabs from './_components/student-tabs';
+import ClassesContainer from './_components/classes-container';
+import HeaderOptions from '@/common/components/elements/header-options';
 
 type ClassesPageProps = {};
 

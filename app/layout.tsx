@@ -1,6 +1,3 @@
-import ReactQueryProvider from '@/common/components/providers/ReactQueryProvider';
-import SessionProvider from '@/common/components/providers/SessionProvider';
-import { ThemeProvider } from '@/common/components/providers/ThemeProvider';
 import { Toaster } from '@/common/components/ui/sonner';
 import { fontInter } from '@/common/libs/Fonts';
 import { validateRequest } from '@/common/libs/lucia';
@@ -11,6 +8,7 @@ import './globals.css';
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
+import Providers from '@/common/components/providers/providers';
 
 export const metadata: Metadata = {
     title: 'GeniiEdu',
@@ -28,21 +26,11 @@ export default async function RootLayout({
         <html lang='en' suppressHydrationWarning>
             <body className={fontInter.className}>
                 <NextTopLoader color='#22c55e' />
-                <SessionProvider data={session}>
-                    <ReactQueryProvider>
-                        <ThemeProvider
-                            attribute='class'
-                            defaultTheme='system'
-                            enableSystem
-                            disableTransitionOnChange
-                        >
-                            {children}
-                            <Toaster richColors position='top-center' />
-                        </ThemeProvider>
-
-                        <ReactQueryDevtools initialIsOpen={false} />
-                    </ReactQueryProvider>
-                </SessionProvider>
+                <Providers session={session}>
+                    {children}
+                    <Toaster richColors position='top-center' />
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </Providers>
             </body>
         </html>
     );

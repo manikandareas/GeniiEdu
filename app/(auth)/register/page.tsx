@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import RetroGrid from '@/common/components/ui/retro-grid';
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
-import Register from './_components/Register';
+import Register from './_components/register';
 import { Env } from '@/common/libs/Env';
 
 export const metadata: Metadata = {

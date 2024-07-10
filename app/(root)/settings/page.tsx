@@ -1,6 +1,5 @@
 import { Separator } from '@/common/components/ui/separator';
-import { ProfileForm } from './_components/ProfileForm';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+import { ProfileForm } from './_components/profile-form';
 
 const SettingsProfilePage = () => {
     return (

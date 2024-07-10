@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/common/components/ui/button';
-import { DUMMY_STUDENTS } from '@/common/constants/DummyStudents';
+import { DUMMY_STUDENTS } from '@/common/constants/dummy-students';
 import { MoreVertical } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import Image from 'next/image';

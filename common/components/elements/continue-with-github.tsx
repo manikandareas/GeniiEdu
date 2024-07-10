@@ -1,15 +1,13 @@
 'use client';
-import { createGoogleAuthorizationURL } from '@/actions/auth.actions';
 import { Button } from '../ui/button';
 import { Icons } from '../ui/icons';
-import { toast } from 'sonner';
 
-type ContinueWithGoogleProps = {
+type ContinueWithGithubProps = {
     isLoading: boolean;
     executeFn: () => void;
 };
 
-const ContinueWithGoogle: React.FC<ContinueWithGoogleProps> = ({
+const ContinueWithGithub: React.FC<ContinueWithGithubProps> = ({
     isLoading = false,
     executeFn,
 }) => {
@@ -23,10 +21,10 @@ const ContinueWithGoogle: React.FC<ContinueWithGoogleProps> = ({
             {isLoading ? (
                 <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
             ) : (
-                <Icons.google className='mr-2 h-4 w-4' />
+                <Icons.gitHub className='mr-2 h-4 w-4' />
             )}
-            Google
+            GitHub
         </Button>
     );
 };
-export default ContinueWithGoogle;
+export default ContinueWithGithub;

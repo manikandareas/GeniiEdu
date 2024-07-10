@@ -2,13 +2,14 @@
 
 import { Search } from 'lucide-react';
 import { Input } from '../ui/input';
-import DropdownProfile from './DropdownProfile';
-import GenerateBreadcrumb from './GenerateBreadcrumb';
-import SidebarOnSM from './SidebarOnSM';
+import DropdownProfile from './dropdown-profile';
+
 import { useHeaderStore } from '@/common/stores/header-store';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { AnimatePresence, motion } from 'framer-motion';
+import GenerateBreadcrumb from './generate-breadcrumb';
+import SidebarOnSM from './sidebar-on-sm';
 
 type HeaderProps = {};
 

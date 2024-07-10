@@ -1,5 +1,5 @@
 import Typography from '@/common/components/ui/typography';
-import MaterialHeader from '../../../_components/MaterialHeader';
+import MaterialHeader from '../../../_components/material-header';
 import { ComponentProps, ElementType } from 'react';
 import { cn } from '@/common/libs/utils';
 

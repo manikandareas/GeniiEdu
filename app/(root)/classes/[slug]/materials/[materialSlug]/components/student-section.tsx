@@ -1,4 +1,4 @@
-import MaterialHeader from '../../../_components/MaterialHeader';
+import MaterialHeader from '../../../_components/material-header';
 import Typography from '@/common/components/ui/typography';
 import Link from 'next/link';
 import { buttonVariants } from '@/common/components/ui/button';

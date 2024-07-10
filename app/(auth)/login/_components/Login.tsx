@@ -20,10 +20,11 @@ import { Password } from '@/common/components/ui/password';
 import { signIn } from '@/actions/auth.actions';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import ContinueWithGithub from '@/common/components/elements/ContinueWithGithub';
-import ContinueWithGoogle from '@/common/components/elements/ContinueWithGoogle';
+
 import { useAction } from 'next-safe-action/hooks';
 import useContinueWithOauth from '@/common/hooks/useContinueWithOauth';
+import ContinueWithGithub from '@/common/components/elements/continue-with-github';
+import ContinueWithGoogle from '@/common/components/elements/continue-with-google';
 
 const Login = () => {
     const LoginForm = useForm<z.infer<typeof AuthModel.loginUserSchema>>({

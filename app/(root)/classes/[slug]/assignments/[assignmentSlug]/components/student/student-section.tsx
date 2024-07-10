@@ -1,6 +1,6 @@
 import Typography from '@/common/components/ui/typography';
-import DetailsAssignment from '../DetailsAssignment';
-import SubmissionAssignment from './SubmissionAssignment';
+import DetailsAssignment from '../details-assignment';
+import SubmissionAssignment from './submission-assignment';
 
 type StudentSectionProps = {};
 

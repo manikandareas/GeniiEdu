@@ -26,8 +26,8 @@ import {
     GetUserClassesResponse,
 } from '@/actions/users.actions';
 import { useQuery } from '@tanstack/react-query';
-import { ClassesCard, ClassesCardWrapper } from './ClassesCard';
-import CreateClassForm from './CreateClassForm';
+import { ClassesCard, ClassesCardWrapper } from './classes-card';
+import CreateClassForm from './create-class-form';
 
 type TeacherTabsProps = {
     initialData: GetUserClassesResponse;
@@ -46,7 +46,7 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
 
     return (
         <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
-            <div className='flex items-center'>
+            <div className='flex items-center overflow-hidden'>
                 <TabsList className='bg-transparent'>
                     <TeacherTabsTrigger
                         count={classes.data.metadata.total}

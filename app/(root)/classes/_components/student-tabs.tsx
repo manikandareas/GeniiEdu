@@ -26,8 +26,8 @@ import {
     GetUserClassesResponse,
 } from '@/actions/users.actions';
 import { useQuery } from '@tanstack/react-query';
-import { ClassesCard, ClassesCardWrapper } from './ClassesCard';
-import JoinClassForm from './JoinClassForm';
+import { ClassesCard, ClassesCardWrapper } from './classes-card';
+import JoinClassForm from './join-class-form';
 
 type StudentTabsProps = {
     initialData: GetUserClassesResponse;

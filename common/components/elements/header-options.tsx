@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { BreadcrumbURLs } from './GenerateBreadcrumb';
+import { BreadcrumbURLs } from './generate-breadcrumb';
 import { useHeaderStore } from '@/common/stores/header-store';
 
 type HeaderOptionsProps = {

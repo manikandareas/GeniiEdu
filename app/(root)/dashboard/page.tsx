@@ -1,7 +1,7 @@
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
-import { Dashboard } from './_components/Dashboard';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+import { Dashboard } from './_components/dashboard';
+import HeaderOptions from '@/common/components/elements/header-options';
 
 const urls = [
     {

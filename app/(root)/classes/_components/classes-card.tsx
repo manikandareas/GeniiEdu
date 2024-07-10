@@ -43,7 +43,9 @@ export const ClassesCard: React.FC<ClassesCardProps> = ({
     statusCompletion,
     tab,
 }) => {
-    if (tab && statusCompletion) statusCompletion !== tab && null;
+    if (tab && statusCompletion) {
+        if (tab !== statusCompletion) return null;
+    }
 
     return (
         <Card className='group/card w-full max-w-sm'>

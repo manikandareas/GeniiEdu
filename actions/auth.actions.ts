@@ -1,6 +1,6 @@
 'use server';
 
-import { DefaultProfile } from '@/common/constants/DefaultProfile';
+import { DEFAULT_PROFILE } from '@/common/constants/default-profile';
 import {
     deleteEmailVerificationByUserId,
     findEmailVerificationByUserId,
@@ -154,7 +154,7 @@ export const signUp = actionProcedure
             const registeredUser = await insertUser({
                 email: parsedInput.email,
                 passwordHash: hashedPassword,
-                profilePicture: DefaultProfile.profilePicture,
+                profilePicture: DEFAULT_PROFILE.profilePicture,
             }).then((res) => res[0]);
 
             // Random String for email verification

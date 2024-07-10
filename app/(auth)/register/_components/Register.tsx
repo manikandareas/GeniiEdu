@@ -17,15 +17,14 @@ import {
     FormMessage,
 } from '@/common/components/ui/form';
 import { Password } from '@/common/components/ui/password';
-
 import { signUp } from '@/actions/auth.actions';
 import { useAction } from 'next-safe-action/hooks';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import ContinueWithGithub from '@/common/components/elements/ContinueWithGithub';
-import ContinueWithGoogle from '@/common/components/elements/ContinueWithGoogle';
 import useContinueWithOauth from '@/common/hooks/useContinueWithOauth';
+import ContinueWithGithub from '@/common/components/elements/continue-with-github';
+import ContinueWithGoogle from '@/common/components/elements/continue-with-google';
 
 const Register = () => {
     const router = useRouter();
