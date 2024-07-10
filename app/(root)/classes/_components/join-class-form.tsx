@@ -10,14 +10,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/common/components/ui/dialog';
-import { Input } from '@/common/components/ui/input';
-import { ClassesModel } from '@/common/models';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAction } from 'next-safe-action/hooks';
-import React, { ElementRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
 import {
     Form,
     FormControl,
@@ -26,8 +18,16 @@ import {
     FormLabel,
     FormMessage,
 } from '@/common/components/ui/form';
-import { useQueryClient } from '@tanstack/react-query';
+import { Input } from '@/common/components/ui/input';
+import { userClassesQuery } from '@/common/hooks/user-classes-query';
+import { ClassesModel } from '@/common/models';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusSquare } from 'lucide-react';
+import { useAction } from 'next-safe-action/hooks';
+import React, { ElementRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 type JoinClassFormProps = {};
 
@@ -41,7 +41,7 @@ const JoinClassForm: React.FC<JoinClassFormProps> = () => {
         },
     );
 
-    const queryClient = useQueryClient();
+    const { invalidate: invalidateUserClassesQuery } = userClassesQuery();
 
     const refJoinDialog = React.useRef<ElementRef<'button'>>(null);
 
@@ -49,9 +49,7 @@ const JoinClassForm: React.FC<JoinClassFormProps> = () => {
         onSuccess({ data }) {
             toast.success(data?.message);
             joinClassForm.reset();
-            queryClient.invalidateQueries({
-                queryKey: ['classes'],
-            });
+            invalidateUserClassesQuery();
             refJoinDialog.current?.click();
         },
         onError({ error }) {

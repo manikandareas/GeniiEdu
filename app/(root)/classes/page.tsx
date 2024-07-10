@@ -10,6 +10,7 @@ import TeacherTabs from './_components/teacher-tabs';
 import StudentTabs from './_components/student-tabs';
 import ClassesContainer from './_components/classes-container';
 import HeaderOptions from '@/common/components/elements/header-options';
+import { userClassesQuery } from '@/common/hooks/user-classes-query';
 
 type ClassesPageProps = {};
 
@@ -22,12 +23,17 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
 
     const initialData = await getUserClasses();
 
-    const queryClient = new QueryClient();
+    // const queryClient = new QueryClient();
 
-    await queryClient.prefetchQuery({
-        queryKey: ['classes'],
-        queryFn: getUserClasses,
-    });
+    // await queryClient.prefetchQuery({
+    //     queryKey: ['classes'],
+    //     queryFn: getUserClasses,
+    // });
+
+    const { prefetch: prefetchUserClassesQuery, queryClient } =
+        userClassesQuery();
+
+    await prefetchUserClassesQuery();
 
     const urls = [
         {

@@ -21,11 +21,8 @@ import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { cn } from '@/common/libs/utils';
 import { useSearchParams } from 'next/navigation';
 
-import {
-    getUserClasses,
-    GetUserClassesResponse,
-} from '@/actions/users.actions';
-import { useQuery } from '@tanstack/react-query';
+import { GetUserClassesResponse } from '@/actions/users.actions';
+import { useUserClassesQuery } from '@/common/hooks/user-classes-query';
 import { ClassesCard, ClassesCardWrapper } from './classes-card';
 import JoinClassForm from './join-class-form';
 
@@ -36,11 +33,7 @@ type StudentTabsProps = {
 const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
     const searchParams = useSearchParams();
 
-    const { data: classes } = useQuery({
-        initialData,
-        queryKey: ['classes'],
-        queryFn: getUserClasses,
-    });
+    const { data: classes } = useUserClassesQuery(initialData);
 
     return (
         <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
