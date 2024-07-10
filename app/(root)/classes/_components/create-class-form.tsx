@@ -1,19 +1,8 @@
 'use client';
 
-import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/common/components/ui/sheet';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { createClass, uploadClassThumbnail } from '@/actions/classes.actions';
 import { removeFiles } from '@/actions/storage.actions';
+import { UploadDropzone } from '@/common/components/elements/uploadthing';
 import { Button } from '@/common/components/ui/button';
 import {
     Form,
@@ -25,13 +14,6 @@ import {
     FormMessage,
 } from '@/common/components/ui/form';
 import { Input } from '@/common/components/ui/input';
-import { generateRandomToken } from '@/common/libs/utils';
-import { ClassesModel } from '@/common/models';
-import { useMutation } from '@tanstack/react-query';
-import { Copy, Dices, Plus, PlusCircle, PlusSquare, X } from 'lucide-react';
-import Image from 'next/image';
-import { ElementRef, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import {
     Select,
     SelectContent,
@@ -40,6 +22,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/common/components/ui/select';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/common/components/ui/sheet';
 import { Textarea } from '@/common/components/ui/textarea';
 import {
     Tooltip,
@@ -47,11 +38,21 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
-import { UploadDropzone } from '@/common/components/elements/uploadthing';
+import { generateRandomToken } from '@/common/libs/utils';
+import { ClassesModel } from '@/common/models';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Dices, PlusSquare, X } from 'lucide-react';
+import Image from 'next/image';
+import { ElementRef, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
+import { useSession } from '@/common/components/providers/session-provider';
 import { useAction } from 'next-safe-action/hooks';
 import CreateClassSuccessDialog from './create-class-success-dialog';
-import { useSession } from '@/common/components/providers/session-provider';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { revalidatePath } from 'next/cache';
 
 const CreateClassForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
@@ -60,6 +61,8 @@ const CreateClassForm = () => {
 
     const [isCreateClassSuccess, setIsCreateClassSuccess] =
         useState<boolean>(false);
+
+    const queryClient = new QueryClient();
 
     const createClassForm = useForm<
         z.infer<typeof ClassesModel.createClassSchema>
@@ -81,6 +84,9 @@ const CreateClassForm = () => {
             onSuccess: ({ data }) => {
                 toast.success(data?.message);
                 setIsCreateClassSuccess(true);
+                queryClient.invalidateQueries({
+                    queryKey: ['classes'],
+                });
             },
             onError: ({ error }) => {
                 toast.error(error.serverError);
@@ -94,7 +100,6 @@ const CreateClassForm = () => {
         onSuccess: ({ data, input }) => {
             createClassForm.setValue('thumbnail', input.url);
             createClassForm.setValue('thumbnailKey', input.key);
-
             toast.success(data?.message);
         },
         onError: ({ error }) => {
@@ -151,6 +156,12 @@ const CreateClassForm = () => {
     };
 
     const onOkClicked = () => {
+        queryClient.invalidateQueries({
+            queryKey: ['classes'],
+        });
+        queryClient.refetchQueries({
+            queryKey: ['classes'],
+        });
         setIsCreateClassSuccess(false);
         closeSheetRef.current?.click();
 

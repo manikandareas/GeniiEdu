@@ -2,8 +2,8 @@
 
 import { createLearningMaterial } from '@/actions/learning-materials.actions';
 import { removeFiles, saveFilesToDB } from '@/actions/storage.actions';
-import Tiptap from '@/common/components/elements/Tiptap';
-import { UploadDropzone } from '@/common/components/elements/Uploadthing';
+import Tiptap from '@/common/components/elements/tiptap';
+import { UploadDropzone } from '@/common/components/elements/uploadthing';
 import { Button, buttonVariants } from '@/common/components/ui/button';
 import {
     Form,
@@ -41,7 +41,7 @@ import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { LearningMaterialsModel } from '@/common/models';
 import YoutubeLink from '@/public/youtube-link.png';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PlusCircle, X } from 'lucide-react';
+import { Plus, PlusCircle, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useAction } from 'next-safe-action/hooks';
 import Image from 'next/image';
@@ -201,9 +201,8 @@ const CreateLMForm = () => {
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
-                <Button variant={'neon'}>
-                    <PlusCircle className='mr-2 inline' size={16} />
-                    Learning Material
+                <Button variant={'outline'}>
+                    Add Learning Materials <Plus className='ml-2' size={16} />
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>

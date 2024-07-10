@@ -13,6 +13,10 @@ import { SiGitbook, SiTask } from 'react-icons/si';
 import AboutClassContainer from './_components/about-class-container';
 import AboutClassInformation from './_components/about-class-information';
 import HeaderOptions from '@/common/components/elements/header-options';
+import MaterialsCard from './_components/materials-card';
+import Typography from '@/common/components/ui/typography';
+import CreateLMForm from '@/common/components/elements/create-lm-form';
+import EmptyStuff from './_components/empty-stuff';
 type DetailClassPageProps = {
     params: {
         slug: string;
@@ -42,12 +46,12 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
     return (
         <>
             <HeaderOptions urls={urls} title={dataClass.data.className} />
-            <AboutClassContainer className='relative'>
+            <main className='relative grid min-h-screen px-3 md:grid-cols-3 lg:px-6 xl:grid-cols-4 xl:gap-4'>
                 {/* <TableOfContents /> */}
 
                 <AboutClassInformation initialData={dataClass} />
 
-                <div className='relative hidden flex-1 space-y-4 xl:col-span-2 xl:block'>
+                <div className='flex-1 space-y-4 overflow-hidden lg:relative xl:col-span-2'>
                     {/* <TeacherCard
                         name={dataClass.data.teacher.name ?? ''}
                         profilePicture={
@@ -59,7 +63,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                     <StudentsCards classSlug={params.slug} /> */}
 
                     <Tabs defaultValue='learningMaterials'>
-                        <div className='sticky top-4 flex items-center gap-1.5'>
+                        <div className='flex items-center gap-1.5 lg:sticky lg:top-0'>
                             <TabsList className='w-full'>
                                 <TabsTrigger
                                     className='flex-1 space-x-2'
@@ -97,15 +101,36 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                 <Plus size={16} />
                             </Button>
                         </div>
-                        <TabsContent
-                            className='h-[200vh]'
-                            value='learningMaterials'
-                        ></TabsContent>
-                        <TabsContent value='assignments'></TabsContent>
-                        <TabsContent value='announcements'></TabsContent>
+                        <TabsContent value='learningMaterials'>
+                            {dataClass.data.learningMaterials.length === 0 && (
+                                <EmptyStuff message='No Learning Materials in this class yet. 😪'>
+                                    <CreateLMForm />
+                                </EmptyStuff>
+                            )}
+
+                            {dataClass.data.learningMaterials.map((item) => {
+                                return (
+                                    <MaterialsCard key={item.id} {...item} />
+                                );
+                            })}
+                        </TabsContent>
+                        <TabsContent value='assignments'>
+                            {dataClass.data.learningMaterials.length === 0 && (
+                                <EmptyStuff message='No Assignments in this class yet. 😪'>
+                                    <CreateLMForm />
+                                </EmptyStuff>
+                            )}
+                        </TabsContent>
+                        <TabsContent value='announcements'>
+                            {dataClass.data.learningMaterials.length === 0 && (
+                                <EmptyStuff message='No Announcements in this class yet. 😪'>
+                                    <CreateLMForm />
+                                </EmptyStuff>
+                            )}
+                        </TabsContent>
                     </Tabs>
                 </div>
-            </AboutClassContainer>
+            </main>
         </>
     );
 };
