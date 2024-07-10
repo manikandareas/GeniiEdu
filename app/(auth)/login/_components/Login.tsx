@@ -35,7 +35,7 @@ const Login = () => {
         },
     });
 
-    const { executeAsync, status } = useAction(signIn, {
+    const { executeAsync, isExecuting } = useAction(signIn, {
         onSuccess: ({ data }) => {
             toast.success(data?.message);
         },
@@ -54,11 +54,15 @@ const Login = () => {
             provider: 'google',
         });
 
-    const onSubmitClick = async (
+    const onSubmitClicked = async (
         values: z.infer<typeof AuthModel.loginUserSchema>,
     ) => {
         await executeAsync(values);
     };
+
+    const isLoading =
+        (statusContinueWithGithub || statusContinueWithGoogle) ===
+            'executing' || isExecuting;
     return (
         <div className='z-10 mx-auto w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8'>
             <h2 className='text-xl font-bold text-neutral-800 dark:text-neutral-200'>
@@ -68,13 +72,13 @@ const Login = () => {
                 </span>
             </h2>
             <p className='mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300'>
-                Login to aceternity if you can because we don&apos;t have a
-                login flow yet
+                Login to Genii Edu if you can because we don&apos;t have a login
+                flow yet
             </p>
 
             <Form {...LoginForm}>
                 <form
-                    onSubmit={LoginForm.handleSubmit(onSubmitClick)}
+                    onSubmit={LoginForm.handleSubmit(onSubmitClicked)}
                     className='mt-4 space-y-4'
                 >
                     <FormField
@@ -120,11 +124,7 @@ const Login = () => {
                     <Button
                         className='w-full'
                         type='submit'
-                        disabled={
-                            (statusContinueWithGithub ||
-                                statusContinueWithGoogle ||
-                                status) === 'executing'
-                        }
+                        disabled={isLoading}
                     >
                         Sign In
                     </Button>

@@ -15,7 +15,7 @@ type AboutClassInformationProps = {
 const AboutClassInformation: React.FC<AboutClassInformationProps> = ({
     initialData,
 }) => {
-    if (!initialData.success) {
+    if (!initialData.data) {
         return null;
     }
     return (
