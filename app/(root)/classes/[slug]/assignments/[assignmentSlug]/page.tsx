@@ -1,9 +1,9 @@
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
 import { validateRequest } from '@/common/libs/lucia';
 import { decodeId } from '@/common/libs/utils';
 import { notFound } from 'next/navigation';
-import StudentSection from './components/student/StudentSection';
-import TeacherSection from './components/teacher/TeacherSection';
+import StudentSection from './components/student/student-section';
+import TeacherSection from './components/teacher/teacher-section';
+import HeaderOptions from '@/common/components/elements/header-options';
 
 type DetailClassAssignmentProps = {
     params: {

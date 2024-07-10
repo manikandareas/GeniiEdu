@@ -13,14 +13,14 @@ import {
 import { Progress } from '@/common/components/ui/progress';
 import { WobbleCard } from '@/common/components/ui/wobble-card';
 import Image from 'next/image';
-import { useSession } from '@/common/components/providers/SessionProvider';
+import { useSession } from '@/common/components/providers/session-provider';
 import Link from 'next/link';
-import { DummyProgress } from '@/common/constants/DummyProgress';
+import { DUMMY_PROGRESS } from '@/common/constants/dummy-progress';
 import { nanoid } from 'nanoid';
-import { DummyActivities } from '@/common/constants/DummyActivities';
+import { DUMMY_ACTIVITIES } from '@/common/constants/dummy-activities';
 import { AnimatedTooltip } from '@/common/components/ui/animated-tooltip';
-import GridContainer from '@/common/components/elements/GridContainer';
-import { DefaultProfile } from '@/common/constants/DefaultProfile';
+import GridContainer from '@/common/components/elements/grid-container';
+import { DEFAULT_PROFILE } from '@/common/constants/default-profile';
 
 export function Dashboard() {
     const date = new Date();
@@ -67,7 +67,7 @@ export function Dashboard() {
                     </div>
 
                     <div className='grid grid-cols-1 gap-4 lg:grid-cols-4'>
-                        {DummyProgress.map((data) => (
+                        {DUMMY_PROGRESS.map((data) => (
                             <Card
                                 key={nanoid(5)}
                                 x-chunk='dashboard-05-chunk-2'
@@ -114,7 +114,7 @@ export function Dashboard() {
                             <Settings2 className='text-xl text-muted-foreground' />
                         </div>
                         <div className='space-y-2'>
-                            {DummyActivities.map((data) => (
+                            {DUMMY_ACTIVITIES.map((data) => (
                                 <div
                                     key={nanoid(5)}
                                     className='flex items-center justify-between border-b p-2'
@@ -173,7 +173,7 @@ export function Dashboard() {
                                     className='flex items-center justify-between border-b p-2'
                                 >
                                     <Image
-                                        src={DefaultProfile.profilePicture}
+                                        src={DEFAULT_PROFILE.profilePicture}
                                         width={64}
                                         height={64}
                                         alt={'profile'}

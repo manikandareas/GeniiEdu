@@ -1,18 +1,18 @@
 'use client';
-import { STUDENT_MENU, TEACHER_MENU } from '@/common/constants/SidebarMenus';
+import { STUDENT_MENU, TEACHER_MENU } from '@/common/constants/sidebar-menus';
 import { cn } from '@/common/libs/utils';
 import { nanoid } from 'nanoid';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SiDuolingo } from 'react-icons/si';
-import { useSession } from '../providers/SessionProvider';
+import { useSession } from '../providers/session-provider';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
-import DropdownProfile from './DropdownProfile';
+import DropdownProfile from './dropdown-profile';
 
 type SidebarProps = {};
 

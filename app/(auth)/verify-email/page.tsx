@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { isEmailVerified } from '@/actions/auth.actions';
 import RetroGrid from '@/common/components/ui/retro-grid';
 import { notFound, redirect } from 'next/navigation';
-import VerifyEmail from './_components/VerifyEmail';
+import VerifyEmail from './_components/verify-email';
 
 export const metadata: Metadata = {
     title: 'Verify Email',

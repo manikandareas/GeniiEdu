@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { Separator } from '@/common/components/ui/separator';
-import { SettingsNav } from './_components/SettingsNav';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+
+import HeaderOptions from '@/common/components/elements/header-options';
+import { SettingsNav } from './_components/settings-nav';
 
 export const metadata: Metadata = {
     title: 'Forms',

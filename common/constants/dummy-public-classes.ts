@@ -1,4 +1,4 @@
-export const DummyPublicClasses = [
+export const DUMMY_PUBLIC_CLASSES = [
     {
         className: 'Introduction to Biology',
         description:

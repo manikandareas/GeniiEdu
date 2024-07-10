@@ -1,14 +1,13 @@
 import { GetDetailsClassResponse } from '@/actions/classes.actions';
-import { Badge } from '@/common/components/elements/Badge';
+import { Badge } from '@/common/components/elements/badge';
 import { buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
-import { DUMMY_STUDENTS } from '@/common/constants/DummyStudents';
-import { cn, prettyText } from '@/common/libs/utils';
-import { Copy, Edit3, MoreVertical } from 'lucide-react';
+import { cn } from '@/common/libs/utils';
+import { Copy, Edit3 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SiGmail, SiInstagram, SiWhatsapp } from 'react-icons/si';
-import StudentList from './StudentList';
+import StudentList from './student-list';
 type AboutClassInformationProps = {
     initialData: GetDetailsClassResponse;
 };

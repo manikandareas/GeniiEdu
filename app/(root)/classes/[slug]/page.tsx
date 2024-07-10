@@ -1,5 +1,5 @@
 import { getDetailsClass } from '@/actions/classes.actions';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+
 import { Button } from '@/common/components/ui/button';
 import {
     Tabs,
@@ -10,8 +10,9 @@ import {
 import { Megaphone, Plus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { SiGitbook, SiTask } from 'react-icons/si';
-import AboutClassContainer from './_components/AboutClassContainer';
-import AboutClassInformation from './_components/AboutClassInformation';
+import AboutClassContainer from './_components/about-class-container';
+import AboutClassInformation from './_components/about-class-information';
+import HeaderOptions from '@/common/components/elements/header-options';
 type DetailClassPageProps = {
     params: {
         slug: string;
@@ -60,7 +61,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
 
                     <StudentsCards classSlug={params.slug} /> */}
 
-                    <Tabs>
+                    <Tabs defaultValue='learningMaterials'>
                         <div className='sticky top-4 flex items-center gap-1.5'>
                             <TabsList className='w-full'>
                                 <TabsTrigger

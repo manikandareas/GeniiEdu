@@ -1,4 +1,4 @@
-import { webDevelopmentToC } from '@/common/constants/DummyTOC';
+import { DUMMY_TOC } from '@/common/constants/dummy-toc';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = () => {
         <div className='hidden h-full flex-1 py-2 md:block'>
             <h3 className='text-sm text-foreground'>Table of Contents</h3>
             <ul className='mt-2 space-y-2'>
-                {webDevelopmentToC.map((item, index) => (
+                {DUMMY_TOC.map((item, index) => (
                     <TableOfContentsItem key={index} {...item} />
                 ))}
             </ul>

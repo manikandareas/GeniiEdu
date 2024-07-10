@@ -23,7 +23,7 @@ import {
     DialogTrigger,
 } from '@/common/components/ui/dialog';
 import { Input } from '@/common/components/ui/input';
-import { useSession } from '@/common/components/providers/SessionProvider';
+import { useSession } from '@/common/components/providers/session-provider';
 export function OnboardingTabs() {
     const { user } = useSession();
 

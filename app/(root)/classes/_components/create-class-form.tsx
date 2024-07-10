@@ -47,10 +47,12 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
-import { UploadDropzone } from '@/common/components/elements/Uploadthing';
-import { useSession } from '@/common/components/providers/SessionProvider';
+import { UploadDropzone } from '@/common/components/elements/uploadthing';
+
 import { useAction } from 'next-safe-action/hooks';
-import CreateClassSuccessDialog from './CreateClassSuccessDialog';
+import CreateClassSuccessDialog from './create-class-success-dialog';
+import { useSession } from '@/common/components/providers/session-provider';
+
 const CreateClassForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
 

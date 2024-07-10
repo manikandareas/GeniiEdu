@@ -1,4 +1,4 @@
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+import HeaderOptions from '@/common/components/elements/header-options';
 
 type EditorClassPageProps = {
     params: {

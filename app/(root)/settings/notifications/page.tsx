@@ -1,6 +1,5 @@
 import { Separator } from '@/common/components/ui/separator';
-import { NotificationsForm } from './_components/NotificationsForm';
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
+import { NotificationsForm } from './_components/notifications-form';
 
 export default function SettingsNotificationsPage() {
     return (

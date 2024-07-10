@@ -1,6 +1,6 @@
 'use client';
 import Typography from '@/common/components/ui/typography';
-import { DUMMY_STUDENTS } from '@/common/constants/DummyStudents';
+import { DUMMY_STUDENTS } from '@/common/constants/dummy-students';
 import { prettyText } from '@/common/libs/utils';
 import { MoreVertical } from 'lucide-react';
 import Image from 'next/image';

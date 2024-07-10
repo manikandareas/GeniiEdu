@@ -1,4 +1,4 @@
-export const webDevelopmentToC = [
+export const DUMMY_TOC = [
     {
         id: 'section_1',
         title: 'Introduction to Web Development',

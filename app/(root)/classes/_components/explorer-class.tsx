@@ -7,8 +7,8 @@ import {
 } from '@/common/components/ui/accordion';
 import Image from 'next/image';
 import { nanoid } from 'nanoid';
-import { DummyPublicClasses } from '@/common/constants/DummyPublicClasses';
-import { DefaultProfile } from '@/common/constants/DefaultProfile';
+import { DUMMY_PUBLIC_CLASSES } from '@/common/constants/dummy-public-classes';
+import { DEFAULT_PROFILE } from '@/common/constants/default-profile';
 import { toast } from 'sonner';
 type ExploreClassesProps = {};
 
@@ -24,7 +24,7 @@ const ExplorerClasses: React.FC<ExploreClassesProps> = () => {
             </h1>
 
             <Accordion type='single' collapsible className='w-full'>
-                {DummyPublicClasses.map((data) => (
+                {DUMMY_PUBLIC_CLASSES.map((data) => (
                     <AccordionItem key={nanoid(5)} value={data.token}>
                         <AccordionTrigger>{data.className}</AccordionTrigger>
                         <AccordionContent className='space-y-2'>
@@ -33,7 +33,7 @@ const ExplorerClasses: React.FC<ExploreClassesProps> = () => {
                                     <Image
                                         width={35}
                                         height={35}
-                                        src={DefaultProfile.profilePicture}
+                                        src={DEFAULT_PROFILE.profilePicture}
                                         alt={data.className}
                                         className='rounded-full'
                                     />

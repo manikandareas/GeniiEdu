@@ -1,7 +1,7 @@
 'use client';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Toolbar from './Toolbar';
+import Toolbar from './toolbar';
 import { Heading } from '@tiptap/extension-heading';
 import { BulletList } from '@tiptap/extension-bullet-list';
 type TiptapProps = {

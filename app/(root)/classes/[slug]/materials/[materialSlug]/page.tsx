@@ -1,11 +1,11 @@
-import HeaderOptions from '@/common/components/elements/HeaderOptions';
 import { Button, buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
 import { decodeId } from '@/common/libs/utils';
 import { LucideBookOpenText, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import MaterialHeader from '../../_components/MaterialHeader';
+import MaterialHeader from '../../_components/material-header';
+import HeaderOptions from '@/common/components/elements/header-options';
 
 type DetailsClassMaterialProps = {
     params: {

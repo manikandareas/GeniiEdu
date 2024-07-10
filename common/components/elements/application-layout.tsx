@@ -3,8 +3,8 @@
 import useCurrentSession from '@/common/hooks/useCurrentSession';
 import { useHeaderStore } from '@/common/stores/header-store';
 import { redirect, usePathname } from 'next/navigation';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import Sidebar from './sidebar';
+import Header from './header';
 
 type ApplicationLayoutProps = {
     children: React.ReactNode;

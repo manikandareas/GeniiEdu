@@ -1,4 +1,4 @@
-export const DummyProgress = [
+export const DUMMY_PROGRESS = [
     {
         id: 1,
         title: 'UI/UX Design',

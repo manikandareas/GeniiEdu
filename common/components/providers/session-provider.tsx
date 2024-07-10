@@ -2,7 +2,7 @@
 import { Session, User } from 'lucia';
 import React from 'react';
 
-type SessionProviderContext = {
+export type SessionProviderContext = {
     user: User | null;
     session: Session | null;
 };
