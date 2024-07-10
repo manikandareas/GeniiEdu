@@ -24,9 +24,9 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
 
     const queryClient = new QueryClient();
 
-    queryClient.prefetchQuery({
+    await queryClient.prefetchQuery({
         queryKey: ['classes'],
-        queryFn: () => getUserClasses(),
+        queryFn: getUserClasses,
     });
 
     const urls = [
@@ -43,21 +43,15 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
     return (
         <>
             <HeaderOptions title={titlePage} urls={urls} />
-            {user.role === 'student' && (
-                <ClassesContainer>
-                    <HydrationBoundary state={dehydrate(queryClient)}>
-                        <StudentTabs initialData={initialData} />
-                    </HydrationBoundary>
-                </ClassesContainer>
-            )}
-
-            {user.role === 'teacher' && (
-                <ClassesContainer>
-                    <HydrationBoundary state={dehydrate(queryClient)}>
+            <ClassesContainer>
+                <HydrationBoundary state={dehydrate(queryClient)}>
+                    {user.role === 'teacher' ? (
                         <TeacherTabs initialData={initialData} />
-                    </HydrationBoundary>
-                </ClassesContainer>
-            )}
+                    ) : (
+                        <StudentTabs initialData={initialData} />
+                    )}
+                </HydrationBoundary>
+            </ClassesContainer>
         </>
     );
 };
