@@ -53,6 +53,7 @@ import { useAction } from 'next-safe-action/hooks';
 import CreateClassSuccessDialog from './create-class-success-dialog';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { revalidatePath } from 'next/cache';
+import { userClassesQuery } from '@/common/hooks/user-classes-query';
 
 const CreateClassForm = () => {
     const closeSheetRef = useRef<ElementRef<'button'>>(null);
@@ -62,7 +63,7 @@ const CreateClassForm = () => {
     const [isCreateClassSuccess, setIsCreateClassSuccess] =
         useState<boolean>(false);
 
-    const queryClient = new QueryClient();
+    const { invalidate: invalidateUserClassesQuery } = userClassesQuery();
 
     const createClassForm = useForm<
         z.infer<typeof ClassesModel.createClassSchema>
@@ -84,9 +85,7 @@ const CreateClassForm = () => {
             onSuccess: ({ data }) => {
                 toast.success(data?.message);
                 setIsCreateClassSuccess(true);
-                queryClient.invalidateQueries({
-                    queryKey: ['classes'],
-                });
+                invalidateUserClassesQuery();
             },
             onError: ({ error }) => {
                 toast.error(error.serverError);
@@ -156,12 +155,6 @@ const CreateClassForm = () => {
     };
 
     const onOkClicked = () => {
-        queryClient.invalidateQueries({
-            queryKey: ['classes'],
-        });
-        queryClient.refetchQueries({
-            queryKey: ['classes'],
-        });
         setIsCreateClassSuccess(false);
         closeSheetRef.current?.click();
 
