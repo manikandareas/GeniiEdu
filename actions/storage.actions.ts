@@ -2,7 +2,7 @@
 
 import { deleteFilesByKey, insertFiles } from '@/common/data-access/files';
 import { utapi } from '@/common/libs/Uploadthing';
-import { authenticatedProcedure } from '@/common/libs/safe-action';
+import { ActionError, authenticatedProcedure } from '@/common/libs/safe-action';
 import { FilesTypeEnum } from '@/common/models/schema.model';
 import { ActRes } from '@/common/types/Action.type';
 import { z } from 'zod';
@@ -47,34 +47,29 @@ export const saveFilesToDB = authenticatedProcedure
     })
     .schema(saveFilesToDBSchema)
     .action(async ({ parsedInput, ctx }) => {
+        const { user } = ctx;
+
         if (!parsedInput) {
-            throw new Error('Something went wrong, please try again.');
+            throw new ActionError('No files to save');
         }
 
-        try {
-            const { user } = ctx;
+        // @ts-ignore
+        const mappedFiles = parsedInput.map((file) => ({
+            userId: user.id,
+            key: file.key!,
+            type: file.type!,
+            url: file.url!,
+            name: file.name!,
+        }));
 
-            // @ts-ignore
-            const mappedFiles = parsedInput.map((file) => ({
-                userId: user.id,
-                key: file.key!,
-                type: file.type!,
-                url: file.url!,
-                name: file.name!,
-            }));
+        const res = await insertFiles(mappedFiles);
 
-            const res = await insertFiles(mappedFiles);
-
-            return {
-                success: true,
-                message: 'Files uploaded successfully',
-                data: res,
-            } satisfies ActRes<typeof res>;
-        } catch (error: any) {
-            console.log(JSON.stringify(error, null, 2));
-            return {
-                error: error.message,
-                success: false,
-            } satisfies ActRes;
+        if (!res) {
+            throw new ActionError('Failed to save files');
         }
+
+        return {
+            message: 'Files uploaded successfully',
+            data: res,
+        };
     });

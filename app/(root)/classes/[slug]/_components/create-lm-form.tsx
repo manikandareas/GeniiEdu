@@ -36,18 +36,16 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
-import { insertFile } from '@/common/data-access/files';
 import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { LearningMaterialsModel } from '@/common/models';
 import YoutubeLink from '@/public/youtube-link.png';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, PlusCircle, X } from 'lucide-react';
+import { NotebookText, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useAction } from 'next-safe-action/hooks';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ElementRef, FormEvent, useRef, useState } from 'react';
+import { ElementRef, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -125,16 +123,8 @@ const CreateLMForm = () => {
         saveFilesToDB,
         {
             onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-
-                if (!data.success) {
-                    toast.error(data.error);
-                    return;
-                }
-
-                toast.success(data.message);
-                console.log(JSON.stringify(data, null, 2));
-
+                if (!data) return;
+                toast.success(data?.message);
                 const prevFiles = createLMForm.getValues('files')!;
                 createLMForm.setValue(
                     'files',
@@ -153,7 +143,7 @@ const CreateLMForm = () => {
                 setYoutubeName('');
             },
             onError: ({ error }) => {
-                console.error(JSON.stringify(error, null, 2));
+                toast.error(error.serverError);
                 // toast.error(error);
             },
         },
@@ -198,12 +188,16 @@ const CreateLMForm = () => {
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 <Button variant={'outline'}>
-                    Learning Materials <Plus className='ml-2' size={16} />
+                    <NotebookText className='mr-2' size={16} />
+                    Learning Materials
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>
                 <SheetHeader>
-                    <SheetTitle>Add Learning Material</SheetTitle>
+                    <SheetTitle className='flex items-center gap-2'>
+                        <NotebookText size={24} />
+                        Learning Material
+                    </SheetTitle>
                 </SheetHeader>
 
                 <Form {...createLMForm}>

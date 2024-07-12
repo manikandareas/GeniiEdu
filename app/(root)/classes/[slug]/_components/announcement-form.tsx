@@ -43,16 +43,14 @@ const AnnouncementForm: React.FC<AnnouncementFormProps> = () => {
                     name='content'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Announcement</FormLabel>
                             <FormControl>
                                 <Tiptap
-                                    description={'Write your content here'}
+                                    description={
+                                        'Announce something to your students...'
+                                    }
                                     onChange={field.onChange}
                                 />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
