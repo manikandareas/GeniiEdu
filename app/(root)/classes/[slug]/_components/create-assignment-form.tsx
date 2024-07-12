@@ -1,8 +1,8 @@
 'use client';
-import { Button } from '@/common/components/ui/button';
-import { ClipboardList, Clock } from 'lucide-react';
-
 import Tiptap from '@/common/components/elements/tiptap';
+import { UploadDropzone } from '@/common/components/elements/uploadthing';
+import { Button } from '@/common/components/ui/button';
+import DatePicker from '@/common/components/ui/date-picker';
 import {
     Form,
     FormControl,
@@ -13,6 +13,7 @@ import {
     FormMessage,
 } from '@/common/components/ui/form';
 import { Input } from '@/common/components/ui/input';
+import { Label } from '@/common/components/ui/label';
 import {
     Sheet,
     SheetClose,
@@ -22,17 +23,15 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/common/components/ui/sheet';
+import { TimePeriodSelect } from '@/common/components/ui/time-period-select';
+import { TimePickerInput } from '@/common/components/ui/time-picker-input';
+import { Period } from '@/common/components/ui/time-picker-utils';
+import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
 import { AssignmentsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Label } from '@/common/components/ui/label';
-import { TimePickerInput } from '@/common/components/ui/time-picker-input';
-import { useRef, useState } from 'react';
-import { Period } from '@/common/components/ui/time-picker-utils';
-import { TimePeriodSelect } from '@/common/components/ui/time-period-select';
-import DatePicker from '@/common/components/ui/date-picker';
-import { UploadDropzone } from '@/common/components/elements/uploadthing';
 
 type CreateAssignmentFormProps = {};
 
@@ -67,14 +66,17 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
         <Sheet>
             <SheetTrigger asChild>
                 <Button variant={'outline'}>
-                    <ClipboardList className='mr-2' size={16} />
+                    <DETAILS_CLASS_ICONS.assignments.icon
+                        className='mr-2'
+                        size={16}
+                    />
                     Assignment
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>
                 <SheetHeader>
                     <SheetTitle className='flex items-center gap-2'>
-                        <ClipboardList size={24} />
+                        <DETAILS_CLASS_ICONS.assignments.icon size={24} />
                         Assignment
                     </SheetTitle>
                 </SheetHeader>

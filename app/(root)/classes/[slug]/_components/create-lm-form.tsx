@@ -36,6 +36,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
+import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
 import useSearchParamsState from '@/common/hooks/useSearchParamsState';
 import { LearningMaterialsModel } from '@/common/models';
 import YoutubeLink from '@/public/youtube-link.png';
@@ -188,14 +189,17 @@ const CreateLMForm = () => {
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 <Button variant={'outline'}>
-                    <NotebookText className='mr-2' size={16} />
+                    <DETAILS_CLASS_ICONS.learningMaterials.icon
+                        className='mr-2'
+                        size={16}
+                    />
                     Learning Materials
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>
                 <SheetHeader>
                     <SheetTitle className='flex items-center gap-2'>
-                        <NotebookText size={24} />
+                        <DETAILS_CLASS_ICONS.learningMaterials.icon size={24} />
                         Learning Material
                     </SheetTitle>
                 </SheetHeader>
