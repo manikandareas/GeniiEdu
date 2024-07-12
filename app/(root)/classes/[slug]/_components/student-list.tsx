@@ -10,7 +10,7 @@ type StudentListProps = {};
 
 const AMOUNT_OF_STUDENTS = {
     SM: 2,
-    LG: 5,
+    LG: 7,
 };
 
 const StudentList: React.FC<StudentListProps> = () => {

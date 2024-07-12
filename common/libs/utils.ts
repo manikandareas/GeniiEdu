@@ -31,24 +31,45 @@ export const generateRandomToken = (length: number): string => {
     return token;
 };
 
-import Hashids from 'hashids';
-import { Env } from './Env';
-
-// Buat instans hashids
-const hashids = new Hashids('secret_key', 6); // Ganti 'your_salt' dengan kunci rahasia yang aman
-
-// Fungsi untuk mengenkripsi ID
-export function encodeId(id: number): string {
-    return hashids.encode(id);
-}
-
-// Fungsi untuk mendekripsi ID
-export function decodeId(encodedId: string): number | null {
-    const decoded = hashids.decode(encodedId);
-    // @ts-ignore
-    return decoded.length > 0 ? decoded[0] : null;
-}
-
 export const prettyText = (text: string, limit: number = 85) => {
     return text.length > limit ? `${text.slice(0, limit)}...` : text;
+};
+
+// Fungsi untuk mengubah UUID ke Buffer
+function uuidToBuffer(uuid: string): Buffer {
+    return Buffer.from(uuid.replace(/-/g, ''), 'hex');
+}
+
+// Fungsi untuk mengubah Buffer ke UUID
+function bufferToUuid(buffer: Buffer): string {
+    const hex = buffer.toString('hex');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+// Fungsi untuk mengenkripsi UUID
+export function encodeUuid(uuid: string): string {
+    const buffer = uuidToBuffer(uuid);
+    return buffer.toString('base64url'); // Menggunakan base64url agar aman untuk URL
+}
+
+// Fungsi untuk mendekripsi UUID
+export function decodeUuid(encodedUuid: string): string {
+    const buffer = Buffer.from(encodedUuid, 'base64url');
+    return bufferToUuid(buffer);
+}
+
+import { format, formatDistanceToNow, isBefore, subDays } from 'date-fns';
+import { id } from 'date-fns/locale'; // Import locale Bahasa Indonesia
+
+export const formatDate = (date: Date): string => {
+    const now = new Date();
+    const sevenDaysAgo = subDays(now, 7);
+
+    if (isBefore(date, sevenDaysAgo)) {
+        return format(date, 'd MMMM', { locale: id }); // Format: '7 Juli'
+        // return format(date, 'd MMMM'); // Format: '7 Juli'
+    } else {
+        return formatDistanceToNow(date, { addSuffix: true, locale: id }); // Format: '2 hari yang lalu'
+        // return formatDistanceToNow(date, { addSuffix: true }); // Format: '2 hari yang lalu'
+    }
 };

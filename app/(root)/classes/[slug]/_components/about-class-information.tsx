@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { SiGmail, SiInstagram, SiWhatsapp } from 'react-icons/si';
 import StudentList from './student-list';
+import TeacherInformation from './teacher-information';
 type AboutClassInformationProps = {
     initialData: GetDetailsClassResponse;
 };
@@ -19,7 +20,8 @@ const AboutClassInformation: React.FC<AboutClassInformationProps> = ({
         return null;
     }
     return (
-        <div className='top-5 h-screen flex-1 overflow-x-hidden md:sticky md:col-span-2'>
+        <div className='relative h-screen flex-1 overflow-x-hidden pb-14'>
+            {/* <div className='top-5 h-screen flex-1 overflow-x-hidden md:sticky md:col-span-2'> */}
             <Link
                 href={`/classes/${initialData.data.slug}/editor`}
                 className={cn(
@@ -77,40 +79,14 @@ const AboutClassInformation: React.FC<AboutClassInformationProps> = ({
                     </span>
                 </Typography>
 
-                <div className='flex flex-col gap-4 md:flex-row'>
-                    <Image
-                        src={initialData.data.teacher.profilePicture ?? ''}
-                        width={150}
-                        height={150}
-                        alt={initialData.data.teacher.name ?? ''}
-                        className='aspect-square h-[150px] w-[150px] rounded-xl object-cover'
-                    />
-
-                    <div>
-                        <Typography
-                            className='flex items-center gap-x-2'
-                            variant={'h4'}
-                        >
-                            <span>{initialData.data.teacher.name}</span>•
-                            <span className='text-xs text-muted-foreground'>
-                                @{initialData.data.teacher.username}
-                            </span>
-                        </Typography>
-                        <Typography
-                            className='text-pretty'
-                            variant={'p'}
-                            affects={'muted'}
-                        >
-                            {initialData.data.teacher.bio}
-                        </Typography>
-
-                        <div className='mt-3 flex items-center gap-4'>
-                            <SiGmail size={18} className='text-yellow-400' />
-                            <SiInstagram size={18} className='text-pink-400' />
-                            <SiWhatsapp size={18} className='text-green-400' />
-                        </div>
-                    </div>
-                </div>
+                <TeacherInformation
+                    bio={initialData.data.teacher.bio ?? ''}
+                    name={initialData.data.teacher.name ?? ''}
+                    profilePicture={
+                        initialData.data.teacher.profilePicture ?? ''
+                    }
+                    username={initialData.data.teacher.username ?? ''}
+                />
                 <div className='flex items-center justify-between'>
                     <Typography
                         variant={'h4'}

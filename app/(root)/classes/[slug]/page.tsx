@@ -1,5 +1,5 @@
 import { getDetailsClass } from '@/actions/classes.actions';
-
+import HeaderOptions from '@/common/components/elements/header-options';
 import { Button } from '@/common/components/ui/button';
 import {
     Tabs,
@@ -7,16 +7,21 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import { Megaphone, Plus } from 'lucide-react';
+import { FolderKanbanIcon, Megaphone, Plus, PlusCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import { SiGitbook, SiTask } from 'react-icons/si';
-import AboutClassContainer from './_components/about-class-container';
+import { SiAboutdotme, SiGitbook, SiInformatica, SiTask } from 'react-icons/si';
 import AboutClassInformation from './_components/about-class-information';
-import HeaderOptions from '@/common/components/elements/header-options';
-import MaterialsCard from './_components/materials-card';
-import Typography from '@/common/components/ui/typography';
-import CreateLMForm from '@/common/components/elements/create-lm-form';
+import AnnouncementForm from './_components/announcement-form';
+import CreateLMForm from './_components/create-lm-form';
 import EmptyStuff from './_components/empty-stuff';
+import MaterialsCard from './_components/materials-card';
+
+import UpcomingTasks from './_components/upcoming-tasks';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/common/components/ui/popover';
 type DetailClassPageProps = {
     params: {
         slug: string;
@@ -46,93 +51,115 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
     return (
         <>
             <HeaderOptions urls={urls} title={dataClass.data.className} />
-            <main className='relative grid min-h-screen px-3 md:grid-cols-3 lg:px-6 xl:grid-cols-4 xl:gap-4'>
-                {/* <TableOfContents /> */}
 
-                <AboutClassInformation initialData={dataClass} />
+            <main className='mx-auto w-full max-w-6xl'>
+                <div className='space-y-4 overflow-hidden px-2 lg:relative lg:px-0 xl:col-span-2'>
+                    <Tabs defaultValue='forum'>
+                        <TabsList className='flex overflow-x-scroll'>
+                            <TabsTrigger
+                                className='flex-1 space-x-2'
+                                value='aboutClass'
+                            >
+                                <SiInformatica
+                                    className='text-rose-500'
+                                    size={18}
+                                />
+                                <span className='hidden lg:inline'>
+                                    About Class
+                                </span>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                className='flex-1 space-x-2'
+                                value='forum'
+                            >
+                                <FolderKanbanIcon
+                                    className='text-green-500'
+                                    size={18}
+                                />
+                                <span className='hidden lg:inline'>Forum</span>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                className='flex-1 space-x-2'
+                                value='assignments'
+                            >
+                                <SiTask className='text-yellow-500' size={18} />{' '}
+                                <span className='hidden lg:inline'>
+                                    Assignments
+                                </span>
+                            </TabsTrigger>
+                        </TabsList>
 
-                <div className='flex-1 space-y-4 overflow-hidden lg:relative xl:col-span-2'>
-                    {/* <TeacherCard
-                        name={dataClass.data.teacher.name ?? ''}
-                        profilePicture={
-                            dataClass.data.teacher.profilePicture ?? ''
-                        }
-                        username={dataClass.data.teacher.username ?? ''}
-                    />
-
-                    <StudentsCards classSlug={params.slug} /> */}
-
-                    <Tabs defaultValue='learningMaterials'>
-                        <div className='flex items-center gap-1.5 lg:sticky lg:top-0'>
-                            <TabsList className='w-full'>
-                                <TabsTrigger
-                                    className='flex-1 space-x-2'
-                                    value='learningMaterials'
-                                >
-                                    <SiGitbook
-                                        className='text-green-500'
-                                        size={18}
-                                    />
-                                    <span className=''>Learning Materials</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    className='flex-1 space-x-2'
-                                    value='assignments'
-                                >
-                                    <SiTask
-                                        className='text-yellow-500'
-                                        size={18}
-                                    />{' '}
-                                    <span>Assignments</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    className='flex-1 space-x-2'
-                                    value='announcements'
-                                >
-                                    <Megaphone
-                                        className='text-blue-500'
-                                        size={18}
-                                    />
-                                    <span>Announcements</span>
-                                </TabsTrigger>
-                            </TabsList>
-
-                            <Button size={'icon'}>
+                        {/* <Button size={'icon'}>
                                 <Plus size={16} />
                             </Button>
-                        </div>
-                        <TabsContent value='learningMaterials' className='py-4'>
-                            {/* {dataClass.data.learningMaterials.length === 0 && (
-                                <EmptyStuff message='No Learning Materials in this class yet. 😪'>
-                                    <CreateLMForm />
-                                </EmptyStuff>
-                            )} */}
+                        </div> */}
+                        <TabsContent
+                            value='aboutClass'
+                            className='w-full max-w-6xl'
+                        >
+                            <AboutClassInformation initialData={dataClass} />
+                        </TabsContent>
+                        <TabsContent
+                            value='forum'
+                            className='flex w-full max-w-6xl gap-2'
+                        >
+                            <UpcomingTasks />
 
-                            <div className='space-y-6'>
-                                {Array.from({ length: 20 }).map((_, idx) => {
-                                    return (
-                                        <MaterialsCard
-                                            key={idx}
-                                            type='material'
-                                        />
-                                    );
-                                })}
+                            <div className='w-full max-w-4xl flex-1 space-y-4 lg:space-y-6'>
+                                {dataClass.data.learningMaterials.length ===
+                                    0 && (
+                                    <EmptyStuff message='No Learning Materials in this class yet. 😪'>
+                                        <CreateLMForm />
+                                    </EmptyStuff>
+                                )}
+                                {dataClass.data.learningMaterials.map(
+                                    (item, idx) => {
+                                        return (
+                                            <MaterialsCard
+                                                key={idx}
+                                                type='material'
+                                                teacherName={
+                                                    dataClass.data.teacher
+                                                        .name ?? ''
+                                                }
+                                                classSlug={params.slug}
+                                                {...item}
+                                            />
+                                        );
+                                    },
+                                )}
                             </div>
                         </TabsContent>
                         <TabsContent value='assignments'>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button size={'lg'}>
+                                        <PlusCircle
+                                            size={16}
+                                            className='mr-2'
+                                        />
+                                        Create
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className='flex flex-col gap-2'>
+                                    <CreateLMForm />
+                                </PopoverContent>
+                            </Popover>
+
                             {dataClass.data.learningMaterials.length === 0 && (
                                 <EmptyStuff message='No Assignments in this class yet. 😪'>
                                     <CreateLMForm />
                                 </EmptyStuff>
                             )}
                         </TabsContent>
-                        <TabsContent value='announcements'>
+                        {/* <TabsContent value='announcements' className='py-4'>
+                            <AnnouncementForm />
                             {dataClass.data.learningMaterials.length === 0 && (
                                 <EmptyStuff message='No Announcements in this class yet. 😪'>
                                     <CreateLMForm />
                                 </EmptyStuff>
                             )}
-                        </TabsContent>
+                        </TabsContent> */}
                     </Tabs>
                 </div>
             </main>
