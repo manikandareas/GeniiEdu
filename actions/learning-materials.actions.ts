@@ -1,6 +1,6 @@
 'use server';
 
-import { findClassBySlug } from '@/common/data-access/classes';
+import { findClassBySlug, isOwnerOfClass } from '@/common/data-access/classes';
 import {
     findDetailsLearningMaterial,
     insertLearningMaterial,
@@ -25,10 +25,10 @@ export const createLearningMaterial = teacherProcedure
         const { user } = ctx;
 
         await createTransaction(async (tx) => {
-            const existingClass = await findClassBySlug(classSlug);
+            const existingClass = await isOwnerOfClass(user.id, classSlug);
 
             if (!existingClass) {
-                throw new ActionError('Class not found');
+                throw new ActionError('You are not the owner of this class');
             }
 
             const insertedLearningMaterial = await insertLearningMaterial(

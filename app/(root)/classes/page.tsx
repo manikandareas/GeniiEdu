@@ -1,11 +1,7 @@
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
 import { getUserClasses } from '@/actions/users.actions';
-import {
-    HydrationBoundary,
-    QueryClient,
-    dehydrate,
-} from '@tanstack/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import TeacherTabs from './_components/teacher-tabs';
 import StudentTabs from './_components/student-tabs';
 import ClassesContainer from './_components/classes-container';
@@ -22,13 +18,6 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
     const titlePage = user.role !== 'teacher' ? 'Classes' : 'Manage Classes';
 
     const initialData = await getUserClasses();
-
-    // const queryClient = new QueryClient();
-
-    // await queryClient.prefetchQuery({
-    //     queryKey: ['classes'],
-    //     queryFn: getUserClasses,
-    // });
 
     const { prefetch: prefetchUserClassesQuery, queryClient } =
         userClassesQuery();

@@ -2,26 +2,27 @@ import { getDetailsClass } from '@/actions/classes.actions';
 import HeaderOptions from '@/common/components/elements/header-options';
 import { Button } from '@/common/components/ui/button';
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/common/components/ui/popover';
+import {
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import { FolderKanbanIcon, Megaphone, Plus, PlusCircle } from 'lucide-react';
+import { validateRequest } from '@/common/libs/lucia';
+import { FolderKanbanIcon, PlusCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import { SiAboutdotme, SiGitbook, SiInformatica, SiTask } from 'react-icons/si';
+import { SiInformatica, SiTask } from 'react-icons/si';
 import AboutClassInformation from './_components/about-class-information';
 import AnnouncementForm from './_components/announcement-form';
+import CreateAssignmentForm from './_components/create-assignment-form';
 import CreateLMForm from './_components/create-lm-form';
 import EmptyStuff from './_components/empty-stuff';
 import MaterialsCard from './_components/materials-card';
-
 import UpcomingTasks from './_components/upcoming-tasks';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/common/components/ui/popover';
 type DetailClassPageProps = {
     params: {
         slug: string;
@@ -32,6 +33,8 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
     const dataClass = await getDetailsClass(params.slug).catch((e) =>
         notFound(),
     );
+
+    const { user } = await validateRequest();
 
     const urls = [
         {
@@ -106,6 +109,9 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                             <UpcomingTasks />
 
                             <div className='w-full max-w-4xl flex-1 space-y-4 lg:space-y-6'>
+                                {user?.role === 'teacher' && (
+                                    <AnnouncementForm />
+                                )}
                                 {dataClass.data.learningMaterials.length ===
                                     0 && (
                                     <EmptyStuff message='No Learning Materials in this class yet. 😪'>
@@ -131,35 +137,30 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                             </div>
                         </TabsContent>
                         <TabsContent value='assignments'>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button size={'lg'}>
-                                        <PlusCircle
-                                            size={16}
-                                            className='mr-2'
-                                        />
-                                        Create
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className='flex flex-col gap-2'>
-                                    <CreateLMForm />
-                                </PopoverContent>
-                            </Popover>
+                            {user?.role === 'teacher' && (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button size={'lg'}>
+                                            <PlusCircle
+                                                size={16}
+                                                className='mr-2'
+                                            />
+                                            Create
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className='flex flex-col gap-2'>
+                                        <CreateLMForm />
+                                        <CreateAssignmentForm />
+                                    </PopoverContent>
+                                </Popover>
+                            )}
 
-                            {dataClass.data.learningMaterials.length === 0 && (
+                            {dataClass.data.assignments.length === 0 && (
                                 <EmptyStuff message='No Assignments in this class yet. 😪'>
                                     <CreateLMForm />
                                 </EmptyStuff>
                             )}
                         </TabsContent>
-                        {/* <TabsContent value='announcements' className='py-4'>
-                            <AnnouncementForm />
-                            {dataClass.data.learningMaterials.length === 0 && (
-                                <EmptyStuff message='No Announcements in this class yet. 😪'>
-                                    <CreateLMForm />
-                                </EmptyStuff>
-                            )}
-                        </TabsContent> */}
                     </Tabs>
                 </div>
             </main>

@@ -35,6 +35,13 @@ export const insertClass = async (classData: InsertClassesInput) => {
     return await db.insert(Schema.classes).values(classData).returning();
 };
 
+export const isOwnerOfClass = async (userId: string, classSlug: string) => {
+    return await db.query.classes.findFirst({
+        where: (classes, { and, eq }) =>
+            and(eq(classes.slug, classSlug), eq(classes.teacherId, userId)),
+    });
+};
+
 export const findClassWithThumbnailTeacher = async (slug: string) => {
     return await db.query.classes.findFirst({
         where: (classData, { eq }) => eq(classData.slug, slug),

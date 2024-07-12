@@ -12,7 +12,7 @@ type UpcomingTasksProps = {};
 
 const UpcomingTasks: React.FC<UpcomingTasksProps> = () => {
     return (
-        <Card className='hidden w-full max-w-xs lg:block'>
+        <Card className='hidden h-fit w-full max-w-xs lg:block'>
             <CardHeader>
                 <Typography variant={'h4'}>Upcoming</Typography>
                 <CardDescription>
