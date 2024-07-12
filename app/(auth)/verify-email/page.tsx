@@ -41,7 +41,7 @@ const VerifyEmailPage = async (props: VerifyEmailPageProps) => {
 
     // ? If email is not verified, send verification email
     return (
-        <main className='flex h-screen items-center justify-center'>
+        <main className='flex h-screen items-center justify-center px-2 md:px-0'>
             <RetroGrid />
             <VerifyEmail email={props.searchParams.email} />
         </main>

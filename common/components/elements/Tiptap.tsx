@@ -1,9 +1,8 @@
 'use client';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Toolbar from './toolbar';
-import { Heading } from '@tiptap/extension-heading';
-import { BulletList } from '@tiptap/extension-bullet-list';
+
 type TiptapProps = {
     description: string;
     onChange: (richtext: string) => void;
@@ -12,15 +11,17 @@ type TiptapProps = {
 const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
     const editor = useEditor({
         extensions: [
-            StarterKit.configure(),
-            Heading.configure({
-                HTMLAttributes: {
-                    class: 'text-2xl font-bold',
+            StarterKit.configure({
+                heading: {
+                    levels: [2],
+                    HTMLAttributes: {
+                        class: 'text-2xl font-bold',
+                    },
                 },
-            }),
-            BulletList.configure({
-                HTMLAttributes: {
-                    class: 'list-disc pl-4',
+                bulletList: {
+                    HTMLAttributes: {
+                        class: 'list-disc pl-4',
+                    },
                 },
             }),
         ],
@@ -32,7 +33,6 @@ const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
         },
         onUpdate({ editor }) {
             onChange(editor.getHTML());
-            console.log(editor.getHTML());
         },
     });
     return (

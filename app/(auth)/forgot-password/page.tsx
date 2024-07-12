@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const ForgotPasswordPage = () => {
     return (
-        <main className='relative flex h-screen items-center justify-center'>
+        <main className='relative flex h-screen items-center justify-center px-2 md:px-0'>
             <RetroGrid />
             <ForgotPassword />
         </main>

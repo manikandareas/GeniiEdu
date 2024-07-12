@@ -16,7 +16,7 @@ const RegisterPage = async () => {
         return redirect(Env.NEXT_PUBLIC_AUTH_ROOT_PAGE);
     }
     return (
-        <main className='flex h-screen items-center justify-center'>
+        <main className='flex h-screen items-center justify-center px-2 md:px-0'>
             <RetroGrid />
             <Register />
         </main>

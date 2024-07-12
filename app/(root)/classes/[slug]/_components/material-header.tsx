@@ -1,10 +1,11 @@
 import { Button } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
+import { formatDate } from '@/common/libs/utils';
 import { LucideBookOpenText, MoreVertical, StickyNoteIcon } from 'lucide-react';
 
 type MaterialHeaderProps = {
     authorName: string;
-    createdAt: string;
+    createdAt: Date | null;
     icon: 'material' | 'assignment';
     title: string;
 };
@@ -15,6 +16,7 @@ const MaterialHeader: React.FC<MaterialHeaderProps> = ({
     icon,
     title,
 }) => {
+    const formattedDate = formatDate(createdAt ?? new Date());
     return (
         <div className='flex items-center justify-between border-b px-4 py-4 md:px-0'>
             <div className='flex gap-4'>
@@ -34,7 +36,7 @@ const MaterialHeader: React.FC<MaterialHeaderProps> = ({
                         {title}
                     </Typography>
                     <Typography variant={'p'} affects={'muted'}>
-                        {authorName} • {createdAt}
+                        {authorName} • {formattedDate}
                     </Typography>
                 </div>
             </div>

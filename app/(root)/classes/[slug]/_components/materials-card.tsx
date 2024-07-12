@@ -1,21 +1,18 @@
 import { Button } from '@/common/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/common/components/ui/card';
 import Typography from '@/common/components/ui/typography';
+import { encodeUuid } from '@/common/libs/utils';
 import { MoreVertical } from 'lucide-react';
+import Link from 'next/link';
 import { SiGitbook, SiTask } from 'react-icons/si';
 
 type MaterialsCardProps = {
-    // createdAt: Date | null;
+    createdAt: Date | null;
     // updatedAt: Date | null;
-    // id: string;
+    id: string;
     // classId: string;
-    // title: string;
+    title: string;
+    teacherName: string;
+    classSlug: string;
     // content: string;
     // authorId: string;
     // publishedAt: Date;
@@ -30,20 +27,24 @@ type MaterialsCardProps = {
 };
 
 const MaterialsCard: React.FC<MaterialsCardProps> = (props) => {
+    const encodedId = encodeUuid(props.id);
     return (
-        <div className='flex items-center gap-4 rounded-md border bg-muted px-6 py-4'>
-            <span className='inline-flex size-10 items-center justify-center rounded-full bg-primary'>
+        <Link
+            href={`/classes/${props.classSlug}/materials/${encodedId}`}
+            className='flex items-center gap-4 rounded-md border bg-secondary px-4 py-4 md:px-6'
+        >
+            <span className='inline-flex aspect-square size-10 items-center justify-center rounded-full bg-primary text-white'>
                 {props.type === 'assignment' ? (
-                    <SiTask size={18} />
+                    <SiTask size={16} />
                 ) : (
-                    <SiGitbook size={18} />
+                    <SiGitbook size={16} />
                 )}
             </span>
 
             <div className='flex w-full items-center justify-between'>
                 <div>
-                    <Typography>
-                        Rizky S. Puspa Rinda memposting tugas baru: Final Test
+                    <Typography className='text-pretty leading-tight'>
+                        {props.teacherName} memposting tugas baru: {props.title}
                     </Typography>
                     <Typography affects={'muted'} className='text-xs'>
                         1 hari yang lalu
@@ -54,7 +55,7 @@ const MaterialsCard: React.FC<MaterialsCardProps> = (props) => {
                     <MoreVertical />
                 </Button>
             </div>
-        </div>
+        </Link>
     );
 };
 export default MaterialsCard;

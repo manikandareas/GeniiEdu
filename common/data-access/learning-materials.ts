@@ -26,3 +26,35 @@ export const insertLearningMaterialFiles = async (
         .values(input)
         .returning();
 };
+
+export const findDetailsLearningMaterial = async (
+    id: string,
+    config: DataAccessConfig = {},
+) => {
+    return await (config.tx ? config.tx : db).query.learningMaterials.findFirst(
+        {
+            where: (learningMaterials, { eq }) => eq(learningMaterials.id, id),
+            with: {
+                files: {
+                    with: {
+                        file: true,
+                    },
+                },
+                author: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        profilePicture: true,
+                    },
+                },
+                class: {
+                    columns: {
+                        className: true,
+                        slug: true,
+                    },
+                },
+            },
+        },
+    );
+};

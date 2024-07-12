@@ -85,18 +85,14 @@ const CreateLMForm = () => {
         boundSlugWithFn,
         {
             onSuccess: ({ data }) => {
-                if (!data) throw new Error('Something went wrong');
-
-                if (!data.success) {
-                    toast.error(data.error);
-                    return;
-                }
-
-                toast.success(data.message);
+                toast.success(data?.message);
 
                 createLMForm.reset();
 
                 closeSheetRef.current?.click();
+            },
+            onError: ({ error }) => {
+                toast.error(error.serverError);
             },
         },
     );
@@ -202,7 +198,7 @@ const CreateLMForm = () => {
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 <Button variant={'outline'}>
-                    Add Learning Materials <Plus className='ml-2' size={16} />
+                    Learning Materials <Plus className='ml-2' size={16} />
                 </Button>
             </SheetTrigger>
             <SheetContent className='w-full overflow-y-scroll md:max-w-xl'>
