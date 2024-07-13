@@ -1,9 +1,10 @@
 import { validateRequest } from '@/common/libs/lucia';
-import { decodeId } from '@/common/libs/utils';
+
 import { notFound } from 'next/navigation';
 import StudentSection from './components/student/student-section';
 import TeacherSection from './components/teacher/teacher-section';
 import HeaderOptions from '@/common/components/elements/header-options';
+import { decodeUuid } from '@/common/libs/utils';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -19,9 +20,9 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     if (!user) return notFound();
 
-    const slug = decodeId(params.assignmentSlug);
+    const assignmentId = decodeUuid(params.assignmentSlug);
 
-    if (!slug) return notFound();
+    if (!assignmentId) return notFound();
 
     const urls = [
         {
@@ -33,8 +34,12 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
             href: '/classes',
         },
         {
+            name: params.slug.replace(/-/g, ' '),
+            href: `/classes/${params.slug}`,
+        },
+        {
             name: 'Assignments',
-            href: `classes/${params.slug}`,
+            href: `/classes/${params.slug}/assignments/${params.assignmentSlug}`,
         },
     ];
 

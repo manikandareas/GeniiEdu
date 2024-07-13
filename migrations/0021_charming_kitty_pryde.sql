@@ -1,0 +1,1 @@
+ALTER TABLE "assignments" DROP COLUMN IF EXISTS "file_path";

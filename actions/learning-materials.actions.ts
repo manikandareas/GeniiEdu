@@ -10,6 +10,7 @@ import {
 import { createTransaction } from '@/common/data-access/utils';
 import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
 import { LearningMaterialsModel } from '@/common/models';
+import { insertLearningMaterialsSchema } from '@/common/models/learning-materials.model';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
 import sanitizeHtml from 'sanitize-html';
@@ -20,7 +21,7 @@ export const createLearningMaterial = teacherProcedure
         actionName: 'createLearningMaterial',
     })
     .bindArgsSchemas<[classSlug: z.ZodString]>([z.string()])
-    .schema(LearningMaterialsModel.insertLearningMaterialsSchema)
+    .schema(insertLearningMaterialsSchema)
     .action(async ({ parsedInput, ctx, bindArgsParsedInputs: [classSlug] }) => {
         const { user } = ctx;
 
@@ -49,19 +50,10 @@ export const createLearningMaterial = teacherProcedure
 
             // ? Insert learning material files if they exist
             if (parsedInput.files && parsedInput.files.length > 0) {
-                // @ts-ignore
-                const mappedFiles = parsedInput.files.map((file) => ({
-                    learningMaterialId: insertedLearningMaterial[0].id,
-                    fileId: file.id,
-                })) as {
-                    learningMaterialId: string;
-                    fileId: string;
-                }[];
-
-                mappedFiles.forEach(async (file) => {
+                parsedInput.files.forEach(async (file) => {
                     await patchFiles(
-                        file.fileId,
-                        { learningMaterialId: file.learningMaterialId },
+                        file.id,
+                        { learningMaterialId: insertedLearningMaterial[0].id },
                         { tx },
                     ).catch(() => {
                         throw new ActionError(

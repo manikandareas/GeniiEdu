@@ -200,7 +200,6 @@ export const assignments = pgTable('assignments', {
         .$defaultFn(() => uuidv7()),
     title: text('title').notNull(),
     description: text('description').notNull(),
-    filePath: text('file_path'),
     authorId: text('author_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
