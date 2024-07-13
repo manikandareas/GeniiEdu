@@ -81,12 +81,26 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                         <CreateLMForm />
                                     </EmptyStuff>
                                 )}
-                                {dataClass.data.learningMaterials.map(
-                                    (item, idx) => {
+                                {[
+                                    ...dataClass.data.learningMaterials,
+                                    ...dataClass.data.assignments,
+                                ]
+                                    .sort(
+                                        (a, b) =>
+                                            new Date(b.createdAt!).getTime() -
+                                            new Date(a.createdAt!).getTime(),
+                                    )
+                                    .map((item, idx) => {
+                                        const type = Object.hasOwn(
+                                            item,
+                                            'content',
+                                        )
+                                            ? 'material'
+                                            : 'assignment';
                                         return (
                                             <MaterialsCard
                                                 key={`${item.id}_${idx}`}
-                                                type='material'
+                                                type={type}
                                                 teacherName={
                                                     dataClass.data.teacher
                                                         .name ?? ''
@@ -95,8 +109,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                                 {...item}
                                             />
                                         );
-                                    },
-                                )}
+                                    })}
                             </div>
                         </TabsContent>
                         <TabsContent value='assignments'>

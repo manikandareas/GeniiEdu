@@ -1,7 +1,9 @@
 'use client';
+import { createAssignment } from '@/actions/assignments.actions';
+import { removeFiles, saveFilesToDB } from '@/actions/storage.actions';
 import Tiptap from '@/common/components/elements/tiptap';
 import { UploadDropzone } from '@/common/components/elements/uploadthing';
-import { Button } from '@/common/components/ui/button';
+import { Button, buttonVariants } from '@/common/components/ui/button';
 import DatePicker from '@/common/components/ui/date-picker';
 import {
     Form,
@@ -23,14 +25,33 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/common/components/ui/sheet';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@/common/components/ui/tabs';
 import { TimePeriodSelect } from '@/common/components/ui/time-period-select';
 import { TimePickerInput } from '@/common/components/ui/time-picker-input';
 import { Period } from '@/common/components/ui/time-picker-utils';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/common/components/ui/tooltip';
 import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
+import { detailsClassQuery } from '@/common/hooks/details-class';
 import { AssignmentsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { X } from 'lucide-react';
+import { nanoid } from 'nanoid';
+import { useAction } from 'next-safe-action/hooks';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 type CreateAssignmentFormProps = {};
@@ -44,10 +65,12 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
             title: '',
             description: '',
             dueDate: new Date(),
-            filePath: '',
+            files: [],
             publishedAt: new Date(),
         },
     });
+
+    const params = useParams();
 
     const minuteRef = useRef<HTMLInputElement>(null);
     const hourRef = useRef<HTMLInputElement>(null);
@@ -55,11 +78,114 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
     const periodRef = useRef<HTMLButtonElement>(null);
     const [period, setPeriod] = useState<Period>('PM');
 
+    const [youtubeLink, setYoutubeLink] = useState('');
+
+    const [youtubeName, setYoutubeName] = useState('');
+
+    const { invalidate } = detailsClassQuery(params.slug as string);
+
+    const onXClicked = async (key: string) => {
+        createAssignmentForm.setValue(
+            'files',
+            createAssignmentForm
+                .getValues('files')
+                ?.filter((f) => f.key !== key),
+        );
+        await removeFiles([key]);
+    };
+
+    const bindActionAssignmentWithSlug = createAssignment.bind(
+        null,
+        params.slug as string,
+    );
+
+    const {
+        executeAsync: executeCreateAssignment,
+        isExecuting: isCreatingAssignment,
+    } = useAction(bindActionAssignmentWithSlug, {
+        onSuccess: ({ data }) => {
+            if (!data) return;
+            toast.success(data.message);
+            createAssignmentForm.reset();
+            invalidate();
+            document.getElementById('closeButton')?.click();
+        },
+        onError: ({ error }) => {
+            toast.error(error.serverError);
+        },
+    });
+
+    const { executeAsync: executeSaveFile, status: statusSaveFile } = useAction(
+        saveFilesToDB,
+        {
+            onSuccess: ({ data }) => {
+                if (!data) return;
+                toast.success(data?.message);
+                const prevFiles = createAssignmentForm.getValues('files')!;
+                createAssignmentForm.setValue(
+                    'files',
+                    prevFiles.concat(
+                        data.data.map((f) => ({
+                            key: f.key!,
+                            id: f.id,
+                            type: f.type,
+                            url: f.url,
+                            name: f.name!,
+                        })),
+                    ),
+                );
+
+                setYoutubeLink('');
+                setYoutubeName('');
+            },
+            onError: ({ error }) => {
+                toast.error(error.serverError);
+                // toast.error(error);
+            },
+        },
+    );
+
+    const onClientUploadSuccess = async (
+        data: {
+            url: string;
+            key: string;
+            type: 'image' | 'video' | 'pdf' | 'youtube';
+            name: string;
+        }[],
+    ) => {
+        // do save to database file
+        await executeSaveFile(data);
+    };
+
+    const onAddYoutubeClicked = async () => {
+        if (!youtubeName) {
+            toast.error('Please input youtube name first');
+            return;
+        }
+        if (!youtubeLink) {
+            toast.error('Youtube link cannot be empty');
+            return;
+        }
+
+        await executeSaveFile([
+            {
+                key: nanoid(),
+                type: 'youtube',
+                url: youtubeLink,
+                name: youtubeName,
+            },
+        ]);
+    };
+
     const onCreateAssignmentClicked = async (
         values: z.infer<typeof AssignmentsModel.createAssignmentSchema>,
     ) => {
-        console.log(values);
+        console.log(params.slug);
+        
+        await executeCreateAssignment(values);
     };
+
+    const isLoading = isCreatingAssignment || statusSaveFile === 'executing';
 
     return (
         <Sheet>
@@ -132,20 +258,139 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
                         />
 
                         <FormField
-                            name='filePath'
+                            name='files'
                             control={createAssignmentForm.control}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>
-                                        File Path
-                                        <span className='text-red-500'>*</span>
-                                    </FormLabel>
+                                    <FormLabel>Files</FormLabel>
                                     <FormControl>
-                                        <UploadDropzone endpoint='learningMaterialsFileUploader' />
+                                        <Tabs
+                                            defaultValue='document'
+                                            className=''
+                                        >
+                                            <TabsList className='bg-transparent'>
+                                                <TabsTrigger value='document'>
+                                                    Document
+                                                </TabsTrigger>
+                                                <TabsTrigger value='youtube'>
+                                                    Youtube
+                                                </TabsTrigger>
+                                            </TabsList>
+
+                                            {field.value && (
+                                                <div className='flex gap-2'>
+                                                    {field.value.map((file) => (
+                                                        <SelectedFiles
+                                                            url={file.url}
+                                                            name={file.name}
+                                                            key={nanoid()}
+                                                            onXClicked={() =>
+                                                                onXClicked(
+                                                                    file.key,
+                                                                )
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <TabsContent value='document'>
+                                                <UploadDropzone
+                                                    endpoint='learningMaterialsFileUploader'
+                                                    appearance={{
+                                                        button: buttonVariants({
+                                                            variant: 'outline',
+                                                            className: 'z-20',
+                                                        }),
+                                                        label: 'text-primary hover:text-primary/80',
+                                                    }}
+                                                    onClientUploadComplete={async (
+                                                        res,
+                                                    ) => {
+                                                        await onClientUploadSuccess(
+                                                            res.map((r) => ({
+                                                                key: r.key,
+                                                                url: r.url,
+                                                                type: 'pdf',
+                                                                name: r.name,
+                                                            })),
+                                                        );
+                                                    }}
+                                                />
+                                                <FormDescription>
+                                                    Attach files up to 2 MB in
+                                                    size.
+                                                </FormDescription>
+                                            </TabsContent>
+                                            <TabsContent
+                                                value='youtube'
+                                                className='space-y-4'
+                                            >
+                                                <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                                                    <Input
+                                                        name='youtube-name'
+                                                        placeholder='Name'
+                                                        onChange={(e) =>
+                                                            setYoutubeName(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                    />
+                                                    <Input
+                                                        name='youtube-link'
+                                                        placeholder='Your Youtube Link'
+                                                        onChange={(e) =>
+                                                            setYoutubeLink(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                    />
+                                                    <Button
+                                                        variant={'secondary'}
+                                                        type='button'
+                                                        onClick={
+                                                            onAddYoutubeClicked
+                                                        }
+                                                    >
+                                                        Add Youtube
+                                                    </Button>
+                                                </div>
+
+                                                <FormDescription>
+                                                    Add youtube video via link.
+                                                    hover{' '}
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <span className='bg-primary/10 italic text-primary underline'>
+                                                                    here
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className='w-[350px] space-y-2'>
+                                                                <Image
+                                                                    src={
+                                                                        youtubeLink
+                                                                    }
+                                                                    alt='Youtube'
+                                                                />
+                                                                <p>
+                                                                    Copy the
+                                                                    youtube
+                                                                    share link
+                                                                    like image
+                                                                    above .
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>{' '}
+                                                    to learn more.
+                                                </FormDescription>
+                                            </TabsContent>
+                                        </Tabs>
                                     </FormControl>
-                                    <FormDescription>
-                                        The file path of your learning material.
-                                    </FormDescription>
+
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -360,15 +605,19 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
                         <SheetFooter>
                             <Button
                                 type='button'
+                                disabled={isLoading}
                                 onClick={() => createAssignmentForm.reset()}
                                 variant='ghost'
                             >
                                 Reset
                             </Button>
-                            <Button type='submit'>Create</Button>
+                            <Button disabled={isLoading} type='submit'>
+                                Create
+                            </Button>
                             <SheetClose asChild>
                                 <Button
                                     id='closeButton'
+                                    disabled={isLoading}
                                     variant='ghost'
                                     className='sr-only'
                                 >
@@ -383,3 +632,36 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
     );
 };
 export default CreateAssignmentForm;
+
+type SelectedFilesProps = {
+    onXClicked: () => void;
+    url: string;
+    name: string;
+};
+const SelectedFiles: React.FC<SelectedFilesProps> = ({
+    onXClicked,
+    url,
+    name,
+}) => {
+    return (
+        <div className='relative h-24 w-44 overflow-hidden rounded bg-muted'>
+            <Button
+                type='button'
+                onClick={onXClicked}
+                variant={'secondary'}
+                size={'sm'}
+                className='absolute right-1 top-1 z-10 size-8 rounded-full p-0'
+            >
+                <X size={16} />
+            </Button>
+            <div className='relative h-16 w-full'>
+                <iframe src={url} className='h-full w-full' />
+            </div>
+            <div className='p-2'>
+                <p className='my-auto text-xs'>
+                    {name.length > 10 ? `${name.slice(0, 10)}...` : name}
+                </p>
+            </div>
+        </div>
+    );
+};

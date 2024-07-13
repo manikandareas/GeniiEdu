@@ -2,6 +2,7 @@
 
 import { insertAssignment } from '@/common/data-access/assignments';
 import { isOwnerOfClass } from '@/common/data-access/classes';
+import { patchFiles } from '@/common/data-access/files';
 import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
 import { AssignmentsModel } from '@/common/models';
 import { revalidatePath } from 'next/cache';
@@ -27,7 +28,6 @@ export const createAssignment = teacherProcedure
             classId: existingClass.id,
             description: parsedInput.description,
             dueDate: parsedInput.dueDate,
-            filePath: parsedInput.filePath,
             title: parsedInput.title,
             publishedAt: parsedInput.publishedAt,
             isOpen: true,
@@ -35,6 +35,19 @@ export const createAssignment = teacherProcedure
 
         if (!insertedAssignment) {
             throw new ActionError('Failed to create assignment');
+        }
+
+        // ? Insert learning material files if they exist
+        if (parsedInput.files && parsedInput.files.length > 0) {
+            parsedInput.files.forEach(async (file) => {
+                await patchFiles(file.id, {
+                    assignmentId: insertedAssignment.id,
+                }).catch(() => {
+                    throw new ActionError(
+                        'Failed to attach files to learning material',
+                    );
+                });
+            });
         }
 
         revalidatePath(`/classes/${classSlug}`);
