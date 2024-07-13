@@ -33,9 +33,6 @@ export type DBTransaction = PgTransaction<
 export type InsertLearningMaterialInput =
     typeof Schema.learningMaterials._.inferInsert;
 
-export type InsertLearningMaterialFilesInput =
-    typeof Schema.learningMaterialFiles._.inferInsert;
-
 export type InsertAssignmentInput = typeof Schema.assignments._.inferInsert;
 
 export type InsertClassMemberInput = typeof Schema.classMembers._.inferInsert;

@@ -1,10 +1,10 @@
 'use server';
 
 import { findClassBySlug, isOwnerOfClass } from '@/common/data-access/classes';
+import { patchFiles } from '@/common/data-access/files';
 import {
     findDetailsLearningMaterial,
     insertLearningMaterial,
-    insertLearningMaterialFiles,
 } from '@/common/data-access/learning-materials';
 
 import { createTransaction } from '@/common/data-access/utils';
@@ -53,20 +53,22 @@ export const createLearningMaterial = teacherProcedure
                 const mappedFiles = parsedInput.files.map((file) => ({
                     learningMaterialId: insertedLearningMaterial[0].id,
                     fileId: file.id,
-                }));
+                })) as {
+                    learningMaterialId: string;
+                    fileId: string;
+                }[];
 
-                //   ? Insert files relations
-                const insertedLearningMaterialFiles =
-                    await insertLearningMaterialFiles(mappedFiles, {
-                        tx,
+                mappedFiles.forEach(async (file) => {
+                    await patchFiles(
+                        file.fileId,
+                        { learningMaterialId: file.learningMaterialId },
+                        { tx },
+                    ).catch(() => {
+                        throw new ActionError(
+                            'Failed to attach files to learning material',
+                        );
                     });
-
-                if (insertedLearningMaterialFiles.length === 0) {
-                    tx.rollback();
-                    throw new ActionError(
-                        'Failed to create learning material files',
-                    );
-                }
+                });
             }
 
             revalidatePath(`/class/${classSlug}`);

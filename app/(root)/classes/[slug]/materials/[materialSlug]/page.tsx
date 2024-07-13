@@ -65,10 +65,10 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
                 <section className='space-y-4 px-4 py-4 md:px-14'>
                     <div>{reactParser(initialData.content ?? '')}</div>
                     {materialFiles.map((file) => (
-                        <div key={file.file.key}>
+                        <div key={file.key}>
                             <iframe
-                                key={file.file.key}
-                                src={file.file.url}
+                                key={file.key}
+                                src={file.url}
                                 className='aspect-video w-full rounded-md'
                             />
                             <Typography
@@ -76,13 +76,13 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
                                 variant={'p'}
                                 affects={'muted'}
                             >
-                                {file.file.name},
+                                {file.name},
                                 <Link
                                     className={buttonVariants({
                                         variant: 'link',
                                         size: 'sm',
                                     })}
-                                    href={file.file.url}
+                                    href={file.url}
                                 >
                                     click for details
                                 </Link>

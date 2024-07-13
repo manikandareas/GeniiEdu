@@ -152,7 +152,7 @@ export const classes = pgTable('classes', {
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
     accessType: ClassAccessTypeEnum('access_type').default('private').notNull(),
-    thumbnailId: text('thumbnail_id').references(() => files.id),
+    // thumbnailId: text('thumbnail_id').references(() => files.id),
     createdAt,
     updatedAt,
 });
@@ -236,31 +236,17 @@ export const learningMaterials = pgTable('learning_materials', {
     updatedAt,
 });
 
-export const learningMaterialFiles = pgTable('learning_material_files', {
-    id: serial('learning_material_file_id').primaryKey(),
-    learningMaterialId: text('learning_material_id')
-        .references(() => learningMaterials.id, { onDelete: 'cascade' })
-        .notNull(),
-    fileId: text('file_id')
-        .references(() => files.id, { onDelete: 'cascade' })
-        .notNull(),
-    createdAt,
-    updatedAt,
-});
-
-// Images Table
-export const files = pgTable('files', {
-    id: text('file_id')
-        .primaryKey()
-        .$defaultFn(() => uuidv7()),
-    url: text('url').notNull(),
-    key: text('key').notNull(),
-    name: text('name').notNull(),
-    type: FilesTypeEnum('type').notNull().default('image'),
-    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
-    createdAt,
-    updatedAt,
-});
+// export const learningMaterialFiles = pgTable('learning_material_files', {
+//     id: serial('learning_material_file_id').primaryKey(),
+//     learningMaterialId: text('learning_material_id')
+//         .references(() => learningMaterials.id, { onDelete: 'cascade' })
+//         .notNull(),
+//     fileId: text('file_id')
+//         .references(() => files.id, { onDelete: 'cascade' })
+//         .notNull(),
+//     createdAt,
+//     updatedAt,
+// });
 
 // Submissions Table
 export const submissions = pgTable('submissions', {
@@ -278,7 +264,7 @@ export const submissions = pgTable('submissions', {
     studentId: text('student_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
-    filePath: text('file_path'),
+    // filePath: text('file_path'),
     isGraded: boolean('is_graded').default(false).notNull(),
     grade: numeric('grade'),
     submittedAt: timestamp('submitted_at', { withTimezone: true })
@@ -286,6 +272,36 @@ export const submissions = pgTable('submissions', {
         .notNull(),
     updatedAt,
 });
+
+// Files Table
+export const files = pgTable('files', {
+    id: text('file_id')
+        .primaryKey()
+        .$defaultFn(() => uuidv7()),
+    url: text('url').notNull(),
+    key: text('key').notNull(),
+    name: text('name').notNull(),
+    type: FilesTypeEnum('type').notNull().default('image'),
+    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    learningMaterialId: text('learning_material_id').references(
+        () => learningMaterials.id,
+        { onDelete: 'cascade' },
+    ),
+    assignmentId: text('assignment_id').references(() => assignments.id, {
+        onDelete: 'cascade',
+    }),
+    submissionId: text('submission_id').references(() => submissions.id, {
+        onDelete: 'cascade',
+    }),
+    classId: text('class_id').references(() => classes.id, {
+        onDelete: 'cascade',
+    }),
+    isProfilePicture: boolean('is_profile_picture').default(false).notNull(),
+    createdAt,
+    updatedAt,
+});
+
+// case profile picture, case submission file, cas learning material file, case class thumbnail
 
 // Student Progress Table
 export const studentProgress = pgTable('student_progress', {
@@ -329,10 +345,7 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
         fields: [classes.teacherId],
         references: [users.id],
     }),
-    thumbnail: one(files, {
-        fields: [classes.thumbnailId],
-        references: [files.id],
-    }),
+    thumbnail: many(files),
     members: many(classMembers),
     announcements: many(announcements),
     studentProgress: many(studentProgress),
@@ -371,6 +384,7 @@ export const assignmentsRelations = relations(assignments, ({ many, one }) => ({
         fields: [assignments.classId],
         references: [classes.id],
     }),
+    files: many(files),
 }));
 
 export const learningMaterialsRelations = relations(
@@ -381,33 +395,50 @@ export const learningMaterialsRelations = relations(
             references: [users.id],
         }),
         studentProgress: many(studentProgress),
-        files: many(learningMaterialFiles),
+        // files: many(learningMaterialFiles),
         class: one(classes, {
             fields: [learningMaterials.classId],
             references: [classes.id],
         }),
+        files: many(files),
     }),
 );
 
-export const learningMaterialsFilesRelations = relations(
-    learningMaterialFiles,
-    ({ one }) => ({
-        material: one(learningMaterials, {
-            fields: [learningMaterialFiles.learningMaterialId],
-            references: [learningMaterials.id],
-        }),
-        file: one(files, {
-            fields: [learningMaterialFiles.fileId],
-            references: [files.id],
-        }),
-    }),
-);
+// export const learningMaterialsFilesRelations = relations(
+//     learningMaterialFiles,
+//     ({ one }) => ({
+//         material: one(learningMaterials, {
+//             fields: [learningMaterialFiles.learningMaterialId],
+//             references: [learningMaterials.id],
+//         }),
+//         file: one(files, {
+//             fields: [learningMaterialFiles.fileId],
+//             references: [files.id],
+//         }),
+//     }),
+// );
 
 export const filesRelations = relations(files, ({ one }) => ({
     user: one(users, { fields: [files.userId], references: [users.id] }),
+    learningMaterial: one(learningMaterials, {
+        fields: [files.learningMaterialId],
+        references: [learningMaterials.id],
+    }),
+    assignment: one(assignments, {
+        fields: [files.assignmentId],
+        references: [assignments.id],
+    }),
+    submission: one(submissions, {
+        fields: [files.submissionId],
+        references: [submissions.id],
+    }),
+    class: one(classes, {
+        fields: [files.classId],
+        references: [classes.id],
+    }),
 }));
 
-export const submissionsRelations = relations(submissions, ({ one }) => ({
+export const submissionsRelations = relations(submissions, ({ one, many }) => ({
     assignment: one(assignments, {
         fields: [submissions.assignmentId],
         references: [assignments.id],
@@ -416,14 +447,15 @@ export const submissionsRelations = relations(submissions, ({ one }) => ({
         fields: [submissions.studentId],
         references: [users.id],
     }),
-    file: one(files, {
-        fields: [submissions.filePath],
-        references: [files.id],
-    }),
+    // file: one(files, {
+    //     fields: [submissions.filePath],
+    //     references: [files.id],
+    // }),
     class: one(classes, {
         fields: [submissions.classId],
         references: [classes.id],
     }),
+    files: many(files),
 }));
 
 export const studentProgressRelations = relations(

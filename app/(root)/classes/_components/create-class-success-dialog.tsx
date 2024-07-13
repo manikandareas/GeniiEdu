@@ -43,7 +43,7 @@ const CreateClassSuccessDialog = (props: {
                         <br />
                         <br />
                         <pre className='mt-2 rounded-md bg-secondary p-4'>
-                            <code className='text-white'>
+                            <code className='text-foreground'>
                                 {JSON.stringify(props.data, null, 2)}
                             </code>
                         </pre>
