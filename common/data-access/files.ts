@@ -1,7 +1,8 @@
-import { inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import db from '../libs/DB';
 import { Schema } from '../models';
 import { FilesType } from '../models/schema.model';
+import { DataAccessConfig } from './types';
 
 export const findFileByKey = async (key: string) => {
     return await db.query.files.findFirst({
@@ -19,6 +20,18 @@ export const insertFiles = async (files: FilesType[]) => {
 
 export const deleteFilesByKey = async (key: string[]) => {
     return await db.delete(Schema.files).where(inArray(Schema.files.key, key));
+};
+
+export const patchFiles = async (
+    fileId: string,
+    data: Partial<FilesType>,
+    config: DataAccessConfig = {},
+) => {
+    return await (config.tx ? config.tx : db)
+        .update(Schema.files)
+        .set(data)
+        .where(eq(Schema.files.id, fileId))
+        .returning();
 };
 
 // db.delete(Schema.files).where(inArray(Schema.files.key, key)),

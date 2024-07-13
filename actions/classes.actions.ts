@@ -8,7 +8,11 @@ import {
     findStudentInClass,
     insertClass,
 } from '@/common/data-access/classes';
-import { findFileByKey, insertFile } from '@/common/data-access/files';
+import {
+    findFileByKey,
+    insertFile,
+    patchFiles,
+} from '@/common/data-access/files';
 import {
     ActionError,
     studentProcedure,
@@ -55,7 +59,7 @@ export const createClass = teacherProcedure
 
         // ? Upload default thumbnail to database if not provided
         if (!parsedInput.thumbnailKey && parsedInput.thumbnail) {
-            const uploadedDefaultThumbnail = await insertFile({
+            const [uploadedDefaultThumbnail] = await insertFile({
                 url: parsedInput.thumbnail,
                 key: parsedInput.slug,
                 userId: teacher.id,
@@ -63,7 +67,7 @@ export const createClass = teacherProcedure
                 name: parsedInput.className,
             });
 
-            classThumbnailId = uploadedDefaultThumbnail[0].id;
+            classThumbnailId = uploadedDefaultThumbnail.id;
         } else if (parsedInput.thumbnailKey && parsedInput.thumbnail) {
             // ? Get inserted thumbnail id from database
             const classThumbnail = await findFileByKey(
@@ -79,14 +83,13 @@ export const createClass = teacherProcedure
             throw new ActionError('Something went wrong, please try again.');
         }
 
-        const insertedClass = await insertClass({
+        const [insertedClass] = await insertClass({
             className: parsedInput.className,
             slug: parsedInput.slug,
             description: parsedInput.description,
             teacherId: teacher.id,
             classCode: parsedInput.classCode,
             accessType: parsedInput.accessType,
-            thumbnailId: classThumbnailId,
         });
 
         if (!insertedClass) {
@@ -94,9 +97,13 @@ export const createClass = teacherProcedure
         }
 
         await insertClassMember({
-            classId: insertedClass[0].id,
+            classId: insertedClass.id,
             userId: teacher.id,
             role: 'teacher',
+        });
+
+        await patchFiles(classThumbnailId, {
+            classId: insertedClass.id,
         });
 
         revalidatePath('/classes');

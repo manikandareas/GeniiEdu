@@ -53,7 +53,6 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
     const hourRef = useRef<HTMLInputElement>(null);
     const secondRef = useRef<HTMLInputElement>(null);
     const periodRef = useRef<HTMLButtonElement>(null);
-    const [date, setDate] = useState<Date>();
     const [period, setPeriod] = useState<Period>('PM');
 
     const onCreateAssignmentClicked = async (
@@ -152,172 +151,211 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
                             )}
                         />
 
-                        <FormItem>
-                            <FormLabel>Publish Date</FormLabel>
+                        <FormField
+                            control={createAssignmentForm.control}
+                            name='publishedAt'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Publish Date</FormLabel>
 
-                            <div className='flex flex-wrap items-end gap-2 lg:flex-nowrap'>
-                                <div className='grid gap-1 text-start'>
-                                    <Label htmlFor='hours' className='text-xs'>
-                                        Date
-                                    </Label>
-                                    <DatePicker date={date} setDate={setDate} />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label htmlFor='hours' className='text-xs'>
-                                        Hours
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='12hours'
-                                        period={period}
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={hourRef}
-                                        onRightFocus={() =>
-                                            minuteRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label
-                                        htmlFor='minutes'
-                                        className='text-xs'
-                                    >
-                                        Minutes
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='minutes'
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={minuteRef}
-                                        onLeftFocus={() =>
-                                            hourRef.current?.focus()
-                                        }
-                                        onRightFocus={() =>
-                                            secondRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label
-                                        htmlFor='seconds'
-                                        className='text-xs'
-                                    >
-                                        Seconds
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='seconds'
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={secondRef}
-                                        onLeftFocus={() =>
-                                            minuteRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label htmlFor='period' className='text-xs'>
-                                        Period
-                                    </Label>
-                                    <TimePeriodSelect
-                                        period={period}
-                                        setPeriod={setPeriod}
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={periodRef}
-                                        onLeftFocus={() =>
-                                            secondRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                            </div>
-                            <FormDescription>
-                                By default, the assignment will be published
-                                immediately.
-                            </FormDescription>
-                        </FormItem>
-                        <FormItem>
-                            <FormLabel>Due date of assignment</FormLabel>
+                                    <div className='flex flex-wrap items-end gap-2 lg:flex-nowrap'>
+                                        <div className='grid gap-1 text-start'>
+                                            <Label
+                                                htmlFor='hours'
+                                                className='text-xs'
+                                            >
+                                                Date
+                                            </Label>
+                                            <DatePicker
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='hours'
+                                                className='text-xs'
+                                            >
+                                                Hours
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='12hours'
+                                                period={period}
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={hourRef}
+                                                onRightFocus={() =>
+                                                    minuteRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='minutes'
+                                                className='text-xs'
+                                            >
+                                                Minutes
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='minutes'
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={minuteRef}
+                                                onLeftFocus={() =>
+                                                    hourRef.current?.focus()
+                                                }
+                                                onRightFocus={() =>
+                                                    secondRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='seconds'
+                                                className='text-xs'
+                                            >
+                                                Seconds
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='seconds'
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={secondRef}
+                                                onLeftFocus={() =>
+                                                    minuteRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='period'
+                                                className='text-xs'
+                                            >
+                                                Period
+                                            </Label>
+                                            <TimePeriodSelect
+                                                period={period}
+                                                setPeriod={setPeriod}
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={periodRef}
+                                                onLeftFocus={() =>
+                                                    secondRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <FormDescription>
+                                        By default, the assignment will be
+                                        published immediately.
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
 
-                            <div className='flex flex-wrap items-end gap-2 lg:flex-nowrap'>
-                                <div className='grid gap-1 text-start'>
-                                    <Label htmlFor='hours' className='text-xs'>
-                                        Date
-                                    </Label>
-                                    <DatePicker date={date} setDate={setDate} />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label htmlFor='hours' className='text-xs'>
-                                        Hours
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='12hours'
-                                        period={period}
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={hourRef}
-                                        onRightFocus={() =>
-                                            minuteRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label
-                                        htmlFor='minutes'
-                                        className='text-xs'
-                                    >
-                                        Minutes
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='minutes'
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={minuteRef}
-                                        onLeftFocus={() =>
-                                            hourRef.current?.focus()
-                                        }
-                                        onRightFocus={() =>
-                                            secondRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label
-                                        htmlFor='seconds'
-                                        className='text-xs'
-                                    >
-                                        Seconds
-                                    </Label>
-                                    <TimePickerInput
-                                        picker='seconds'
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={secondRef}
-                                        onLeftFocus={() =>
-                                            minuteRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                                <div className='grid gap-1 text-center'>
-                                    <Label htmlFor='period' className='text-xs'>
-                                        Period
-                                    </Label>
-                                    <TimePeriodSelect
-                                        period={period}
-                                        setPeriod={setPeriod}
-                                        date={date}
-                                        setDate={setDate}
-                                        ref={periodRef}
-                                        onLeftFocus={() =>
-                                            secondRef.current?.focus()
-                                        }
-                                    />
-                                </div>
-                            </div>
-                            <FormDescription>
-                                By default, the assignment will&apos;t have a
-                                due date.
-                            </FormDescription>
-                        </FormItem>
+                        <FormField
+                            control={createAssignmentForm.control}
+                            name='dueDate'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Due date of assignment
+                                    </FormLabel>
+
+                                    <div className='flex flex-wrap items-end gap-2 lg:flex-nowrap'>
+                                        <div className='grid gap-1 text-start'>
+                                            <Label
+                                                htmlFor='hours'
+                                                className='text-xs'
+                                            >
+                                                Date
+                                            </Label>
+                                            <DatePicker
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='hours'
+                                                className='text-xs'
+                                            >
+                                                Hours
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='12hours'
+                                                period={period}
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={hourRef}
+                                                onRightFocus={() =>
+                                                    minuteRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='minutes'
+                                                className='text-xs'
+                                            >
+                                                Minutes
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='minutes'
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={minuteRef}
+                                                onLeftFocus={() =>
+                                                    hourRef.current?.focus()
+                                                }
+                                                onRightFocus={() =>
+                                                    secondRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='seconds'
+                                                className='text-xs'
+                                            >
+                                                Seconds
+                                            </Label>
+                                            <TimePickerInput
+                                                picker='seconds'
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={secondRef}
+                                                onLeftFocus={() =>
+                                                    minuteRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                        <div className='grid gap-1 text-center'>
+                                            <Label
+                                                htmlFor='period'
+                                                className='text-xs'
+                                            >
+                                                Period
+                                            </Label>
+                                            <TimePeriodSelect
+                                                period={period}
+                                                setPeriod={setPeriod}
+                                                date={field.value}
+                                                setDate={field.onChange}
+                                                ref={periodRef}
+                                                onLeftFocus={() =>
+                                                    secondRef.current?.focus()
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <FormDescription>
+                                        By default, the assignment will&apos;t
+                                        have a due date.
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
 
                         <SheetFooter>
                             <Button
@@ -329,7 +367,11 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
                             </Button>
                             <Button type='submit'>Create</Button>
                             <SheetClose asChild>
-                                <Button variant='ghost' className='sr-only'>
+                                <Button
+                                    id='closeButton'
+                                    variant='ghost'
+                                    className='sr-only'
+                                >
                                     Cancel
                                 </Button>
                             </SheetClose>

@@ -36,11 +36,11 @@ const AboutClassInformation: React.FC<AboutClassInformationProps> = ({
             {/* Head */}
             <div className='space-y-6'>
                 <Image
-                    src={initialData.data.thumbnail?.url ?? ''}
+                    src={initialData.data.thumbnail[0]?.url ?? ''}
                     width={1600}
                     height={900}
-                    alt={initialData.data.thumbnail?.key ?? ''}
-                    className='h-[300px] overflow-clip rounded-md object-cover'
+                    alt={initialData.data.thumbnail[0]?.key ?? ''}
+                    className='h-[300px] overflow-clip rounded-md object-cover object-center'
                 />
 
                 <Typography

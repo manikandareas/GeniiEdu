@@ -1,4 +1,3 @@
-import { eq, sql } from 'drizzle-orm';
 import db from '../libs/DB';
 import { Schema } from '../models';
 import { InsertClassesInput } from './types';
@@ -67,6 +66,7 @@ export const findDetailsClass = async (slug: string) => {
                     files: true,
                 },
             },
+
             assignments: true,
             teacher: true,
             thumbnail: true,

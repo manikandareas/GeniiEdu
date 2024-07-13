@@ -97,7 +97,7 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
                             slug={item.class.slug}
                             title={item.class.className}
                             updatedAt={item.class.updatedAt ?? new Date()}
-                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            thumbnail={item.class.thumbnail[0]?.url ?? ''}
                             statusCompletion={item.statusCompletion}
                         />
                     ))}
@@ -112,7 +112,7 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
                             slug={item.class.slug}
                             title={item.class.className}
                             updatedAt={item.class.updatedAt ?? new Date()}
-                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            thumbnail={item.class.thumbnail[0]?.url ?? ''}
                             tab='ongoing'
                             statusCompletion={item.statusCompletion}
                         />
@@ -128,7 +128,7 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
                             slug={item.class.slug}
                             title={item.class.className}
                             updatedAt={item.class.updatedAt ?? new Date()}
-                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            thumbnail={item.class.thumbnail[0]?.url ?? ''}
                             tab='completed'
                             statusCompletion={item.statusCompletion}
                         />
@@ -144,7 +144,7 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
                             slug={item.class.slug}
                             title={item.class.className}
                             updatedAt={item.class.updatedAt ?? new Date()}
-                            thumbnail={item.class.thumbnail?.url ?? ''}
+                            thumbnail={item.class.thumbnail[0]?.url ?? ''}
                             tab='archived'
                             statusCompletion={item.statusCompletion}
                         />
