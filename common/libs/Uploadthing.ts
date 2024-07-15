@@ -36,6 +36,7 @@ export const ourFileRouter = {
         'pdf',
         'application/vnd.ms-word.document.macroenabled.12',
         'application/vnd.ms-powerpoint',
+        'image',
     ])
         .middleware(async ({ req }) => {
             const { user } = await validateRequest();

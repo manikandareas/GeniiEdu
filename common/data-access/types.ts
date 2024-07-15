@@ -36,3 +36,5 @@ export type InsertLearningMaterialInput =
 export type InsertAssignmentInput = typeof Schema.assignments._.inferInsert;
 
 export type InsertClassMemberInput = typeof Schema.classMembers._.inferInsert;
+
+export type InsertSubmissionInput = typeof Schema.submissions._.inferInsert;
