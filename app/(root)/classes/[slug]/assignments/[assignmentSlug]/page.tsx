@@ -5,6 +5,7 @@ import StudentSection from './components/student/student-section';
 import TeacherSection from './components/teacher/teacher-section';
 import HeaderOptions from '@/common/components/elements/header-options';
 import { decodeUuid } from '@/common/libs/utils';
+import { findDetailsAssignmentForStudent } from '@/common/data-access/assignments';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -24,6 +25,12 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     if (!assignmentId) return notFound();
 
+    const details = await findDetailsAssignmentForStudent(
+        assignmentId,
+        user.id,
+    );
+    if (!details) return notFound();
+
     const urls = [
         {
             name: 'Dashboard',
@@ -34,7 +41,7 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
             href: '/classes',
         },
         {
-            name: params.slug.replace(/-/g, ' '),
+            name: details.class.className,
             href: `/classes/${params.slug}`,
         },
         {
@@ -46,7 +53,11 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
     return (
         <>
             <HeaderOptions title={'Assignment Details'} urls={urls} />
-            {user.role === 'student' ? <StudentSection /> : <TeacherSection />}
+            {user.role === 'student' ? (
+                <StudentSection data={details} />
+            ) : (
+                <TeacherSection />
+            )}
         </>
     );
 };

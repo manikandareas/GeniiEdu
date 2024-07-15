@@ -98,7 +98,6 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                                     onClick={onSignOutClick}
                                     disabled={status === 'executing'}
                                     variant={'destructive'}
-                                    className='bg-red-600 text-foreground hover:bg-red-600'
                                 >
                                     Sign Out
                                 </Button>

@@ -1,11 +1,23 @@
+import { buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
-import MaterialHeader from '../../../_components/material-header';
-import { ComponentProps, ElementType } from 'react';
+import { FindDetailsAssignmentForStudentResponse } from '@/common/data-access/assignments';
 import { cn } from '@/common/libs/utils';
+import reactParser from 'html-react-parser';
+import Link from 'next/link';
+import { ComponentProps } from 'react';
+import MaterialHeader from '../../../_components/material-header';
 
-type DetailsAssignmentProps = ComponentProps<'main'>;
+type DetailsAssignmentProps = ComponentProps<'main'> & {
+    data: FindDetailsAssignmentForStudentResponse;
+};
 
-const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({ className }) => {
+const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({
+    className,
+    data,
+}) => {
+    if (!data) return null;
+
+    const assignmentFiles = data.files ?? [];
     return (
         <main
             className={cn(
@@ -14,16 +26,40 @@ const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({ className }) => {
             )}
         >
             <MaterialHeader
-                authorName='Manik'
+                authorName={data.author.name ?? ''}
                 icon='assignment'
-                title='UAS Pemrograman Web'
-                createdAt='23 Apr'
+                title={data.title}
+                createdAt={data.createdAt}
             />
 
             <section className='space-y-4 px-4 py-4 md:px-14'>
-                <Typography variant={'p'}>
-                    Uas Pemrograman Web dalam mata kuliah Pemrograman Web
-                </Typography>
+                {reactParser(data.description)}
+                {assignmentFiles.map((file) => (
+                    <div key={file.key}>
+                        <iframe
+                            key={file.key}
+                            src={file.url}
+                            className='aspect-video w-full rounded-md'
+                            allowFullScreen
+                        />
+                        <Typography
+                            className=''
+                            variant={'p'}
+                            affects={'muted'}
+                        >
+                            {file.name},
+                            <Link
+                                className={buttonVariants({
+                                    variant: 'link',
+                                    size: 'sm',
+                                })}
+                                href={file.url}
+                            >
+                                click for details
+                            </Link>
+                        </Typography>
+                    </div>
+                ))}
             </section>
         </main>
     );

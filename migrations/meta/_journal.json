@@ -155,6 +155,13 @@
       "when": 1720867828370,
       "tag": "0021_charming_kitty_pryde",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1720947964985,
+      "tag": "0022_military_sentinel",
+      "breakpoints": true
     }
   ]
 }
