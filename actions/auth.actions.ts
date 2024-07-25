@@ -109,7 +109,6 @@ export const isEmailVerified = actionProcedure
         }
         if (existingUser.isEmailVerified) {
             return {
-                success: true,
                 data: true,
             };
         }

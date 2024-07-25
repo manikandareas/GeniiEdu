@@ -1,11 +1,18 @@
+import HeaderOptions from '@/common/components/elements/header-options';
+import {
+    findDetailsAssignment,
+    FindDetailsAssignmentForStudentResponse,
+    FindDetailsAssignmentForTeacherResponse,
+    FindDetailsAssignmentResponse,
+} from '@/common/data-access/assignments';
 import { validateRequest } from '@/common/libs/lucia';
-
+import { decodeUuid } from '@/common/libs/utils';
 import { notFound } from 'next/navigation';
 import StudentSection from './components/student/student-section';
 import TeacherSection from './components/teacher/teacher-section';
-import HeaderOptions from '@/common/components/elements/header-options';
-import { decodeUuid } from '@/common/libs/utils';
-import { findDetailsAssignmentForStudent } from '@/common/data-access/assignments';
+import { InputGradeContextProvider } from './components/teacher/input-grade-context';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { detailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -25,11 +32,19 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     if (!assignmentId) return notFound();
 
-    const details = await findDetailsAssignmentForStudent(
-        assignmentId,
-        user.id,
-    );
+    const details = await findDetailsAssignment({
+        id: assignmentId,
+        userId: user.id,
+    });
+
     if (!details) return notFound();
+
+    const { queryClient, prefetch } = detailsAssignmentQuery({
+        assignmentId,
+        userId: user.id,
+    });
+
+    await prefetch();
 
     const urls = [
         {
@@ -53,11 +68,23 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
     return (
         <>
             <HeaderOptions title={'Assignment Details'} urls={urls} />
-            {user.role === 'student' ? (
-                <StudentSection data={details} />
-            ) : (
-                <TeacherSection />
-            )}
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                {user.role === 'student' ? (
+                    <StudentSection
+                        data={
+                            details as FindDetailsAssignmentForStudentResponse
+                        }
+                    />
+                ) : (
+                    <InputGradeContextProvider>
+                        <TeacherSection
+                            initialData={
+                                details! as FindDetailsAssignmentForTeacherResponse
+                            }
+                        />
+                    </InputGradeContextProvider>
+                )}
+            </HydrationBoundary>
         </>
     );
 };

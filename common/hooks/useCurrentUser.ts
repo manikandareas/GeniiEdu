@@ -1,4 +1,4 @@
-import { useSession } from '../components/providers/SessionProvider';
+import { useSession } from '../components/providers/session-provider';
 
 const useCurrentUser = () => {
     const { user } = useSession();

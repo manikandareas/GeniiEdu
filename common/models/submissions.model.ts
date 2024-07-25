@@ -15,11 +15,9 @@ export const createSubmissionSchema = z.object({
         .optional(),
 });
 
-// classId: string;
-// assignmentId: string;
-// studentId: string;
-// id?: string | undefined;
-// updatedAt?: Date | null | undefined;
-// isGraded?: boolean | undefined;
-// grade?: string | null | undefined;
-// submittedAt?: Date | undefined;
+export const submitGradesSchema = z.array(
+    z.object({
+        grade: z.number(),
+        id: z.string(),
+    }),
+);

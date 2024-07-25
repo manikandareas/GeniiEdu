@@ -8,7 +8,7 @@ import {
 } from '@/common/components/ui/popover';
 import { Tabs, TabsContent } from '@/common/components/ui/tabs';
 import { TABS_TRIGGER_CLASS } from '@/common/constants/details-class-tabs';
-import { detailsClassQuery } from '@/common/hooks/details-class';
+import { detailsClassQuery } from '@/common/hooks/details-class-query';
 import { validateRequest } from '@/common/libs/lucia';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { PlusCircle } from 'lucide-react';

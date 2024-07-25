@@ -27,12 +27,7 @@ const VerifyEmailPage = async (props: VerifyEmailPageProps) => {
         throw new Error('Something went wrong');
     }
 
-    const { success, data: isVerified } = response.data;
-
-    // ? If user not found or email is't valid
-    if (!success) {
-        return notFound();
-    }
+    const { data: isVerified } = response.data;
 
     // ? If email is already verified redirect to login
     if (isVerified) {

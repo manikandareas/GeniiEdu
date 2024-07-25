@@ -1,7 +1,16 @@
 'use server';
+import { findDetailsAssignment } from '@/common/data-access/assignments';
 import { patchFiles } from '@/common/data-access/files';
-import { insertSubmission } from '@/common/data-access/submissions';
-import { ActionError, studentProcedure } from '@/common/libs/safe-action';
+import {
+    findSubmissionById,
+    insertSubmission,
+    patchSubmission,
+} from '@/common/data-access/submissions';
+import {
+    ActionError,
+    studentProcedure,
+    teacherProcedure,
+} from '@/common/libs/safe-action';
 import { SubmissionsModel } from '@/common/models';
 import { z, ZodObject, ZodString } from 'zod';
 
@@ -41,3 +50,35 @@ export const createSubmission = studentProcedure
             };
         },
     );
+
+export const submitGrades = teacherProcedure
+    .metadata({
+        actionName: 'submitsGrade',
+    })
+    .schema(SubmissionsModel.submitGradesSchema)
+    .action(async ({ ctx, parsedInput }) => {
+        const { user: teacher } = ctx;
+
+        parsedInput.forEach(async (grade) => {
+            const submission = await findSubmissionById(grade.id);
+            if (!submission) {
+                throw new ActionError('Submission not found');
+            }
+
+            if (submission.assignment.authorId !== teacher.id) {
+                throw new ActionError('Unauthorized to submit grade');
+            }
+
+            await patchSubmission({
+                id: grade.id,
+                grade: String(grade.grade),
+                isGraded: true,
+            }).catch(() => {
+                throw new ActionError('Failed to submit grade');
+            });
+        });
+
+        return {
+            message: 'Grades submitted successfully',
+        };
+    });
