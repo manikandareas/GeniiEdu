@@ -1,6 +1,10 @@
 'use server';
 
-import { insertAssignment } from '@/common/data-access/assignments';
+import {
+    findDetailsAssignment,
+    insertAssignment,
+    patchAssignment,
+} from '@/common/data-access/assignments';
 import { isOwnerOfClass } from '@/common/data-access/classes';
 import { patchFiles } from '@/common/data-access/files';
 import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
@@ -54,5 +58,56 @@ export const createAssignment = teacherProcedure
 
         return {
             message: 'Assignment created successfully',
+        };
+    });
+
+type GetDetailsAssignmentProps = {
+    id: string;
+    userId: string;
+};
+
+export const getDetailsAssignment = async (
+    properties: GetDetailsAssignmentProps,
+) => {
+    const response = await findDetailsAssignment({
+        id: properties.id,
+        userId: properties.userId,
+    });
+
+    if (!response) {
+        throw new ActionError('Assignment not found');
+    }
+
+    return response;
+};
+
+export const toggleAssignmentStatus = teacherProcedure
+    .metadata({
+        actionName: 'toggleAssignmentStatus',
+    })
+    .schema(z.string())
+    .action(async ({ parsedInput, ctx }) => {
+        const { user } = ctx;
+
+        const assignment = await findDetailsAssignment({
+            id: parsedInput,
+            userId: user.id,
+        });
+
+        if (!assignment) {
+            throw new ActionError('Assignment not found');
+        }
+
+        const updatedAssignment = patchAssignment({
+            id: parsedInput,
+            isOpen: !assignment.isOpen,
+        });
+
+        if (!updatedAssignment) {
+            throw new ActionError('Failed to toggle assignment status');
+        }
+
+        return {
+            message: 'Assignment status toggled successfully',
         };
     });

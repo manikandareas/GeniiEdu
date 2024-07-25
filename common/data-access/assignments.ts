@@ -1,6 +1,12 @@
-import { DataAccessConfig, InsertAssignmentInput } from './types';
+import {
+    DataAccessConfig,
+    InsertAssignmentInput,
+    PatchAssignmentInput,
+} from './types';
 import db from '../libs/DB';
 import { Schema } from '../models';
+import { validateRequest } from '../libs/lucia';
+import { eq } from 'drizzle-orm';
 
 export const insertAssignment = async (
     input: InsertAssignmentInput,
@@ -28,7 +34,11 @@ export const findDetailsAssignmentForStudent = async (
                 },
             },
             files: true,
-            author: true,
+            author: {
+                columns: {
+                    name: true,
+                },
+            },
             class: {
                 columns: {
                     id: true,
@@ -42,3 +52,86 @@ export const findDetailsAssignmentForStudent = async (
 export type FindDetailsAssignmentForStudentResponse = Awaited<
     ReturnType<typeof findDetailsAssignmentForStudent>
 >;
+
+export const findDetailsAssignmentForTeacher = async (
+    id: string,
+    userId: string,
+    config: DataAccessConfig = {},
+) => {
+    return await (config.tx ? config.tx : db).query.assignments.findFirst({
+        where: (assignment, { eq, and }) =>
+            and(eq(assignment.id, id), eq(assignment.authorId, userId)),
+        with: {
+            submissions: {
+                with: {
+                    student: {
+                        columns: {
+                            name: true,
+                            profilePicture: true,
+                            id: true,
+                            email: true,
+                            username: true,
+                        },
+                    },
+                    files: true,
+                },
+            },
+            author: {
+                columns: {
+                    id: true,
+                    name: true,
+                },
+            },
+            files: true,
+            class: {
+                columns: {
+                    id: true,
+                    className: true,
+                },
+            },
+        },
+    });
+};
+
+export type FindDetailsAssignmentForTeacherResponse = Awaited<
+    ReturnType<typeof findDetailsAssignmentForTeacher>
+>;
+
+type FindDetailsAssignmentProps = {
+    id: string;
+    userId: string;
+};
+
+export const findDetailsAssignment = async (
+    properties: FindDetailsAssignmentProps,
+    config: DataAccessConfig = {},
+) => {
+    const { user } = await validateRequest();
+    if (user?.role === 'student') {
+        return findDetailsAssignmentForStudent(
+            properties.id,
+            properties.userId,
+            config,
+        );
+    }
+    return findDetailsAssignmentForTeacher(
+        properties.id,
+        properties.userId,
+        config,
+    );
+};
+
+export type FindDetailsAssignmentResponse = Awaited<
+    ReturnType<typeof findDetailsAssignment>
+>;
+
+export const patchAssignment = async (
+    input: PatchAssignmentInput,
+    config: DataAccessConfig = {},
+) => {
+    return await (config.tx ? config.tx : db)
+        .update(Schema.assignments)
+        .set(input)
+        .where(eq(Schema.assignments.id, input.id!))
+        .returning();
+};

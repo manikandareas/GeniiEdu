@@ -1,12 +1,5 @@
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from '@/common/components/ui/tabs';
-import DetailsAssignment from '../details-assignment';
+'use client';
 import { Button } from '@/common/components/ui/button';
-import { Info, Mail, Settings } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -14,25 +7,47 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/common/components/ui/select';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@/common/components/ui/tabs';
+import { BoxSelectIcon, Flag, Info, Mail, Settings } from 'lucide-react';
+import DetailsAssignment from '../details-assignment';
 
-import Typography from '@/common/components/ui/typography';
 import { Switch } from '@/common/components/ui/switch';
+import Typography from '@/common/components/ui/typography';
 
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
-    CardTitle,
 } from '@/common/components/ui/card';
+import { FindDetailsAssignmentForTeacherResponse } from '@/common/data-access/assignments';
 import Image from 'next/image';
+import { columns, SubmissionsAssignment } from './Columns';
 import { DataTable } from './data-table';
-import { columns } from './columns';
-import { DUMMY_STUDENT_SUBMISSIONS } from '@/common/constants/dummy-student-submissions';
+import ReturnSubmissions from './return-submissions';
+import { useDetailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
+import SwitchAssignmentStatus from './switch-assignment-status';
+import { prettyText } from '@/common/libs/utils';
+import TooltipTable from './tooltip-table';
 
-type TeacherSectionProps = {};
+type TeacherSectionProps = {
+    initialData: FindDetailsAssignmentForTeacherResponse;
+};
 
-const TeacherSection: React.FC<TeacherSectionProps> = () => {
+const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {
+    const { data } = useDetailsAssignmentQuery(initialData, {
+        assignmentId: initialData?.id as string,
+        userId: initialData?.author.id as string,
+    });
+    const queryData = data as FindDetailsAssignmentForTeacherResponse;
+
+    if (!queryData) return null;
+
     return (
         <main className='w-full px-4 py-4 md:px-6 md:py-0'>
             <Tabs defaultValue='studentAssignment' className=''>
@@ -43,14 +58,16 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value='details'>
-                    <DetailsAssignment className='mx-auto' />
+                    <DetailsAssignment data={queryData} className='mx-auto' />
                 </TabsContent>
                 <TabsContent value='studentAssignment'>
                     <main className='space-y-4'>
                         {/* Action bar */}
                         <div className='flex h-16 items-center justify-between'>
                             <div className='flex items-center gap-x-4'>
-                                <Button>Return</Button>
+                                <ReturnSubmissions
+                                    assignmentId={queryData.id as string}
+                                />
                                 <Button variant={'ghost'} size={'icon'}>
                                     <Mail size={24} />
                                 </Button>
@@ -82,20 +99,24 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
                             <div className='h-screen w-full lg:max-w-sm'>
                                 <DataTable
                                     columns={columns}
-                                    data={DUMMY_STUDENT_SUBMISSIONS}
+                                    data={queryData?.submissions ?? []}
                                 />
+                                <TooltipTable />
                             </div>
                             <div className='hidden h-screen w-full lg:block'>
                                 <div className='space-y-2 p-4'>
                                     <Typography variant={'h4'}>
-                                        Assignment Title
+                                        {queryData.title}
                                     </Typography>
 
                                     <div className='flex justify-between'>
                                         <div className='flex w-32 divide-x'>
                                             <div className='p-4'>
                                                 <Typography variant={'h2'}>
-                                                    19
+                                                    {
+                                                        queryData.submissions
+                                                            .length
+                                                    }
                                                 </Typography>
                                                 <p className='text-xs text-muted-foreground'>
                                                     Diserahkan
@@ -103,7 +124,12 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
                                             </div>
                                             <div className='p-4'>
                                                 <Typography variant={'h2'}>
-                                                    0
+                                                    {
+                                                        queryData.submissions.filter(
+                                                            (item) =>
+                                                                item.isGraded,
+                                                        ).length
+                                                    }
                                                 </Typography>
                                                 <p className='text-xs text-muted-foreground'>
                                                     Ditugaskan
@@ -112,13 +138,14 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
                                         </div>
 
                                         <div>
-                                            <div className='flex items-center gap-2 text-sm'>
-                                                <Switch checked />
-                                                <Typography variant={'p'}>
-                                                    Menerima kiriman
-                                                </Typography>
-                                                <Info className='text-muted-foreground' />
-                                            </div>
+                                            <SwitchAssignmentStatus
+                                                assignmentId={
+                                                    initialData?.id ?? ''
+                                                }
+                                                isOpen={
+                                                    initialData?.isOpen ?? false
+                                                }
+                                            />
 
                                             <div className='pt-2'>
                                                 <Select defaultValue='100'>
@@ -148,7 +175,11 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
                                     </div>
 
                                     {/* <div className='grid grid-cols-4'></div> */}
-                                    <OverviewSubmissionCards />
+                                    <OverviewSubmissionCards
+                                        submissions={
+                                            initialData?.submissions ?? []
+                                        }
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -160,42 +191,34 @@ const TeacherSection: React.FC<TeacherSectionProps> = () => {
 };
 export default TeacherSection;
 
-type OverviewSubmissionCardProps = {
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-    profilePicture: string;
-};
-const OverviewSubmissionCard: React.FC<OverviewSubmissionCardProps> = ({
-    email,
-    id,
-    name,
-    profilePicture,
-    username,
-}) => {
+type OverviewSubmissionCardProps = SubmissionsAssignment;
+const OverviewSubmissionCard: React.FC<OverviewSubmissionCardProps> = (
+    props,
+) => {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center gap-2'>
                 <Image
                     width={32}
                     height={32}
-                    src={profilePicture}
-                    alt={name}
+                    src={props.student.profilePicture ?? ''}
+                    alt={props.student.name ?? ''}
                     className='rounded-full'
                 />
-                <Typography>{name}</Typography>
+                <Typography>{props.student.name}</Typography>
             </CardHeader>
             <CardContent className='space-y-2'>
-                <Image
-                    src={'https://picsum.photos/200/300'}
+                <iframe
+                    src={props.files[0].url}
                     width={200}
                     height={200}
-                    className='aspect-video h-24 object-cover'
-                    alt='file name'
+                    className='aspect-video max-h-24 w-full object-cover'
+                    // alt='file name'
                 />
 
-                <Typography affects={'muted'}>Submission file name</Typography>
+                <Typography affects={'muted'}>
+                    {prettyText(props.files[0].name)}
+                </Typography>
             </CardContent>
             <CardFooter>
                 <Typography className='text-sm text-primary'>
@@ -206,11 +229,15 @@ const OverviewSubmissionCard: React.FC<OverviewSubmissionCardProps> = ({
     );
 };
 
-const OverviewSubmissionCards = () => {
+const OverviewSubmissionCards = ({
+    submissions,
+}: {
+    submissions: SubmissionsAssignment[];
+}) => {
     return (
         <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-4'>
-            {DUMMY_STUDENT_SUBMISSIONS.map((item) => (
-                <OverviewSubmissionCard key={item.id} {...item.user} />
+            {submissions.map((item) => (
+                <OverviewSubmissionCard key={item.id} {...item} />
             ))}
         </div>
     );

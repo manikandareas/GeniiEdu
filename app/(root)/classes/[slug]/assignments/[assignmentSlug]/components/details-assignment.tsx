@@ -1,6 +1,9 @@
 import { buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
-import { FindDetailsAssignmentForStudentResponse } from '@/common/data-access/assignments';
+import {
+    FindDetailsAssignmentForStudentResponse,
+    FindDetailsAssignmentForTeacherResponse,
+} from '@/common/data-access/assignments';
 import { cn } from '@/common/libs/utils';
 import reactParser from 'html-react-parser';
 import Link from 'next/link';
@@ -8,7 +11,9 @@ import { ComponentProps } from 'react';
 import MaterialHeader from '../../../_components/material-header';
 
 type DetailsAssignmentProps = ComponentProps<'main'> & {
-    data: FindDetailsAssignmentForStudentResponse;
+    data:
+        | FindDetailsAssignmentForStudentResponse
+        | FindDetailsAssignmentForTeacherResponse;
 };
 
 const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({

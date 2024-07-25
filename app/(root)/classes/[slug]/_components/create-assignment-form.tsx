@@ -41,7 +41,7 @@ import {
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
 import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
-import { detailsClassQuery } from '@/common/hooks/details-class';
+import { detailsClassQuery } from '@/common/hooks/details-class-query';
 import { AssignmentsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
@@ -181,7 +181,7 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
         values: z.infer<typeof AssignmentsModel.createAssignmentSchema>,
     ) => {
         console.log(params.slug);
-        
+
         await executeCreateAssignment(values);
     };
 

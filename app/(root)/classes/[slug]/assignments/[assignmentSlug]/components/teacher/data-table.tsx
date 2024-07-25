@@ -11,10 +11,12 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
 } from '@/common/components/ui/table';
+import { Box } from 'lucide-react';
 
 type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
