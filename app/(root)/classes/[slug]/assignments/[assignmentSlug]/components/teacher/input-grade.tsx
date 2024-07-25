@@ -50,14 +50,13 @@ const InputGrade: React.FC<InputGradeProps> = ({ id, defaultValue }) => {
         if (localValue.length > 0) {
             setGrades(localValue);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Hanya dijalankan sekali saat komponen di-mount
 
     useEffect(() => {
-        // return () => {
         if (grades.length > 0) {
             setLocalValue(grades);
         }
-        // };
     }, [grades, setLocalValue]); // Fungsi cleanup dijalankan saat komponen di-unmount
 
     return (
