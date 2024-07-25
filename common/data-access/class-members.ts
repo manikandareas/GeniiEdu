@@ -4,7 +4,7 @@ import { Schema } from '../models';
 
 export const insertClassMember = async (
     input: InsertClassMemberInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'classMembers'> = {},
 ) => {
     return await (config.tx ? config.tx : db)
         .insert(Schema.classMembers)
@@ -14,7 +14,7 @@ export const insertClassMember = async (
 
 export const findMemberClasses = async (
     userId: string,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'classMembers'> = {},
 ) => {
     return await (config.tx ? config.tx : db).query.classMembers.findMany({
         where: (classMembers, { eq }) => eq(classMembers.userId, userId),

@@ -9,7 +9,7 @@ import { eq } from 'drizzle-orm';
 
 export const insertSubmission = async (
     input: InsertSubmissionInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'submissions'> = {},
 ) => {
     const [response] = await (config.tx ? config.tx : db)
         .insert(Schema.submissions)
@@ -21,7 +21,7 @@ export const insertSubmission = async (
 
 export const patchSubmission = async (
     input: PatchSubmissionInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'submissions'> = {},
 ) => {
     return await (config.tx ? config.tx : db)
         .update(Schema.submissions)
@@ -32,7 +32,7 @@ export const patchSubmission = async (
 
 export const findSubmissionById = async (
     id: string,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'submissions'> = {},
 ) => {
     return await (config.tx ? config.tx : db).query.submissions.findFirst({
         where: (submission, { eq }) => eq(submission.id, id),
