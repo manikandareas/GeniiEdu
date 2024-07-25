@@ -25,7 +25,7 @@ export const deleteFilesByKey = async (key: string[]) => {
 export const patchFiles = async (
     fileId: string,
     data: Partial<FilesType>,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'files'> = {},
 ) => {
     return await (config.tx ? config.tx : db)
         .update(Schema.files)

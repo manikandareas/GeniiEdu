@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
 
 export const insertAssignment = async (
     input: InsertAssignmentInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'assignments'> = {},
 ) => {
     const [response] = await (config.tx ? config.tx : db)
         .insert(Schema.assignments)
@@ -22,7 +22,7 @@ export const insertAssignment = async (
 export const findDetailsAssignmentForStudent = async (
     id: string,
     userId: string,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'assignments'> = {},
 ) => {
     return await (config.tx ? config.tx : db).query.assignments.findFirst({
         where: (assignment, { eq }) => eq(assignment.id, id),
@@ -56,7 +56,7 @@ export type FindDetailsAssignmentForStudentResponse = Awaited<
 export const findDetailsAssignmentForTeacher = async (
     id: string,
     userId: string,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'assignments'> = {},
 ) => {
     return await (config.tx ? config.tx : db).query.assignments.findFirst({
         where: (assignment, { eq, and }) =>
@@ -104,7 +104,7 @@ type FindDetailsAssignmentProps = {
 
 export const findDetailsAssignment = async (
     properties: FindDetailsAssignmentProps,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'assignments'> = {},
 ) => {
     const { user } = await validateRequest();
     if (user?.role === 'student') {
@@ -127,7 +127,7 @@ export type FindDetailsAssignmentResponse = Awaited<
 
 export const patchAssignment = async (
     input: PatchAssignmentInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'assignments'> = {},
 ) => {
     return await (config.tx ? config.tx : db)
         .update(Schema.assignments)

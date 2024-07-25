@@ -5,7 +5,7 @@ import { DataAccessConfig, InsertLearningMaterialInput } from './types';
 
 export const insertLearningMaterial = async (
     input: InsertLearningMaterialInput,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'learningMaterials'> = {},
 ) => {
     return await (config.tx ? config.tx : db)
         .insert(Schema.learningMaterials)
@@ -15,7 +15,7 @@ export const insertLearningMaterial = async (
 
 export const findDetailsLearningMaterial = async (
     id: string,
-    config: DataAccessConfig = {},
+    config: DataAccessConfig<'learningMaterials'> = {},
 ) => {
     return await (config.tx ? config.tx : db).query.learningMaterials.findFirst(
         {
