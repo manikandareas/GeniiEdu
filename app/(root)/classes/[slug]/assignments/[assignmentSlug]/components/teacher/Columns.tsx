@@ -1,36 +1,26 @@
 'use client';
 
-import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/common/components/ui/checkbox';
+import { InferResultType } from '@/common/data-access/types';
+import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
-import { Input } from '@/common/components/ui/input';
-import { cn } from '@/common/libs/utils';
 import InputGrade from './input-grade';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type SubmissionsAssignment = {
-    grade: string | null;
-    id: string;
-    updatedAt: Date | null;
-    assignmentId: string;
-    studentId: string;
-    isGraded: boolean;
-    submittedAt: Date;
-    student: {
-        id: string;
-        name: string | null;
-        email: string | null;
-        profilePicture: string | null;
-        username: string | null;
-    };
-    files: {
-        id: string;
-        url: string;
-        key: string;
-        name: string;
-    }[];
-};
+export type SubmissionsAssignment = InferResultType<
+    'submissions',
+    {
+        student: {
+            columns: {
+                id: true;
+                name: true;
+                email: true;
+                profilePicture: true;
+                username: true;
+            };
+        };
+        files: true;
+    }
+>;
 
 export const columns: ColumnDef<SubmissionsAssignment>[] = [
     {
