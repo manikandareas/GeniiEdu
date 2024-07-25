@@ -2,7 +2,12 @@ import { PgTransaction } from 'drizzle-orm/pg-core';
 import { TypeDB } from '../libs/DB';
 import { Schema } from '../models';
 import { PostgresJsQueryResultHKT } from 'drizzle-orm/postgres-js';
-import { DBQueryConfig, ExtractTablesWithRelations } from 'drizzle-orm';
+import {
+    BuildQueryResult,
+    DBQueryConfig,
+    eq,
+    ExtractTablesWithRelations,
+} from 'drizzle-orm';
 import db from '../libs/DB';
 
 export type InsertClassesInput = typeof Schema.classes._.inferInsert;
@@ -54,6 +59,25 @@ export type QueryRelationsConfig<TableName extends keyof TablesWithRelations> =
         >['0']
     >;
 
-// Testing it out
 export type QueryConfig<TableName extends keyof TablesWithRelations> =
     QueryRelationsConfig<TableName>;
+
+type TSchema = ExtractTablesWithRelations<typeof Schema>;
+
+export type IncludeRelation<TableName extends keyof TSchema> = DBQueryConfig<
+    'one' | 'many',
+    boolean,
+    TSchema,
+    TSchema[TableName]
+>['with'];
+
+export type InferResultType<
+    TableName extends keyof TSchema,
+    With extends IncludeRelation<TableName> | undefined = undefined,
+> = BuildQueryResult<
+    TSchema,
+    TSchema[TableName],
+    {
+        with: With;
+    }
+>;
