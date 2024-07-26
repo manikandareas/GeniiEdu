@@ -3,7 +3,6 @@ import {
     findDetailsAssignment,
     FindDetailsAssignmentForStudentResponse,
     FindDetailsAssignmentForTeacherResponse,
-    FindDetailsAssignmentResponse,
 } from '@/common/data-access/assignments';
 import { validateRequest } from '@/common/libs/lucia';
 import { decodeUuid } from '@/common/libs/utils';

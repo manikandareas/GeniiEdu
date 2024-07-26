@@ -25,5 +25,8 @@ export const findMemberClasses = async (
                 },
             },
         },
+        orderBy(fields, operators) {
+            return operators.asc(fields.joinedAt);
+        },
     });
 };
