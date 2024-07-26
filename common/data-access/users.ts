@@ -32,5 +32,8 @@ export const findStudentClasses = async (studentId: string) => {
                 },
             },
         },
+        orderBy(fields, operators) {
+            return operators.asc(fields.joinedAt);
+        },
     });
 };

@@ -17,6 +17,8 @@ import {
     TableRow,
 } from '@/common/components/ui/table';
 import { Box } from 'lucide-react';
+import useSearchParamsState from '@/common/hooks/useSearchParamsState';
+import { cn } from '@/common/libs/utils';
 
 type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
@@ -32,6 +34,17 @@ export function DataTable<TData, TValue>({
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
+
+    const { handleChange, searchParams } = useSearchParamsState();
+
+    const onRowClicked = (id: string) => {
+        if (searchParams.get('sb') === id) {
+            handleChange('sb', '');
+            return;
+        }
+
+        handleChange('sb', id);
+    };
 
     return (
         <div className='rounded-md border'>
@@ -61,6 +74,16 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && 'selected'}
+                                onClick={() =>
+                                    onRowClicked(
+                                        (row.original as any).id as string,
+                                    )
+                                }
+                                className={cn({
+                                    'bg-secondary':
+                                        ((row.original as any).id as string) ===
+                                        searchParams.get('sb'),
+                                })}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>

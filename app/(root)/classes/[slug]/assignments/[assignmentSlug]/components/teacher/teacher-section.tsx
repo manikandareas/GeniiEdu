@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/common/components/ui/button';
+import { Button, buttonVariants } from '@/common/components/ui/button';
 import {
     Select,
     SelectContent,
@@ -32,8 +32,10 @@ import { DataTable } from './data-table';
 import ReturnSubmissions from './return-submissions';
 import { useDetailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
 import SwitchAssignmentStatus from './switch-assignment-status';
-import { prettyText } from '@/common/libs/utils';
+import { cn, prettyText } from '@/common/libs/utils';
 import TooltipTable from './tooltip-table';
+import useSearchParamsState from '@/common/hooks/useSearchParamsState';
+import Link from 'next/link';
 
 type TeacherSectionProps = {
     initialData: FindDetailsAssignmentForTeacherResponse;
@@ -44,10 +46,8 @@ const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {
         assignmentId: initialData?.id as string,
         userId: initialData?.author.id as string,
     });
-    const queryData = data as FindDetailsAssignmentForTeacherResponse;
-
-    if (!queryData) return null;
-
+    const queryData =
+        data as NonNullable<FindDetailsAssignmentForTeacherResponse>;
     return (
         <main className='w-full px-4 py-4 md:px-6 md:py-0'>
             <Tabs defaultValue='studentAssignment' className=''>
@@ -174,7 +174,6 @@ const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {
                                         </div>
                                     </div>
 
-                                    {/* <div className='grid grid-cols-4'></div> */}
                                     <OverviewSubmissionCards
                                         submissions={
                                             initialData?.submissions ?? []
@@ -234,10 +233,71 @@ const OverviewSubmissionCards = ({
 }: {
     submissions: SubmissionsAssignment[];
 }) => {
+    const { handleChange, searchParams } = useSearchParamsState();
     return (
-        <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-4'>
-            {submissions.map((item) => (
-                <OverviewSubmissionCard key={item.id} {...item} />
+        <>
+            {!!!searchParams.get('sb') ? (
+                <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-4'>
+                    {submissions.map((item) => (
+                        <OverviewSubmissionCard key={item.id} {...item} />
+                    ))}
+                </div>
+            ) : (
+                <div className='flex flex-col gap-4'>
+                    {submissions
+                        .filter((item) => item.id === searchParams.get('sb'))
+                        .map((item) => (
+                            <DetailsSubmission key={item.id} data={item} />
+                        ))}
+                </div>
+            )}
+        </>
+    );
+};
+
+const DetailsSubmission: React.FC<{ data: SubmissionsAssignment }> = ({
+    data,
+}) => {
+    return (
+        <div className='flex flex-col gap-4'>
+            <div className='flex items-center gap-2'>
+                <Image
+                    src={data.student.profilePicture ?? ''}
+                    alt={data.student.name ?? ''}
+                    width={70}
+                    height={70}
+                    className='rounded-full'
+                />
+
+                <div>
+                    <Typography variant={'h4'}>{data.student.name}</Typography>
+                    <Typography affects={'muted'}>
+                        @{data.student.username}
+                    </Typography>
+                </div>
+            </div>
+            {[...data.files, ...data.files].map((file) => (
+                <div title={file.name} className='space-y-2' key={file.key}>
+                    <iframe
+                        src={file.url}
+                        className='aspect-video w-full rounded-md'
+                        allowFullScreen
+                    />
+                    <div className='flex items-center gap-2'>
+                        <p
+                            title={file.name}
+                            className='text-xs text-muted-foreground'
+                        >
+                            {prettyText(file.name, 40)}
+                        </p>
+                        <Link
+                            href={file.url}
+                            className={buttonVariants({ variant: 'link' })}
+                        >
+                            Details
+                        </Link>
+                    </div>
+                </div>
             ))}
         </div>
     );
