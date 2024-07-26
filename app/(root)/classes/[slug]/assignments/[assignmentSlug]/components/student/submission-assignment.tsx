@@ -122,9 +122,14 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <CardTitle>Assignment</CardTitle>
                     {props.data?.submissions &&
-                        props.data.submissions.length > 0 && (
-                            <CardDescription>Submitted</CardDescription>
-                        )}
+                    props.data.submissions.length > 0 &&
+                    props.data.submissions[0].isGraded ? (
+                        <CardDescription className='text-green-500'>
+                            Graded: {props.data.submissions[0].grade}
+                        </CardDescription>
+                    ) : (
+                        <CardDescription>Submitted</CardDescription>
+                    )}
                 </CardHeader>
                 <CardContent>
                     <input

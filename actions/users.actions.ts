@@ -3,12 +3,17 @@
 import { findMemberClasses } from '@/common/data-access/class-members';
 import { findUserByEmail, patchUser } from '@/common/data-access/users';
 import { validateRequest } from '@/common/libs/lucia';
-import { ActionError, actionProcedure } from '@/common/libs/safe-action';
+import {
+    ActionError,
+    actionProcedure,
+    authenticatedProcedure,
+} from '@/common/libs/safe-action';
 import { UsersModel } from '@/common/models';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import * as argon from 'argon2';
 
 /**
  * Handles the onboarding profile process for a user.
@@ -158,3 +163,85 @@ export const getUserClasses = async () => {
 };
 
 export type GetUserClassesResponse = Awaited<ReturnType<typeof getUserClasses>>;
+
+export const updateUserProfile = authenticatedProcedure
+    .metadata({
+        actionName: 'updateUserProfile',
+    })
+    .schema(UsersModel.updateProfileSchema)
+    .action(async ({ parsedInput, ctx }) => {
+        const { user } = ctx;
+
+        const response = await patchUser(
+            {
+                username: parsedInput.username,
+                email: parsedInput.email,
+                bio: parsedInput.bio,
+            },
+            user.id,
+        );
+
+        if (response.length === 0) {
+            throw new ActionError('User not found');
+        }
+
+        return {
+            message: 'Profile updated successfully',
+        };
+    });
+
+export const updateUserAccount = authenticatedProcedure
+    .metadata({
+        actionName: 'updateUserAccount',
+    })
+    .schema(UsersModel.updateAccountSchema)
+    .action(async ({ parsedInput, ctx }) => {
+        const { user } = ctx;
+        let response;
+
+        const userWithPassword = await findUserByEmail(user.email);
+
+        if (!userWithPassword) {
+            throw new ActionError('User not found');
+        }
+
+        // ? Check if the new password and confirm password match
+        // ? Do Update if they match
+        if (
+            parsedInput.newPassword &&
+            parsedInput.confirmPassword &&
+            parsedInput.currentPassword
+        ) {
+            if (parsedInput.newPassword !== parsedInput.confirmPassword) {
+                throw new ActionError('Passwords do not match');
+            }
+
+            const isPasswordMatch = await argon.verify(
+                userWithPassword.passwordHash as string,
+                parsedInput.currentPassword,
+            );
+
+            if (!isPasswordMatch) {
+                throw new ActionError('Incorrect password');
+            }
+
+            response = await patchUser(
+                {
+                    passwordHash: await argon.hash(parsedInput.newPassword),
+                    name: parsedInput.name,
+                },
+                user.id,
+            );
+        } else {
+            response = await patchUser(
+                {
+                    name: parsedInput.name,
+                },
+                user.id,
+            );
+        }
+
+        return {
+            message: 'Account updated successfully',
+        };
+    });

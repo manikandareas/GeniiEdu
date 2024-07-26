@@ -26,65 +26,87 @@ import {
 } from '@/common/components/ui/select';
 import { Textarea } from '@/common/components/ui/textarea';
 import { toast } from 'sonner';
+import { UsersModel } from '@/common/models';
+import useCurrentUser from '@/common/hooks/useCurrentUser';
+import { useAction } from 'next-safe-action/hooks';
+import { updateUserProfile } from '@/actions/users.actions';
 
-const profileFormSchema = z.object({
-    username: z
-        .string()
-        .min(2, {
-            message: 'Username must be at least 2 characters.',
-        })
-        .max(30, {
-            message: 'Username must not be longer than 30 characters.',
-        }),
-    email: z
-        .string({
-            required_error: 'Please select an email to display.',
-        })
-        .email(),
-    bio: z.string().max(160).min(4),
-    urls: z
-        .array(
-            z.object({
-                value: z.string().url({ message: 'Please enter a valid URL.' }),
-            }),
-        )
-        .optional(),
-});
+// const profileFormSchema = z.object({
+//     username: z
+//         .string()
+//         .min(2, {
+//             message: 'Username must be at least 2 characters.',
+//         })
+//         .max(30, {
+//             message: 'Username must not be longer than 30 characters.',
+//         }),
+//     email: z
+//         .string({
+//             required_error: 'Please select an email to display.',
+//         })
+//         .email(),
+//     bio: z.string().max(160).min(4),
+//     urls: z
+//         .array(
+//             z.object({
+//                 value: z.string().url({ message: 'Please enter a valid URL.' }),
+//             }),
+//         )
+//         .optional(),
+// });
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type ProfileFormValues = z.infer<typeof UsersModel.updateProfileSchema>;
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-    bio: 'I own a computer.',
-    urls: [
-        { value: 'https://shadcn.com' },
-        { value: 'http://twitter.com/shadcn' },
-    ],
-};
-
+/**
+ * Renders a form for updating the user's profile.
+ */
 export function ProfileForm() {
+    const user = useCurrentUser();
+
+    // This can come from your database or API.
+    const defaultValues: Partial<ProfileFormValues> = {
+        bio: user?.bio,
+        // urls: [
+        //     { value: 'https://shadcn.com' },
+        //     { value: 'http://twitter.com/shadcn' },
+        // ],
+        email: user?.email,
+        username: user?.username,
+    };
     const form = useForm<ProfileFormValues>({
-        resolver: zodResolver(profileFormSchema),
+        resolver: zodResolver(UsersModel.updateProfileSchema),
         defaultValues,
         mode: 'onChange',
     });
 
-    const { fields, append } = useFieldArray({
-        name: 'urls',
-        control: form.control,
+    const { executeAsync, isExecuting } = useAction(updateUserProfile, {
+        onSuccess: () => {
+            toast.success('Profile updated successfully');
+        },
+        onError: ({ error }) => {
+            toast.error(error.serverError);
+        },
     });
 
-    function onSubmit(data: ProfileFormValues) {
-        toast.success('You submitted the following values:', {
-            description: (
-                <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-                    <code className='text-white'>
-                        {JSON.stringify(data, null, 2)}
-                    </code>
-                </pre>
-            ),
+    async function onSubmit(data: ProfileFormValues) {
+        // toast.success('You submitted the following values:', {
+        //     description: (
+        //         <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+        //             <code className='text-white'>
+        //                 {JSON.stringify(data, null, 2)}
+        //             </code>
+        //         </pre>
+        //     ),
+        // });
+        await executeAsync({
+            bio: data.bio,
+            email: data.email,
+            username: data.username,
         });
     }
+    const isFormFilled = Object.values(form.formState.dirtyFields).some(
+        (value) => value,
+    );
 
     return (
         <Form {...form}>
@@ -113,33 +135,15 @@ export function ProfileForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email</FormLabel>
-                            <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder='Select a verified email to display' />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value='m@example.com'>
-                                        m@example.com
-                                    </SelectItem>
-                                    <SelectItem value='m@google.com'>
-                                        m@google.com
-                                    </SelectItem>
-                                    <SelectItem value='m@support.com'>
-                                        m@support.com
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <FormControl>
+                                <Input
+                                    placeholder='johnDoe@example.com'
+                                    {...field}
+                                />
+                            </FormControl>
                             <FormDescription>
-                                You can manage verified email addresses in your{' '}
-                                <Link href='/examples/forms'>
-                                    email settings
-                                </Link>
-                                .
+                                This is your email address. It will be used for
+                                communication and account-related notifications.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -166,7 +170,7 @@ export function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                <div>
+                {/* <div>
                     {fields.map((field, index) => (
                         <FormField
                             control={form.control}
@@ -202,8 +206,10 @@ export function ProfileForm() {
                     >
                         Add URL
                     </Button>
-                </div>
-                <Button type='submit'>Update profile</Button>
+                </div> */}
+                <Button disabled={isExecuting || !isFormFilled} type='submit'>
+                    {isExecuting ? 'Updating...' : 'Update profile'}
+                </Button>
             </form>
         </Form>
     );

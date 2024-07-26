@@ -37,6 +37,12 @@ import {
     ChevronDownIcon,
     SortAsc,
 } from 'lucide-react';
+import { UsersModel } from '@/common/models';
+import useCurrentUser from '@/common/hooks/useCurrentUser';
+import { useAction } from 'next-safe-action/hooks';
+import { updateAccountSchema } from '@/common/models/users.model';
+import { updateUserAccount } from '@/actions/users.actions';
+import { Password } from '@/common/components/ui/password';
 
 const languages = [
     { label: 'English', value: 'en' },
@@ -50,48 +56,67 @@ const languages = [
     { label: 'Chinese', value: 'zh' },
 ] as const;
 
-const accountFormSchema = z.object({
-    name: z
-        .string()
-        .min(2, {
-            message: 'Name must be at least 2 characters.',
-        })
-        .max(30, {
-            message: 'Name must not be longer than 30 characters.',
-        }),
-    dob: z.date({
-        required_error: 'A date of birth is required.',
-    }),
-    language: z.string({
-        required_error: 'Please select a language.',
-    }),
-});
+// const accountFormSchema = z.object({
+//     name: z
+//         .string()
+//         .min(2, {
+//             message: 'Name must be at least 2 characters.',
+//         })
+//         .max(30, {
+//             message: 'Name must not be longer than 30 characters.',
+//         }),
+//     dob: z.date({
+//         required_error: 'A date of birth is required.',
+//     }),
+//     language: z.string({
+//         required_error: 'Please select a language.',
+//     }),
+// });
 
-type AccountFormValues = z.infer<typeof accountFormSchema>;
-
-// This can come from your database or API.
-const defaultValues: Partial<AccountFormValues> = {
-    // name: "Your name",
-    // dob: new Date("2023-01-23"),
-};
+type AccountFormValues = z.infer<typeof UsersModel.updateAccountSchema>;
 
 export function AccountForm() {
+    const user = useCurrentUser();
+    const defaultValues: Partial<AccountFormValues> = {
+        // name: "Your name",
+        // dob: new Date("2023-01-23"),
+        confirmPassword: '',
+        name: user?.name,
+        currentPassword: '',
+        newPassword: '',
+    };
     const form = useForm<AccountFormValues>({
-        resolver: zodResolver(accountFormSchema),
+        resolver: zodResolver(UsersModel.updateAccountSchema),
         defaultValues,
     });
 
-    function onSubmit(data: AccountFormValues) {
-        toast('You submitted the following values:', {
-            description: (
-                <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-                    <code className='text-white'>
-                        {JSON.stringify(data, null, 2)}
-                    </code>
-                </pre>
-            ),
-        });
+    const { executeAsync, isExecuting } = useAction(updateUserAccount, {
+        onSuccess: ({ data }) => {
+            toast.success(data?.message);
+        },
+        onError: ({ error }) => {
+            toast.error(error.serverError);
+        },
+    });
+    async function onSubmit(data: AccountFormValues) {
+        // toast('You submitted the following values:', {
+        //     description: (
+        //         <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+        //             <code className='text-white'>
+        //                 {JSON.stringify(data, null, 2)}
+        //             </code>
+        //         </pre>
+        //     ),
+        // });
+        await executeAsync(data);
     }
+
+    // create variable type boolean to check if form filled by user and the value different with the default value
+
+    // create variable bellow for check if isFormFilled one of the value is true
+    const isFormFilled = Object.values(form.formState.dirtyFields).some(
+        (value) => value,
+    );
 
     return (
         <Form {...form}>
@@ -115,55 +140,54 @@ export function AccountForm() {
                 />
                 <FormField
                     control={form.control}
-                    name='dob'
+                    name='currentPassword'
                     render={({ field }) => (
                         <FormItem className='flex flex-col'>
-                            <FormLabel>Date of birth</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={'outline'}
-                                            className={cn(
-                                                'w-[240px] pl-3 text-left font-normal',
-                                                !field.value &&
-                                                    'text-muted-foreground',
-                                            )}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, 'PPP')
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                    className='w-auto p-0'
-                                    align='start'
-                                >
-                                    <Calendar
-                                        mode='single'
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date > new Date() ||
-                                            date < new Date('1900-01-01')
-                                        }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                                <Password placeholder='********' {...field} />
+                            </FormControl>
                             <FormDescription>
-                                Your date of birth is used to calculate your
-                                age.
+                                Please enter your password when you want to
+                                update your password.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <FormField
+                    control={form.control}
+                    name='newPassword'
+                    render={({ field }) => (
+                        <FormItem className='flex flex-col'>
+                            <FormLabel>Update Password</FormLabel>
+                            <FormControl>
+                                <Password placeholder='********' {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                Please enter your new password.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name='confirmPassword'
+                    render={({ field }) => (
+                        <FormItem className='flex flex-col'>
+                            <FormLabel>Confirmation Password</FormLabel>
+                            <FormControl>
+                                <Password placeholder='********' {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                Please enter your new password again to confirm.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                {/* <FormField
                     control={form.control}
                     name='language'
                     render={({ field }) => (
@@ -199,8 +223,10 @@ export function AccountForm() {
                             <FormMessage />
                         </FormItem>
                     )}
-                />
-                <Button type='submit'>Update account</Button>
+                /> */}
+                <Button disabled={isExecuting || !isFormFilled} type='submit'>
+                    Update account
+                </Button>
             </form>
         </Form>
     );
