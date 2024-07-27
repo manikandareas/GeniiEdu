@@ -23,6 +23,8 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import SelectedFile from '../selected-files';
+import { formatDate } from '@/common/libs/utils';
+import { formatDistance } from 'date-fns';
 
 type SubmissionAssignmentProps = {
     data: FindDetailsAssignmentForStudentResponse;
@@ -116,6 +118,15 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
     const isLoading =
         isUploading || statusSaveFile === 'executing' || isExecuting;
 
+    const isSubmittedEarlier =
+        (props.data?.submissions[0].submittedAt || new Date()) <
+        (props.data?.dueDate || new Date());
+
+    const timeDifference = formatDistance(
+        props.data?.submissions[0].submittedAt || new Date(),
+        props.data?.dueDate || new Date(),
+    );
+
     return (
         <aside className='mx-auto w-full max-w-sm space-y-4 md:mx-0'>
             <Card>
@@ -124,7 +135,7 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                     {props.data?.submissions &&
                     props.data.submissions.length > 0 &&
                     props.data.submissions[0].isGraded ? (
-                        <CardDescription className='text-green-500'>
+                        <CardDescription className='font-semibold text-green-500'>
                             Graded: {props.data.submissions[0].grade}
                         </CardDescription>
                     ) : (
@@ -216,6 +227,24 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                                 </p>
                             )}
                         </Button>
+                        {props.data?.submissions[0].submittedAt && (
+                            <span className='text-xs text-muted-foreground'>
+                                Submitted at{' '}
+                                {formatDate(
+                                    props.data?.submissions[0].submittedAt,
+                                )}
+                                ,{' '}
+                                {isSubmittedEarlier ? (
+                                    <span className='text-primary'>
+                                        {timeDifference} earlier
+                                    </span>
+                                ) : (
+                                    <span className='text-destructive'>
+                                        {timeDifference} late
+                                    </span>
+                                )}
+                            </span>
+                        )}
                     </div>
                 </CardContent>
             </Card>
