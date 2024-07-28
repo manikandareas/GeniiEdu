@@ -8,18 +8,16 @@ import {
     CardTitle,
 } from '@/common/components/ui/card';
 import { Input } from '@/common/components/ui/input';
-import { InferResultType } from '@/common/data-access/types';
 import { usePersonalCommentsQuery } from '@/common/hooks/personal-comments-query';
 import useCurrentUser from '@/common/hooks/useCurrentUser';
 import { pusherClient } from '@/common/libs/Pusher';
-import { cn, toPusherKey } from '@/common/libs/utils';
+import { toPusherKey } from '@/common/libs/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { SendHorizonal, User2 } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-
-export type Messages = InferResultType<'messages'>;
+import Comments from './comments';
 
 export namespace PersonalComments {
     export type Props = {
@@ -33,7 +31,6 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
     studentId,
 }) => {
     const user = useCurrentUser()!;
-    // FIXME: This is a bug, the data is not auto updated (subscribe to pusher) && not displayed
     const { data, isLoading } = usePersonalCommentsQuery({
         assignmentId,
         // if user.role === 'student' then user.id else studentId
@@ -82,15 +79,18 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
             ),
         );
 
-        pusherClient.bind('incoming-message', (message: Messages) => {
-            queryClient.invalidateQueries({
-                queryKey: [
-                    'personal-comments',
-                    assignmentId,
-                    studentId || user.id,
-                ],
-            });
-        });
+        pusherClient.bind(
+            'incoming-message',
+            (message: Comments.Props['comments'][number]) => {
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        'personal-comments',
+                        assignmentId,
+                        studentId || user.id,
+                    ],
+                });
+            },
+        );
         // pusherClient.bind('incoming-message', (message: Messages) => {
         //     setIncomingMessages((prev) => [...prev, message]);
         // });
@@ -116,7 +116,7 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
                 </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
-                <Comments messages={data?.messages} />
+                <Comments comments={data?.messages ?? []} />
                 <div className='flex items-center gap-2'>
                     <Input
                         id='commentInput'
@@ -136,41 +136,3 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
     );
 };
 export default PersonalComments;
-
-type CommentsProps = {
-    messages?: Messages[];
-};
-export const Comments: React.FC<CommentsProps> = ({ messages }) => {
-    const user = useCurrentUser()!;
-
-    useEffect(() => {
-        const commentContainer = document.getElementById('commentContainer');
-        commentContainer?.scrollTo({
-            top: commentContainer.scrollHeight,
-            behavior: 'smooth',
-        });
-    }, [messages]);
-
-    if (!messages || messages.length === 0) return null;
-    return (
-        <div
-            id='commentContainer'
-            className='max-h-[40vh] space-y-2 overflow-y-scroll'
-        >
-            {messages.map((item, i) => (
-                <div
-                    key={i}
-                    data-index={i}
-                    className={cn(
-                        'w-fit max-w-[80%] rounded-md bg-muted px-4 py-2',
-                        {
-                            'ml-auto bg-primary': user.id === item.senderId,
-                        },
-                    )}
-                >
-                    {item.content}
-                </div>
-            ))}
-        </div>
-    );
-};

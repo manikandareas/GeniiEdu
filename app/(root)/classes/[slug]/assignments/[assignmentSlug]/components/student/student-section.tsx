@@ -4,11 +4,13 @@ import DetailsAssignment from '../details-assignment';
 import PersonalComments from './personal-comments';
 import SubmissionAssignment from './submission-assignment';
 
-type StudentSectionProps = {
-    data: FindDetailsAssignmentForStudentResponse;
-};
+export namespace StudentSection {
+    export type Props = {
+        data: FindDetailsAssignmentForStudentResponse;
+    };
+}
 
-const StudentSection: React.FC<StudentSectionProps> = ({ data }) => {
+const StudentSection: React.FC<StudentSection.Props> = ({ data }) => {
     return (
         <div className='flex w-full flex-col gap-4 px-6 md:flex-row md:justify-center md:gap-4 2xl:px-0'>
             <DetailsAssignment data={data} />
