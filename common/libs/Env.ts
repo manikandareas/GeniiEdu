@@ -20,8 +20,12 @@ export const Env = createEnv({
         GOOGLE_CLIENT_SECRET: z.string().min(1),
         UPLOADTHING_APP_ID: z.string().min(1),
         UPLOADTHING_SECRET: z.string().min(1),
+        PUSHER_APP_ID: z.string().min(1),
+        PUSHER_APP_SECRET: z.string().min(1),
+        PUSHER_CLUSTER: z.string().min(1),
     },
     client: {
+        NEXT_PUBLIC_PUSHER_APP_KEY: z.string().min(1),
         NEXT_PUBLIC_APP_URL: z.string().optional(),
         NEXT_PUBLIC_AUTH_ROOT_PAGE: z.string().min(1),
     },
@@ -45,5 +49,9 @@ export const Env = createEnv({
         UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
         UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
         NEXT_PUBLIC_AUTH_ROOT_PAGE: process.env.NEXT_PUBLIC_AUTH_ROOT_PAGE,
+        PUSHER_APP_ID: process.env.PUSHER_APP_ID,
+        PUSHER_APP_SECRET: process.env.PUSHER_APP_SECRET,
+        PUSHER_CLUSTER: process.env.PUSHER_CLUSTER,
+        NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
     },
 });

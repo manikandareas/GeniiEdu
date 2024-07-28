@@ -317,6 +317,36 @@ export const studentProgress = pgTable('student_progress', {
     updatedAt,
 });
 
+export const assignmentPersonalChats = pgTable('assignment_personal_chats', {
+    id: text('room_chat_id')
+        .primaryKey()
+        .$defaultFn(() => uuidv7()),
+    assignmentId: text('assignment_id').references(() => assignments.id, {
+        onDelete: 'cascade',
+    }),
+    studentId: text('student_id').references(() => users.id, {
+        onDelete: 'cascade',
+    }),
+    createdAt,
+    updatedAt,
+});
+
+export const messages = pgTable('messages', {
+    id: serial('message_id').primaryKey(),
+    content: text('content').notNull(),
+    assignmentPersonalChatId: text('room_chat_id').references(
+        () => assignmentPersonalChats.id,
+        {
+            onDelete: 'cascade',
+        },
+    ),
+    senderId: text('sender_id').references(() => users.id, {
+        onDelete: 'cascade',
+    }),
+    createdAt,
+    updatedAt,
+});
+
 /**
  * Relations
  */
@@ -469,5 +499,31 @@ export const studentProgressRelations = relations(
         }),
     }),
 );
+
+export const assignmentPersonalChatsRelations = relations(
+    assignmentPersonalChats,
+    ({ one, many }) => ({
+        assignment: one(assignments, {
+            fields: [assignmentPersonalChats.assignmentId],
+            references: [assignments.id],
+        }),
+        student: one(users, {
+            fields: [assignmentPersonalChats.studentId],
+            references: [users.id],
+        }),
+        messages: many(messages),
+    }),
+);
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+    roomChat: one(assignmentPersonalChats, {
+        fields: [messages.assignmentPersonalChatId],
+        references: [assignmentPersonalChats.id],
+    }),
+    sender: one(users, {
+        fields: [messages.senderId],
+        references: [users.id],
+    }),
+}));
 
 export type FilesType = typeof files._.inferInsert;

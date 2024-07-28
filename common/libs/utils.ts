@@ -73,3 +73,7 @@ export const formatDate = (date: Date): string => {
         // return formatDistanceToNow(date, { addSuffix: true }); // Format: '2 hari yang lalu'
     }
 };
+
+export function toPusherKey(key: string) {
+    return key.replace(/:/g, '__');
+}

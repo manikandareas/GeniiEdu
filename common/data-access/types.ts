@@ -81,3 +81,13 @@ export type InferResultType<
         with: With;
     }
 >;
+
+export type InsertAssignmentPersonalCommentInput =
+    typeof Schema.assignmentPersonalChats._.inferInsert;
+
+export type PatchAssignmentPersonalCommentInput =
+    Partial<InsertAssignmentPersonalCommentInput>;
+
+export type InsertCommentInput = typeof Schema.messages._.inferInsert;
+
+export type PatchCommentInput = Partial<InsertCommentInput>;
