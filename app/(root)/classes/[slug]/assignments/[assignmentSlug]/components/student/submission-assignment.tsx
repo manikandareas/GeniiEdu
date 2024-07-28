@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import SelectedFile from '../selected-files';
 import { formatDate } from '@/common/libs/utils';
 import { formatDistance } from 'date-fns';
+import PersonalComments from './personal-comments';
 
 type SubmissionAssignmentProps = {
     data: FindDetailsAssignmentForStudentResponse;
@@ -128,141 +129,121 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
     );
 
     return (
-        <aside className='mx-auto w-full max-w-sm space-y-4 md:mx-0'>
-            <Card>
-                <CardHeader className='flex flex-row items-center justify-between'>
-                    <CardTitle>Assignment</CardTitle>
-                    {props.data?.submissions &&
-                    props.data.submissions.length > 0 &&
-                    props.data.submissions[0].isGraded ? (
-                        <CardDescription className='font-semibold text-green-500'>
-                            Graded: {props.data.submissions[0].grade}
-                        </CardDescription>
-                    ) : (
-                        <CardDescription>Submitted</CardDescription>
-                    )}
-                </CardHeader>
-                <CardContent>
-                    <input
-                        type='file'
-                        id='fileUploader'
-                        hidden
-                        onChange={handleChange}
-                        accept='image/*,  .pdf, .doc, .docx'
-                    />
-                    <div className='flex flex-col gap-4'>
-                        {!userSubmission &&
-                            submissionFiles.length > 0 &&
-                            submissionFiles.map((file) => (
-                                <SelectedFile
-                                    onXClicked={onXClicked}
-                                    key={file.id}
-                                    file={file}
-                                    isStatic={false}
-                                />
-                            ))}
+        <Card>
+            <CardHeader className='flex flex-row items-center justify-between'>
+                <CardTitle>Assignment</CardTitle>
+                {props.data?.submissions &&
+                props.data.submissions.length > 0 &&
+                props.data.submissions[0].isGraded ? (
+                    <CardDescription className='font-semibold text-green-500'>
+                        Graded: {props.data.submissions[0].grade}
+                    </CardDescription>
+                ) : (
+                    <CardDescription>Submitted</CardDescription>
+                )}
+            </CardHeader>
+            <CardContent>
+                <input
+                    type='file'
+                    id='fileUploader'
+                    hidden
+                    onChange={handleChange}
+                    accept='image/*,  .pdf, .doc, .docx'
+                />
+                <div className='flex flex-col gap-4'>
+                    {!userSubmission &&
+                        submissionFiles.length > 0 &&
+                        submissionFiles.map((file) => (
+                            <SelectedFile
+                                onXClicked={onXClicked}
+                                key={file.id}
+                                file={file}
+                                isStatic={false}
+                            />
+                        ))}
 
-                        {userSubmission &&
-                            userSubmission.files.map((file) => (
-                                <SelectedFile
-                                    onXClicked={onXClicked}
-                                    key={file.id}
-                                    file={file}
-                                    isStatic={true}
-                                />
-                            ))}
-                        {!!!userSubmission && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        disabled={
-                                            isUploading || !!userSubmission
-                                        }
-                                        className='flex items-center gap-2 bg-secondary text-primary hover:bg-secondary/80'
-                                    >
-                                        <Plus size={16} />
-                                        <span>Add or Create</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className='w-80'>
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            document
-                                                ?.getElementById('fileUploader')
-                                                ?.click()
-                                        }
-                                    >
-                                        Attach Files
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem disabled>
-                                        Create new Word
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem disabled>
-                                        Add Youtube source
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
-                        <Button
-                            onClick={() =>
-                                executeCreateSubmissions({
-                                    files: submissionFiles,
-                                })
-                            }
-                            disabled={isLoading}
-                        >
-                            {!isExecuting ? (
-                                !!userSubmission ? (
-                                    'Cancel Submission'
-                                ) : (
-                                    'Turn in'
-                                )
+                    {userSubmission &&
+                        userSubmission.files.map((file) => (
+                            <SelectedFile
+                                onXClicked={onXClicked}
+                                key={file.id}
+                                file={file}
+                                isStatic={true}
+                            />
+                        ))}
+                    {!!!userSubmission && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    disabled={isUploading || !!userSubmission}
+                                    className='flex items-center gap-2 bg-secondary text-primary hover:bg-secondary/80'
+                                >
+                                    <Plus size={16} />
+                                    <span>Add or Create</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-80'>
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        document
+                                            ?.getElementById('fileUploader')
+                                            ?.click()
+                                    }
+                                >
+                                    Attach Files
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    Create new Word
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    Add Youtube source
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                    <Button
+                        onClick={() =>
+                            executeCreateSubmissions({
+                                files: submissionFiles,
+                            })
+                        }
+                        disabled={isLoading}
+                    >
+                        {!isExecuting ? (
+                            !!userSubmission ? (
+                                'Cancel Submission'
                             ) : (
-                                <p className='animate-pulse'>
-                                    <Loader2
-                                        className='mr-1 inline animate-spin'
-                                        size={18}
-                                    />{' '}
-                                    Turn in
-                                </p>
-                            )}
-                        </Button>
-                        {props.data?.submissions[0].submittedAt && (
-                            <span className='text-xs text-muted-foreground'>
-                                Submitted at{' '}
-                                {formatDate(
-                                    props.data?.submissions[0].submittedAt,
-                                )}
-                                ,{' '}
-                                {isSubmittedEarlier ? (
-                                    <span className='text-primary'>
-                                        {timeDifference} earlier
-                                    </span>
-                                ) : (
-                                    <span className='text-destructive'>
-                                        {timeDifference} late
-                                    </span>
-                                )}
-                            </span>
+                                'Turn in'
+                            )
+                        ) : (
+                            <p className='animate-pulse'>
+                                <Loader2
+                                    className='mr-1 inline animate-spin'
+                                    size={18}
+                                />{' '}
+                                Turn in
+                            </p>
                         )}
-                    </div>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader className=''>
-                    <CardTitle className='flex items-center gap-2 text-xl'>
-                        <User2 size={20} />
-                        <span>Personal Comments</span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='flex items-center gap-2'>
-                    <Input placeholder='Add a comment for your teacher...' />
-                    <Button variant={'ghost'} size={'icon'}>
-                        <SendHorizonal size={16} />
                     </Button>
-                </CardContent>
-            </Card>
-        </aside>
+                    {props.data?.submissions[0].submittedAt && (
+                        <span className='text-xs text-muted-foreground'>
+                            Submitted at{' '}
+                            {formatDate(props.data?.submissions[0].submittedAt)}
+                            ,{' '}
+                            {isSubmittedEarlier ? (
+                                <span className='text-primary'>
+                                    {timeDifference} earlier
+                                </span>
+                            ) : (
+                                <span className='text-destructive'>
+                                    {timeDifference} late
+                                </span>
+                            )}
+                        </span>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 export default SubmissionAssignment;

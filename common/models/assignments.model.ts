@@ -19,14 +19,8 @@ export const createAssignmentSchema = z.object({
         .optional(),
 });
 
-// description: string;
-// title: string;
-// authorId: string;
-// dueDate: Date;
-// classId: string;
-// id?: string | undefined;
-// createdAt?: Date | null | undefined;
-// updatedAt?: Date | null | undefined;
-// filePath?: string | ... 1 more ... | undefined;
-// isOpen?: boolean | undefined;
-// publishedAt?: Date | undefined;
+export const sendPersonalCommentSchema = z.object({
+    comment: z.string(),
+    studentId: z.string(),
+    assignmentId: z.string(),
+});

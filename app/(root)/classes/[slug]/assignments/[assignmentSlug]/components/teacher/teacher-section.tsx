@@ -13,10 +13,9 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/common/components/ui/tabs';
-import { BoxSelectIcon, Flag, Info, Mail, Settings } from 'lucide-react';
+import { Mail, Settings } from 'lucide-react';
 import DetailsAssignment from '../details-assignment';
 
-import { Switch } from '@/common/components/ui/switch';
 import Typography from '@/common/components/ui/typography';
 
 import {
@@ -26,16 +25,17 @@ import {
     CardHeader,
 } from '@/common/components/ui/card';
 import { FindDetailsAssignmentForTeacherResponse } from '@/common/data-access/assignments';
+import { useDetailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
+import useSearchParamsState from '@/common/hooks/useSearchParamsState';
+import { prettyText } from '@/common/libs/utils';
 import Image from 'next/image';
+import Link from 'next/link';
 import { columns, SubmissionsAssignment } from './Columns';
 import { DataTable } from './data-table';
 import ReturnSubmissions from './return-submissions';
-import { useDetailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
 import SwitchAssignmentStatus from './switch-assignment-status';
-import { cn, prettyText } from '@/common/libs/utils';
 import TooltipTable from './tooltip-table';
-import useSearchParamsState from '@/common/hooks/useSearchParamsState';
-import Link from 'next/link';
+import PersonalComments from '../student/personal-comments';
 
 type TeacherSectionProps = {
     initialData: FindDetailsAssignmentForTeacherResponse;
@@ -276,7 +276,7 @@ const DetailsSubmission: React.FC<{ data: SubmissionsAssignment }> = ({
                     </Typography>
                 </div>
             </div>
-            {[...data.files, ...data.files].map((file) => (
+            {data.files.map((file) => (
                 <div title={file.name} className='space-y-2' key={file.key}>
                     <iframe
                         src={file.url}
@@ -299,6 +299,11 @@ const DetailsSubmission: React.FC<{ data: SubmissionsAssignment }> = ({
                     </div>
                 </div>
             ))}
+
+            <PersonalComments
+                assignmentId={data.assignmentId}
+                studentId={data.studentId}
+            />
         </div>
     );
 };
