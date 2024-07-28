@@ -15,9 +15,10 @@ import { toPusherKey } from '@/common/libs/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { SendHorizonal, User2 } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Comments from './comments';
+import { Skeleton } from '@/common/components/ui/skeleton';
 
 export namespace PersonalComments {
     export type Props = {
@@ -40,9 +41,9 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
     const defaultId = 'default';
     const queryClient = useQueryClient();
 
-    // const [incomingMessages, setIncomingMessages] = useState<Messages[]>(
-    //     initialData?.messages!,
-    // );
+    // const [incomingMessages, setIncomingMessages] = useState<
+    //     Comments.Props['comments']
+    // >(data?.messages ?? []);
 
     const { executeAsync: executeSendPersonalComment, isExecuting } = useAction(
         sendPersonalComment,
@@ -55,12 +56,23 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
                 commentInput.value = '';
             },
             onError: ({ error }) => {
-                toast.error(error.serverError);
+                if (error.serverError) {
+                    toast.error(error.serverError);
+                    return;
+                } else if (
+                    error.validationErrors &&
+                    error.validationErrors.comment
+                ) {
+                    toast.error(error.validationErrors.comment._errors);
+                    return;
+                }
+                toast.error('An error occurred');
             },
         },
     );
 
-    const onSendClicked = () => {
+    const onSubmit = (e: FormEvent) => {
+        e.preventDefault();
         const commentInput = document.getElementById(
             'commentInput',
         ) as HTMLInputElement;
@@ -89,6 +101,11 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
                         studentId || user.id,
                     ],
                 });
+
+                // queryClient.setQueryData(
+                //     ['personal-comments', assignmentId, studentId || user.id],
+                //     [...(data?.messages ?? []), message],
+                // );
             },
         );
         // pusherClient.bind('incoming-message', (message: Messages) => {
@@ -116,21 +133,22 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
                 </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
+                {isLoading && <Skeleton className='h-10 w-full rounded-md' />}
                 <Comments comments={data?.messages ?? []} />
-                <div className='flex items-center gap-2'>
+                <form onSubmit={onSubmit} className='flex items-center gap-2'>
                     <Input
                         id='commentInput'
                         placeholder='Add a comment for your teacher...'
                     />
                     <Button
-                        onClick={onSendClicked}
-                        disabled={isExecuting}
-                        variant={'ghost'}
+                        disabled={isExecuting || isLoading}
+                        variant={'outline'}
                         size={'icon'}
+                        type='submit'
                     >
                         <SendHorizonal size={16} />
                     </Button>
-                </div>
+                </form>
             </CardContent>
         </Card>
     );
