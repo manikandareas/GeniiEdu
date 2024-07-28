@@ -1,7 +1,8 @@
 'use client';
+import Typography from '@/common/components/ui/typography';
 import { InferResultType } from '@/common/data-access/types';
 import useCurrentUser from '@/common/hooks/useCurrentUser';
-import { cn } from '@/common/libs/utils';
+import { cn, formatDate } from '@/common/libs/utils';
 import { useEffect } from 'react';
 
 namespace Comments {
@@ -31,13 +32,28 @@ const Comments: React.FC<Comments.Props> = ({ comments }) => {
                     key={i}
                     data-index={i}
                     className={cn(
-                        'w-fit max-w-[80%] rounded-md bg-muted px-4 py-2',
+                        'flex w-fit max-w-[80%] flex-col gap-y-1 rounded-md bg-muted px-4 py-2',
                         {
-                            'ml-auto bg-primary': user.id === item.senderId,
+                            'ml-auto items-end bg-primary':
+                                user.id === item.senderId,
                         },
                     )}
                 >
-                    {item.content}
+                    <Typography
+                        variant={'p'}
+                        className={cn('font-medium', {
+                            'text-secondary': user.id === item.senderId,
+                        })}
+                    >
+                        {item.content}
+                    </Typography>
+                    <span
+                        className={cn('text-xs text-muted-foreground', {
+                            'text-secondary': user.id === item.senderId,
+                        })}
+                    >
+                        {formatDate(item.createdAt ?? new Date())}
+                    </span>
                 </div>
             ))}
         </div>

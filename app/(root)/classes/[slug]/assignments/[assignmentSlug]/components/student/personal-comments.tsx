@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import Comments from './comments';
 import { Skeleton } from '@/common/components/ui/skeleton';
 
-export namespace PersonalComments {
+namespace PersonalComments {
     export type Props = {
         assignmentId: string;
         studentId?: string;
