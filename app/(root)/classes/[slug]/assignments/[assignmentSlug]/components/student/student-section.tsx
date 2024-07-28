@@ -4,7 +4,7 @@ import DetailsAssignment from '../details-assignment';
 import PersonalComments from './personal-comments';
 import SubmissionAssignment from './submission-assignment';
 
-export namespace StudentSection {
+namespace StudentSection {
     export type Props = {
         data: FindDetailsAssignmentForStudentResponse;
     };

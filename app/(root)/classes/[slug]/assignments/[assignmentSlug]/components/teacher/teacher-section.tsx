@@ -276,29 +276,32 @@ const DetailsSubmission: React.FC<{ data: SubmissionsAssignment }> = ({
                     </Typography>
                 </div>
             </div>
-            {data.files.map((file) => (
-                <div title={file.name} className='space-y-2' key={file.key}>
-                    <iframe
-                        src={file.url}
-                        className='aspect-video w-full rounded-md'
-                        allowFullScreen
-                    />
-                    <div className='flex items-center gap-2'>
-                        <p
-                            title={file.name}
-                            className='text-xs text-muted-foreground'
-                        >
-                            {prettyText(file.name, 40)}
-                        </p>
-                        <Link
-                            href={file.url}
-                            className={buttonVariants({ variant: 'link' })}
-                        >
-                            Details
-                        </Link>
+
+            <div className='flex gap-2'>
+                {data.files.map((file) => (
+                    <div title={file.name} className='space-y-2' key={file.key}>
+                        <iframe
+                            src={file.url}
+                            className='aspect-video w-60 rounded-md'
+                            allowFullScreen
+                        />
+                        <div className='flex items-center gap-2'>
+                            <p
+                                title={file.name}
+                                className='text-xs text-muted-foreground'
+                            >
+                                {prettyText(file.name, 40)}
+                            </p>
+                            <Link
+                                href={file.url}
+                                className={buttonVariants({ variant: 'link' })}
+                            >
+                                Details
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
 
             <PersonalComments
                 assignmentId={data.assignmentId}
