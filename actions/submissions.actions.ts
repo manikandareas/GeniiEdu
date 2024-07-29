@@ -1,5 +1,9 @@
 'use server';
-import { findDetailsAssignment } from '@/common/data-access/assignments';
+import {
+    findAssignment,
+    findDetailsAssignment,
+    findDetailsAssignmentForStudent,
+} from '@/common/data-access/assignments';
 import { patchFiles } from '@/common/data-access/files';
 import {
     findSubmissionById,
@@ -24,9 +28,19 @@ export const createSubmission = studentProcedure
         async ({ ctx, parsedInput, bindArgsParsedInputs: [assignmentId] }) => {
             const { user } = ctx;
 
+            const assignment = await findAssignment(assignmentId);
+
+            if (!assignment) {
+                throw new ActionError('Assignment not found');
+            }
+
+            if (!assignment.isOpen) {
+                throw new ActionError('Assignment is closed');
+            }
+
             const insertedSubmission = await insertSubmission({
                 studentId: user.id,
-                assignmentId: assignmentId,
+                assignmentId: assignment.id,
             });
 
             if (!insertedSubmission) {

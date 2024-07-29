@@ -19,6 +19,15 @@ export const insertAssignment = async (
     return response;
 };
 
+export const findAssignment = async (
+    assignmentId: string,
+    config: DataAccessConfig<'assignments'> = {},
+) => {
+    return await (config.tx ? config.tx : db).query.assignments.findFirst({
+        where: (assignment, { eq }) => eq(assignment.id, assignmentId),
+    });
+};
+
 export const findDetailsAssignmentForStudent = async (
     id: string,
     userId: string,
