@@ -1,15 +1,12 @@
+import { eq } from 'drizzle-orm';
+import db from '../libs/DB';
+import { validateRequest } from '../libs/lucia';
+import { Schema } from '../models';
 import {
     DataAccessConfig,
     InsertAssignmentInput,
-    InsertAssignmentPersonalCommentInput,
-    InsertCommentInput,
     PatchAssignmentInput,
 } from './types';
-import db from '../libs/DB';
-import { Schema } from '../models';
-import { validateRequest } from '../libs/lucia';
-import { eq } from 'drizzle-orm';
-import { messages } from '../models/schema.model';
 
 export const insertAssignment = async (
     input: InsertAssignmentInput,
@@ -137,49 +134,4 @@ export const patchAssignment = async (
         .set(input)
         .where(eq(Schema.assignments.id, input.id!))
         .returning();
-};
-
-export const createAssignmentPersonalComment = async (
-    input: InsertAssignmentPersonalCommentInput,
-    config: DataAccessConfig<'assignmentPersonalChats'> = {},
-) => {
-    const [response] = await (config.tx ? config.tx : db)
-        .insert(Schema.assignmentPersonalChats)
-        .values(input)
-        .returning();
-
-    return response;
-};
-
-type FindAssignmentPersonalCommentsProps = {
-    assignmentId: string;
-    studentId: string;
-};
-export const findAssignmentPersonalComments = async (
-    properties: FindAssignmentPersonalCommentsProps,
-    config: DataAccessConfig<'assignmentPersonalChats'> = {},
-) => {
-    return await (
-        config.tx ? config.tx : db
-    ).query.assignmentPersonalChats.findFirst({
-        where: (chat, { eq, and }) =>
-            and(
-                eq(chat.assignmentId, properties.assignmentId),
-                eq(chat.studentId, properties.studentId),
-            ),
-        with: {
-            messages: true,
-        },
-    });
-};
-
-export const insertPersonalComment = async (
-    input: InsertCommentInput,
-    config: DataAccessConfig<'messages'> = {},
-) => {
-    const [response] = await (config.tx ? config.tx : db)
-        .insert(Schema.messages)
-        .values(input)
-        .returning();
-    return response;
 };

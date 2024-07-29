@@ -317,25 +317,28 @@ export const studentProgress = pgTable('student_progress', {
     updatedAt,
 });
 
-export const assignmentPersonalChats = pgTable('assignment_personal_chats', {
-    id: text('room_chat_id')
-        .primaryKey()
-        .$defaultFn(() => uuidv7()),
-    assignmentId: text('assignment_id').references(() => assignments.id, {
-        onDelete: 'cascade',
-    }),
-    studentId: text('student_id').references(() => users.id, {
-        onDelete: 'cascade',
-    }),
-    createdAt,
-    updatedAt,
-});
+export const assignmentPersonalComments = pgTable(
+    'assignment_personal_comments',
+    {
+        id: text('assignment_personal_comment_id')
+            .primaryKey()
+            .$defaultFn(() => uuidv7()),
+        assignmentId: text('assignment_id').references(() => assignments.id, {
+            onDelete: 'cascade',
+        }),
+        studentId: text('student_id').references(() => users.id, {
+            onDelete: 'cascade',
+        }),
+        createdAt,
+        updatedAt,
+    },
+);
 
-export const messages = pgTable('messages', {
-    id: serial('message_id').primaryKey(),
+export const comments = pgTable('comments', {
+    id: serial('comment_id').primaryKey(),
     content: text('content').notNull(),
-    assignmentPersonalChatId: text('room_chat_id').references(
-        () => assignmentPersonalChats.id,
+    assignmentPersonalChatId: text('room_id').references(
+        () => assignmentPersonalComments.id,
         {
             onDelete: 'cascade',
         },
@@ -500,28 +503,28 @@ export const studentProgressRelations = relations(
     }),
 );
 
-export const assignmentPersonalChatsRelations = relations(
-    assignmentPersonalChats,
+export const assignmentPersonalCommentsRelations = relations(
+    assignmentPersonalComments,
     ({ one, many }) => ({
         assignment: one(assignments, {
-            fields: [assignmentPersonalChats.assignmentId],
+            fields: [assignmentPersonalComments.assignmentId],
             references: [assignments.id],
         }),
         student: one(users, {
-            fields: [assignmentPersonalChats.studentId],
+            fields: [assignmentPersonalComments.studentId],
             references: [users.id],
         }),
-        messages: many(messages),
+        messages: many(comments),
     }),
 );
 
-export const messagesRelations = relations(messages, ({ one }) => ({
-    roomChat: one(assignmentPersonalChats, {
-        fields: [messages.assignmentPersonalChatId],
-        references: [assignmentPersonalChats.id],
+export const commentsRelations = relations(comments, ({ one }) => ({
+    roomChat: one(assignmentPersonalComments, {
+        fields: [comments.assignmentPersonalChatId],
+        references: [assignmentPersonalComments.id],
     }),
     sender: one(users, {
-        fields: [messages.senderId],
+        fields: [comments.senderId],
         references: [users.id],
     }),
 }));

@@ -1,4 +1,4 @@
-import { getAssignmentPersonalComments } from '@/actions/assignments.actions';
+import { getPersonalComments } from '@/actions/personal-comments.actions';
 import { useQuery } from '@tanstack/react-query';
 
 export const usePersonalCommentsQuery = ({
@@ -11,7 +11,7 @@ export const usePersonalCommentsQuery = ({
     return useQuery({
         queryKey: ['personal-comments', assignmentId, studentId],
         queryFn: () =>
-            getAssignmentPersonalComments({
+            getPersonalComments({
                 assignmentId,
                 studentId,
             }),
