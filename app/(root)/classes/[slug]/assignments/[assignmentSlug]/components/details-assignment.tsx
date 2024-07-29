@@ -11,18 +11,18 @@ import { ComponentProps } from 'react';
 import MaterialHeader from '../../../_components/material-header';
 
 type DetailsAssignmentProps = ComponentProps<'main'> & {
-    data:
+    initialData:
         | FindDetailsAssignmentForStudentResponse
         | FindDetailsAssignmentForTeacherResponse;
 };
 
 const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({
     className,
-    data,
+    initialData,
 }) => {
-    if (!data) return null;
+    if (!initialData) return null;
 
-    const assignmentFiles = data.files ?? [];
+    const assignmentFiles = initialData.files ?? [];
     return (
         <main
             className={cn(
@@ -31,14 +31,14 @@ const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({
             )}
         >
             <MaterialHeader
-                authorName={data.author.name ?? ''}
+                authorName={initialData.author.name ?? ''}
                 icon='assignment'
-                title={data.title}
-                createdAt={data.createdAt}
+                title={initialData.title}
+                createdAt={initialData.createdAt}
             />
 
             <section className='space-y-4 px-4 py-4 md:px-14'>
-                {reactParser(data.description)}
+                {reactParser(initialData.description)}
                 {assignmentFiles.map((file) => (
                     <div key={file.key}>
                         <iframe
