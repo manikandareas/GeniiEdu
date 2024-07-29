@@ -1,3 +1,4 @@
+import 'server-only';
 import * as schema from '@/common/models/schema.model';
 import { Env } from './Env';
 import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js';

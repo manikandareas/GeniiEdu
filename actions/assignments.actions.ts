@@ -1,22 +1,13 @@
 'use server';
 
 import {
-    createAssignmentPersonalComment,
-    findAssignmentPersonalComments,
     findDetailsAssignment,
     insertAssignment,
-    insertPersonalComment,
     patchAssignment,
 } from '@/common/data-access/assignments';
 import { isOwnerOfClass } from '@/common/data-access/classes';
 import { patchFiles } from '@/common/data-access/files';
-import { pusherServer } from '@/common/libs/Pusher';
-import {
-    ActionError,
-    authenticatedProcedure,
-    teacherProcedure,
-} from '@/common/libs/safe-action';
-import { toPusherKey } from '@/common/libs/utils';
+import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
 import { AssignmentsModel } from '@/common/models';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -120,68 +111,3 @@ export const toggleAssignmentStatus = teacherProcedure
             message: 'Assignment status toggled successfully',
         };
     });
-
-export const sendPersonalComment = authenticatedProcedure
-    .metadata({
-        actionName: 'sendPersonalComment',
-    })
-    .schema(AssignmentsModel.sendPersonalCommentSchema)
-    .action(async ({ parsedInput, ctx }) => {
-        const { user } = ctx;
-
-        let room = await findAssignmentPersonalComments({
-            assignmentId: parsedInput.assignmentId,
-            studentId: parsedInput.studentId,
-        });
-
-        if (!room) {
-            const createdRoom = await createAssignmentPersonalComment({
-                assignmentId: parsedInput.assignmentId,
-                studentId: parsedInput.studentId,
-            });
-            room = {
-                ...createdRoom,
-                messages: [],
-            };
-        }
-
-        const insertedComment = await insertPersonalComment({
-            senderId: user.id,
-            content: parsedInput.comment,
-            assignmentPersonalChatId: room.id,
-        });
-
-        pusherServer.trigger(
-            toPusherKey(
-                `personal_comments:${parsedInput.assignmentId}:${parsedInput.studentId || user.id}`,
-            ),
-            'incoming-message',
-            insertedComment,
-        );
-
-        if (!insertedComment) {
-            throw new ActionError('Failed to send message');
-        }
-
-        return {
-            message: 'Message sent successfully',
-        };
-    });
-
-type GetAssignmentPersonalCommentsProps = {
-    studentId: string;
-    assignmentId: string;
-};
-export const getAssignmentPersonalComments = async (
-    props: GetAssignmentPersonalCommentsProps,
-) => {
-    const response = await findAssignmentPersonalComments({
-        assignmentId: props.assignmentId,
-        studentId: props.studentId,
-    });
-
-    if (!response) {
-        throw new ActionError('Failed to get personal comments');
-    }
-    return response;
-};

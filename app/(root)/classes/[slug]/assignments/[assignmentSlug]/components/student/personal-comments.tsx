@@ -1,5 +1,4 @@
 'use client';
-import { sendPersonalComment } from '@/actions/assignments.actions';
 import { Button } from '@/common/components/ui/button';
 import {
     Card,
@@ -19,6 +18,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Comments from './comments';
 import { Skeleton } from '@/common/components/ui/skeleton';
+import { sendPersonalComment } from '@/actions/personal-comments.actions';
 
 namespace PersonalComments {
     export type Props = {

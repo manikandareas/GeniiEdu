@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 namespace Comments {
     export type Props = {
-        comments: InferResultType<'messages'>[];
+        comments: InferResultType<'comments'>[];
     };
 }
 const Comments: React.FC<Comments.Props> = ({ comments }) => {
