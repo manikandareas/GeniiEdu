@@ -25,7 +25,7 @@ import { DataTable } from './data-table';
 import PreviewSubmissions from './preview-submissions';
 import ReturnSubmissions from './return-submissions';
 import SwitchAssignmentStatus from './switch-assignment-status';
-import TooltipTable from './tooltip-table';
+import HintTable from './hint-table';
 
 type TeacherSectionProps = {
     initialData: FindDetailsAssignmentForTeacherResponse;
@@ -91,7 +91,7 @@ const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {
                                     columns={columns}
                                     data={queryData?.submissions ?? []}
                                 />
-                                <TooltipTable />
+                                <HintTable />
                             </div>
                             <div className='hidden h-screen w-full lg:block'>
                                 <div className='space-y-2 p-4'>

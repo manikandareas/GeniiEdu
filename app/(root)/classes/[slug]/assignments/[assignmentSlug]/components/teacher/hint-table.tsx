@@ -1,8 +1,8 @@
 import { Flag } from 'lucide-react';
 
-type TooltipTableProps = {};
+type HintTableProps = {};
 
-const TooltipTable: React.FC<TooltipTableProps> = () => {
+const HintTable: React.FC<HintTableProps> = () => {
     return (
         <div className='flex items-center justify-evenly py-1'>
             <div className='flex items-center gap-1.5'>
@@ -22,4 +22,4 @@ const TooltipTable: React.FC<TooltipTableProps> = () => {
         </div>
     );
 };
-export default TooltipTable;
+export default HintTable;
