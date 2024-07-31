@@ -8,7 +8,7 @@ const GridContainer: React.FC<GridContainerProps> = (props) => {
         <main
             {...rest}
             className={cn(
-                'grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-10 lg:grid-cols-3 xl:grid-cols-4',
+                'grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-10 lg:grid-cols-3',
                 className,
             )}
         >

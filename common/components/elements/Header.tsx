@@ -35,9 +35,9 @@ const Header: React.FC<HeaderProps> = () => {
             </div>
 
             <GlobalSearch />
-            <div className='sm:hidden'>
-                <DropdownProfile />
-            </div>
+            {/* <div className='sm:hidden'> */}
+            <DropdownProfile />
+            {/* </div> */}
         </header>
     );
 };

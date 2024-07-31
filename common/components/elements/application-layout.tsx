@@ -3,8 +3,8 @@
 import useCurrentSession from '@/common/hooks/useCurrentSession';
 import { useHeaderStore } from '@/common/stores/header-store';
 import { redirect, usePathname } from 'next/navigation';
-import Sidebar from './sidebar';
-import Header from './header';
+import Sidebar from './Sidebar';
+import Header from './Header';
 
 type ApplicationLayoutProps = {
     children: React.ReactNode;
@@ -26,8 +26,8 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({ children }) => {
 
         default:
             return (
-                <div className='flex min-h-screen w-full flex-col bg-background'>
-                    <Sidebar />
+                <div className='mx-auto flex min-h-screen w-full max-w-7xl flex-col bg-background'>
+                    {/* <Sidebar /> */}
                     <div className='flex flex-col sm:gap-4 sm:py-4 sm:pl-14'>
                         {isHeaderShown && <Header />}
                         {children}
