@@ -203,7 +203,7 @@ export function Dashboard() {
             </div>
 
             {/* Calendar */}
-            <div className=''>
+            {/* <div className=''>
                 <h1 className='mb-4 text-xl font-semibold'>Scheduled</h1>
 
                 <Calendar
@@ -212,7 +212,7 @@ export function Dashboard() {
                     // onSelect={setDate}
                     className='flex justify-center rounded-md'
                 />
-            </div>
+            </div> */}
         </GridContainer>
     );
 }
