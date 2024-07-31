@@ -1,21 +1,21 @@
 'use client';
 
-import { useHeaderStore } from '@/common/stores/header-store';
+import useCurrentUser from '@/common/hooks/useCurrentUser';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import NavLinks from '../ui/nav-links';
 import { Skeleton } from '../ui/skeleton';
 import DropdownProfile from './dropdown-profile';
-import GenerateBreadcrumb from './generate-breadcrumb';
 import GlobalSearch from './global-search';
 import SidebarOnSM from './sidebar-on-sm';
+import TeamSwitcher from './team-switcher';
 
 type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
     const [mounted, setMounted] = useState<boolean>(false);
-    const { title, urls } = useHeaderStore((state) => ({
-        title: state.title,
-        urls: state.breadcrumbs,
-    }));
+    const user = useCurrentUser();
+    const pathname = usePathname();
 
     useEffect(() => {
         setMounted(true);
@@ -26,13 +26,15 @@ const Header: React.FC<HeaderProps> = () => {
     }
 
     return (
-        <header className='sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
+        <header className='sticky top-0 z-30 flex h-14 items-center gap-4 bg-background px-4 py-4 sm:static sm:h-auto sm:bg-transparent sm:px-6'>
             <SidebarOnSM />
 
-            <div className='hidden space-y-2 md:block'>
-                <h1 className='text-2xl font-bold text-foreground'>{title}</h1>
-                <GenerateBreadcrumb urls={urls} />
-            </div>
+            <nav className='hidden items-center gap-6 md:flex'>
+                {/* <AppLogo /> */}
+                <TeamSwitcher />
+
+                <NavLinks role={user?.role ?? 'student'} pathname={pathname} />
+            </nav>
 
             <GlobalSearch />
             {/* <div className='sm:hidden'> */}

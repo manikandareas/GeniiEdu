@@ -57,18 +57,15 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
         <>
             <HeaderOptions urls={urls} title={dataClass.data.className} />
             <HydrationBoundary state={dehydrate(queryClient)}>
-                <main className='mx-auto w-full max-w-6xl px-2 lg:relative lg:px-0'>
+                <main className='mx-auto w-full px-2 lg:relative lg:px-6'>
                     <Tabs defaultValue='forum'>
                         <TabsListClass tabs={TABS_TRIGGER_CLASS} />
-                        <TabsContent
-                            value='aboutClass'
-                            className='w-full max-w-6xl'
-                        >
+                        <TabsContent value='aboutClass' className='w-full'>
                             <AboutClassInformation initialData={dataClass} />
                         </TabsContent>
                         <TabsContent
                             value='forum'
-                            className='flex w-full max-w-6xl gap-2'
+                            className='flex w-full gap-2'
                         >
                             <UpcomingTasks />
                             <div className='w-full max-w-4xl flex-1 space-y-4 lg:space-y-6'>
