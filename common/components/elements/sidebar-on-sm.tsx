@@ -9,6 +9,7 @@ import { SiDuolingo } from 'react-icons/si';
 import { useSession } from '../providers/session-provider';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import AppLogo from '../ui/app-logo';
 
 type SidebarOnSMProps = {};
 
@@ -24,13 +25,7 @@ const SidebarOnSM: React.FC<SidebarOnSMProps> = () => {
             </SheetTrigger>
             <SheetContent side='left' className='sm:max-w-xs'>
                 <nav className='grid gap-6 text-lg font-medium'>
-                    <Link
-                        href='/'
-                        className='group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base'
-                    >
-                        <SiDuolingo className='h-5 w-5 transition-all group-hover:scale-110' />
-                        <span className='sr-only'>Genii Edu</span>
-                    </Link>
+                    <AppLogo />
                     {user?.role === 'student'
                         ? STUDENT_MENU.map((menu) => (
                               <SidebarOnSMItem key={nanoid(5)} {...menu} />

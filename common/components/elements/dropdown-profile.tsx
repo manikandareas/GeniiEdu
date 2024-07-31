@@ -65,7 +65,8 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className='w-56'>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem>
@@ -142,7 +143,7 @@ const DropdownProfile: React.FC<DropdownProfileProps> = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <SignOutDialog />
+                    <SignOutDialog name={user?.name} />
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
