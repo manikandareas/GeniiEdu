@@ -32,7 +32,7 @@ export const useGlobalSearch = () => {
     }, [isLoading, dataClasses]);
 
     useEffect(() => {
-        if (!isReady || query.length < 3) {
+        if (!isReady || query.length === 0) {
             setResults([]);
             return;
         }

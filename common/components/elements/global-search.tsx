@@ -118,7 +118,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = () => {
                                     ease: 'backInOut',
                                 }}
                             >
-                                {results.map((result) => (
+                                {results.slice(0, 8).map((result) => (
                                     <Link key={result.url} href={result.url}>
                                         <div
                                             onClick={reset}
