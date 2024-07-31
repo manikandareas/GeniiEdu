@@ -37,3 +37,27 @@ export const findStudentClasses = async (studentId: string) => {
         },
     });
 };
+
+export const findUserClassesForSearch = async (userId: string) => {
+    const query = await db.query.classMembers.findMany({
+        where: (cm, { eq }) => eq(cm.userId, userId),
+        with: {
+            class: {
+                columns: {
+                    className: true,
+                    description: true,
+                    slug: true,
+                },
+            },
+        },
+        columns: {
+            id: true,
+        },
+    });
+
+    return query.map((data) => ({
+        title: data.class.className,
+        content: data.class.description,
+        url: `/classes/${data.class.slug}`,
+    }));
+};

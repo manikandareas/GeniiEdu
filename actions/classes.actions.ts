@@ -1,5 +1,6 @@
 'use server';
 
+import { GlobalSearch } from '@/common/components/providers/flexsearch-provider';
 import { insertClassMember } from '@/common/data-access/class-members';
 import {
     findClassByCode,
@@ -13,6 +14,7 @@ import {
     insertFile,
     patchFiles,
 } from '@/common/data-access/files';
+import { findUserClassesForSearch } from '@/common/data-access/users';
 import {
     ActionError,
     studentProcedure,
@@ -195,3 +197,7 @@ export const joinClass = studentProcedure
             message: `Welcome to ${classToJoin.className}🎊`,
         };
     });
+
+export const getClassesForSearch = async (userId: string) => {
+    return (await findUserClassesForSearch(userId)) as GlobalSearch[];
+};

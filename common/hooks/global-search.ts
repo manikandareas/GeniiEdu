@@ -1,33 +1,35 @@
 'use client';
-import FlexSearch from 'flexsearch';
+
 import { useEffect, useState } from 'react';
 import dataSearch from '@/common/constants/search-index.json';
-import { getMatches, replaceTextWithMarker } from '../libs/flexsearch';
+import {
+    GlobalSearch,
+    useFlexSearch,
+} from '../components/providers/flexsearch-provider';
+import { useQuery } from '@tanstack/react-query';
+import { getClassesForSearch } from '@/actions/classes.actions';
+import useCurrentUser from './useCurrentUser';
 
 export const useGlobalSearch = () => {
     const [query, setQuery] = useState<string>('');
     const [isReady, setIsReady] = useState<boolean>(false);
-    const [results, setResults] = useState<
-        { title: string; content: string[]; url: string }[]
-    >([]);
-    const [flexSearch] = useState<FlexSearch.Index>(
-        new FlexSearch.Index({
-            tokenize: 'forward',
-        }),
-    );
+    const [results, setResults] = useState<GlobalSearch[]>([]);
+    const user = useCurrentUser();
 
-    const createIndex = (data: typeof dataSearch.teacher) => {
-        data.forEach((itm, idx) => {
-            const item = `${itm.title} ${itm.content}`;
-            flexSearch.add(idx, item);
-        });
-    };
+    const { data: dataClasses, isLoading } = useQuery({
+        queryKey: ['search-index', user?.id ?? ''],
+        queryFn: () => getClassesForSearch(user?.id ?? ''),
+    });
+
+    const { createIndex, searchIndex } = useFlexSearch();
 
     useEffect(() => {
-        createIndex(dataSearch.teacher);
+        if (isLoading || !dataClasses) return;
+        const dataIndex = dataClasses.concat(dataSearch[user?.role!]);
+        createIndex(dataIndex);
         setIsReady(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isLoading, dataClasses]);
 
     useEffect(() => {
         if (!isReady || query.length < 3) {
@@ -35,24 +37,9 @@ export const useGlobalSearch = () => {
             return;
         }
 
-        const searchIndex = (searchTerm: string) => {
-            const match = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const searchResults = flexSearch.search(match);
-
-            return searchResults
-                .map((index) => dataSearch.teacher[index as number])
-                .map(({ url, title, content }) => {
-                    return {
-                        url,
-                        title: replaceTextWithMarker(title, match),
-                        content: getMatches(content, match),
-                    };
-                });
-        };
-
         const result = searchIndex(query);
         setResults(result);
-    }, [query, isReady, flexSearch]);
+    }, [query, isReady]);
 
     return { query, setQuery, isReady, results };
 };
