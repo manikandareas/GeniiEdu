@@ -8,8 +8,11 @@ import { useGlobalSearch } from '@/common/hooks/global-search';
 import reactParser from 'html-react-parser';
 import { CommandShortcut } from '../ui/command';
 import Link from 'next/link';
+import { GlobalSearch as GlobalSearchType } from '../providers/flexsearch-provider';
 
 type GlobalSearchProps = {};
+
+const MAX_RESULTS = 8;
 
 const GlobalSearch: React.FC<GlobalSearchProps> = () => {
     const [isActive, setIsActive] = useState<boolean>(false);
@@ -118,20 +121,12 @@ const GlobalSearch: React.FC<GlobalSearchProps> = () => {
                                     ease: 'backInOut',
                                 }}
                             >
-                                {results.slice(0, 8).map((result) => (
-                                    <Link key={result.url} href={result.url}>
-                                        <div
-                                            onClick={reset}
-                                            className='w-full p-4'
-                                        >
-                                            <h3 className='text-lg font-semibold text-foreground'>
-                                                {reactParser(result.title)}
-                                            </h3>
-                                            <p className='text-sm text-muted-foreground'>
-                                                {reactParser(result.content)}
-                                            </p>
-                                        </div>
-                                    </Link>
+                                {results.slice(0, MAX_RESULTS).map((result) => (
+                                    <ResultItem
+                                        key={result.url}
+                                        result={result}
+                                        reset={reset}
+                                    />
                                 ))}
                             </motion.div>
                         </div>
@@ -142,3 +137,26 @@ const GlobalSearch: React.FC<GlobalSearchProps> = () => {
     );
 };
 export default GlobalSearch;
+
+type ResultItemProps = {
+    result: GlobalSearchType;
+    reset: () => void;
+};
+
+const ResultItem: React.FC<ResultItemProps> = ({ reset, result }) => {
+    return (
+        <Link href={result.url}>
+            <div
+                onClick={reset}
+                className='w-full rounded-md p-4 hover:bg-secondary'
+            >
+                <h3 className='text-lg font-semibold text-foreground'>
+                    {reactParser(result.title)}
+                </h3>
+                <p className='text-sm text-muted-foreground'>
+                    {reactParser(result.content)}
+                </p>
+            </div>
+        </Link>
+    );
+};

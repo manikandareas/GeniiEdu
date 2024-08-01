@@ -36,9 +36,13 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
     const { data: classes } = useUserClassesQuery(initialData);
 
     return (
-        <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
-            <div className='flex items-center overflow-hidden'>
-                <TabsList className='bg-transparent'>
+        <Tabs
+            className='w-full'
+            value={searchParams.get('tab') ?? 'all'}
+            defaultValue='all'
+        >
+            <div className='flex items-center'>
+                <TabsList className='flex-wrap bg-transparent lg:flex-nowrap'>
                     <TeacherTabsTrigger
                         count={classes.data.metadata.total}
                         keyType='all'
@@ -56,7 +60,7 @@ const TeacherTabs: React.FC<TeacherTabsProps> = ({ initialData }) => {
                         keyType='archived'
                     />
                 </TabsList>
-                <div className='ml-auto flex items-center gap-2'>
+                <div className='ml-auto hidden items-center gap-2 md:flex'>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button

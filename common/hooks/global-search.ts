@@ -39,6 +39,7 @@ export const useGlobalSearch = () => {
 
         const result = searchIndex(query);
         setResults(result);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query, isReady]);
 
     return { query, setQuery, isReady, results };

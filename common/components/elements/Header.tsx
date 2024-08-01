@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = () => {
         <header className='sticky top-0 z-30 flex h-14 items-center gap-4 bg-background px-4 py-4 sm:static sm:h-auto sm:bg-transparent sm:px-6'>
             <SidebarOnSM />
 
-            <nav className='hidden items-center gap-6 md:flex'>
+            <nav className='hidden items-center gap-6 lg:flex'>
                 {/* <AppLogo /> */}
                 <TeamSwitcher />
 

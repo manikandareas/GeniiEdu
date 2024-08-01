@@ -9,7 +9,7 @@ const ClassesContainer: React.FC<ClassesContainerProps> = (props) => {
         <main
             {...rest}
             className={cn(
-                'grid flex-1 items-start gap-4 bg-background p-4 sm:px-6 sm:py-0 md:gap-8',
+                'flex items-start gap-4 overflow-hidden bg-background p-4 sm:px-6 sm:py-0 md:gap-8',
                 className,
             )}
         >

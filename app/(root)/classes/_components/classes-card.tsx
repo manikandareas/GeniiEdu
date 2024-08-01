@@ -47,7 +47,7 @@ export const ClassesCard: React.FC<ClassesCardProps> = ({
     }
 
     return (
-        <Card className='group/card w-full max-w-[calc((100%/3)-(3px*3))]'>
+        <Card className='group/card mx-auto w-full max-w-[95%] md:max-w-[calc((100%/2)-(3px*2))] lg:mx-0 lg:max-w-[calc((100%/3)-(3px*3))]'>
             <CardHeader className='space-y-3'>
                 <div className='relative aspect-video h-36 overflow-clip rounded-md'>
                     <Image
