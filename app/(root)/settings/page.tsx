@@ -1,6 +1,7 @@
 import { Separator } from '@/common/components/ui/separator';
 import { ProfileForm } from './_components/profile-form';
-import HeaderOptions from '@/common/components/elements/header-options';
+import { SetSlot } from '@/common/components/providers/slot';
+import PageHeader from '@/common/components/elements/page-header';
 const urls = [
     {
         name: 'Dashboard',
@@ -14,7 +15,9 @@ const urls = [
 const SettingsProfilePage = () => {
     return (
         <>
-            <HeaderOptions urls={urls} title='Settings' />
+            <SetSlot name='page-header'>
+                <PageHeader urls={urls} title='Settings' />
+            </SetSlot>
             <div className='space-y-6'>
                 <div>
                     <h3 className='text-lg font-medium'>Profile</h3>

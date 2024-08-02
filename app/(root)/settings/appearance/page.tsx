@@ -1,6 +1,7 @@
 import { Separator } from '@/common/components/ui/separator';
 import { AppearanceForm } from './_components/appearance-form';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
+import { SetSlot } from '@/common/components/providers/slot';
 
 const urls = [
     {
@@ -20,7 +21,9 @@ const urls = [
 export default function SettingsAppearancePage() {
     return (
         <>
-            <HeaderOptions urls={urls} title='Settings' />
+            <SetSlot name='page-header'>
+                <PageHeader urls={urls} title='Settings Appearance' />
+            </SetSlot>
             <div className='space-y-6'>
                 <div>
                     <h3 className='text-lg font-medium'>Appearance</h3>

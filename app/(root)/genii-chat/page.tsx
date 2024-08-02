@@ -1,4 +1,4 @@
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 
 type GeniiChatPageProps = {};
 
@@ -16,7 +16,7 @@ const urls = [
 const GeniiChatPage: React.FC<GeniiChatPageProps> = () => {
     return (
         <>
-            <HeaderOptions title='Genii Chat' urls={urls} />
+            <PageHeader title='Genii Chat' urls={urls} />
             <main className='px-6'>Hello From Genii Chat Page</main>
 
             <iframe

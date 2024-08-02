@@ -3,9 +3,7 @@
 import useCurrentSession from '@/common/hooks/useCurrentSession';
 import { useHeaderStore } from '@/common/stores/header-store';
 import { redirect, usePathname } from 'next/navigation';
-import Sidebar from './Sidebar';
 import Header from './Header';
-import PageTitle from './page-title';
 
 type ApplicationLayoutProps = {
     children: React.ReactNode;
@@ -31,7 +29,6 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({ children }) => {
                     {/* <Sidebar /> */}
                     <div className='flex flex-col sm:gap-2'>
                         {isHeaderShown && <Header />}
-                        <PageTitle />
                         {children}
                     </div>
                 </div>

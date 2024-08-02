@@ -1,12 +1,12 @@
-import { validateRequest } from '@/common/libs/lucia';
-import { redirect } from 'next/navigation';
 import { getUserClasses } from '@/actions/users.actions';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import TeacherTabs from './_components/teacher-tabs';
-import StudentTabs from './_components/student-tabs';
-import ClassesContainer from './_components/classes-container';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 import { userClassesQuery } from '@/common/hooks/user-classes-query';
+import { validateRequest } from '@/common/libs/lucia';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { redirect } from 'next/navigation';
+import ClassesContainer from './_components/classes-container';
+import StudentTabs from './_components/student-tabs';
+import TeacherTabs from './_components/teacher-tabs';
 
 type ClassesPageProps = {};
 
@@ -37,7 +37,10 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
 
     return (
         <>
-            <HeaderOptions title={titlePage} urls={urls} />
+            <PageHeader
+                title={user.role === 'teacher' ? 'Manage Classes' : 'Classes'}
+                urls={urls}
+            />
             <ClassesContainer>
                 <HydrationBoundary state={dehydrate(queryClient)}>
                     {user.role === 'teacher' ? (

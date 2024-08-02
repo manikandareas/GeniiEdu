@@ -1,6 +1,7 @@
 import { Separator } from '@/common/components/ui/separator';
 import { DisplayForm } from './_components/display-form';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
+import { SetSlot } from '@/common/components/providers/slot';
 
 const urls = [
     {
@@ -20,7 +21,9 @@ const urls = [
 export default function SettingsDisplayPage() {
     return (
         <>
-            <HeaderOptions title='Settings' urls={urls} />
+            <SetSlot name='page-header'>
+                <PageHeader title='Settings Display' urls={urls} />
+            </SetSlot>
             <div className='space-y-6'>
                 <div>
                     <h3 className='text-lg font-medium'>Display</h3>

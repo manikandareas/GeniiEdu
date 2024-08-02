@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { Separator } from '@/common/components/ui/separator';
 
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 import { SettingsNav } from './_components/settings-nav';
+import { Slot } from '@/common/components/providers/slot';
 
 export const metadata: Metadata = {
     title: 'Forms',
@@ -39,17 +40,9 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
     return (
         <>
-            <div className='space-y-6 p-4 sm:px-6 sm:py-0'>
-                {/* <div className='space-y-0.5'>
-                    <h2 className='text-2xl font-bold tracking-tight'>
-                        Settings
-                    </h2>
-                    <p className='text-muted-foreground'>
-                        Manage your account settings and set e-mail preferences.
-                    </p>
-                </div>
-                <Separator className='my-6' /> */}
-                <div className='flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0'>
+            <div className='space-y-6 p-4 sm:px-0 sm:py-0'>
+                <Slot name='page-header' />
+                <div className='flex flex-col space-y-8 sm:px-8 lg:flex-row lg:space-x-12 lg:space-y-0'>
                     <aside className='-mx-4 lg:w-1/5'>
                         <SettingsNav items={sidebarNavItems} />
                     </aside>

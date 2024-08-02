@@ -2,7 +2,7 @@ import { buttonVariants } from '@/common/components/ui/button';
 import Typography from '@/common/components/ui/typography';
 
 import { getDetailsLearningMaterial } from '@/actions/learning-materials.actions';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 import { decodeUuid } from '@/common/libs/utils';
 import reactParser from 'html-react-parser';
 import Link from 'next/link';
@@ -53,7 +53,7 @@ const DetailsClassMaterial: React.FC<DetailsClassMaterialProps> = async ({
 
     return (
         <>
-            <HeaderOptions title={'Details Learning Material'} urls={urls} />
+            <PageHeader title={'Details Learning Material'} urls={urls} />
             <main className='mx-auto min-h-screen w-full max-w-4xl'>
                 <MaterialHeader
                     authorName={initialData.author.name ?? ''}

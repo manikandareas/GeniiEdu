@@ -1,7 +1,7 @@
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
 import { Dashboard } from './_components/dashboard';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 
 const urls = [
     {
@@ -23,7 +23,7 @@ const HomePage = async () => {
 
     return (
         <>
-            <HeaderOptions title='Dashboard' urls={urls} />
+            <PageHeader title='Dashboard' urls={urls} />
             <Dashboard />
         </>
     );

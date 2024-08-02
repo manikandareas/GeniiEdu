@@ -1,4 +1,4 @@
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 
 type EditorClassPageProps = {
     params: {
@@ -27,7 +27,7 @@ const EditorClassPage: React.FC<EditorClassPageProps> = ({ params }) => {
     ];
     return (
         <>
-            <HeaderOptions title='Editor' urls={urls} />
+            <PageHeader title='Editor Page' urls={urls} />
             <div>Editor Class Page</div>
         </>
     );

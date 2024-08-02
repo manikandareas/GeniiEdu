@@ -1,17 +1,17 @@
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 import {
     findDetailsAssignment,
     FindDetailsAssignmentForStudentResponse,
     FindDetailsAssignmentForTeacherResponse,
 } from '@/common/data-access/assignments';
+import { detailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
 import { validateRequest } from '@/common/libs/lucia';
 import { decodeUuid } from '@/common/libs/utils';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
 import StudentSection from './components/student/student-section';
-import TeacherSection from './components/teacher/teacher-section';
 import { InputGradeContextProvider } from './components/teacher/input-grade-context';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { detailsAssignmentQuery } from '@/common/hooks/details-assignment-query';
+import TeacherSection from './components/teacher/teacher-section';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -66,7 +66,7 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     return (
         <>
-            <HeaderOptions title={'Assignment Details'} urls={urls} />
+            <PageHeader title='Assignment Details' urls={urls} />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 {user.role === 'student' ? (
                     <StudentSection

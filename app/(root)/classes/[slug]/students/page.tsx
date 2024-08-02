@@ -1,4 +1,4 @@
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 
 type ClassesStudentsPageProps = {
     params: {
@@ -29,7 +29,7 @@ const ClassesStudentsPage: React.FC<ClassesStudentsPageProps> = ({
     ];
     return (
         <>
-            <HeaderOptions urls={urls} title='Classes Students' />
+            <PageHeader urls={urls} title='Classes Students' />
             <main className='container mx-auto'>Classes Students</main>
         </>
     );

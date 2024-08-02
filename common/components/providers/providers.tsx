@@ -1,6 +1,7 @@
 import FlexSearchProvider from './flexsearch-provider';
 import ReactQueryProvider from './react-query-provider';
 import SessionProvider, { SessionProviderContext } from './session-provider';
+import { SlotProvider } from './slot';
 import { ThemeProvider } from './theme-provider';
 
 type ProvidersProps = {
@@ -18,7 +19,9 @@ const Providers: React.FC<ProvidersProps> = ({ children, session }) => {
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <FlexSearchProvider>{children}</FlexSearchProvider>
+                    <SlotProvider>
+                        <FlexSearchProvider>{children}</FlexSearchProvider>
+                    </SlotProvider>
                 </ThemeProvider>
             </ReactQueryProvider>
         </SessionProvider>

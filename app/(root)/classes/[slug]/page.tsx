@@ -1,5 +1,5 @@
 import { getDetailsClass } from '@/actions/classes.actions';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
 import { Button } from '@/common/components/ui/button';
 import {
     Popover,
@@ -55,7 +55,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
 
     return (
         <>
-            <HeaderOptions urls={urls} title={dataClass.data.className} />
+            <PageHeader urls={urls} title={dataClass.data.className} />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <main className='mx-auto w-full px-2 lg:relative lg:px-6'>
                     <Tabs defaultValue='forum'>

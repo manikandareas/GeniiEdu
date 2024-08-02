@@ -1,6 +1,7 @@
 import { Separator } from '@/common/components/ui/separator';
 import { AccountForm } from './_components/account-form';
-import HeaderOptions from '@/common/components/elements/header-options';
+import PageHeader from '@/common/components/elements/page-header';
+import { SetSlot } from '@/common/components/providers/slot';
 const urls = [
     {
         name: 'Dashboard',
@@ -18,7 +19,9 @@ const urls = [
 export default function SettingsAccountPage() {
     return (
         <>
-            <HeaderOptions title='Settings' urls={urls} />
+            <SetSlot name='page-header'>
+                <PageHeader urls={urls} title='Settings Account' />
+            </SetSlot>
             <div className='space-y-6'>
                 <div>
                     <h3 className='text-lg font-medium'>Account</h3>
