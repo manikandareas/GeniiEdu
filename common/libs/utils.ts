@@ -61,7 +61,7 @@ export function decodeUuid(encodedUuid: string): string {
 import { format, formatDistanceToNow, isBefore, subDays } from 'date-fns';
 import { id } from 'date-fns/locale'; // Import locale Bahasa Indonesia
 
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date, addSuffix: boolean = true): string => {
     const now = new Date();
     const sevenDaysAgo = subDays(now, 7);
 
@@ -69,7 +69,7 @@ export const formatDate = (date: Date): string => {
         return format(date, 'd MMMM', { locale: id }); // Format: '7 Juli'
         // return format(date, 'd MMMM'); // Format: '7 Juli'
     } else {
-        return formatDistanceToNow(date, { addSuffix: true, locale: id }); // Format: '2 hari yang lalu'
+        return formatDistanceToNow(date, { addSuffix: addSuffix, locale: id }); // Format: '2 hari yang lalu'
         // return formatDistanceToNow(date, { addSuffix: true }); // Format: '2 hari yang lalu'
     }
 };

@@ -8,13 +8,7 @@ import {
     text,
     timestamp,
 } from 'drizzle-orm/pg-core';
-import { nanoid } from 'nanoid';
 import { uuidv7 } from 'uuidv7';
-
-// ? Defining Database Schemas
-
-const customUniqueID = (identifier: string, size: number = 15) =>
-    `${identifier}${nanoid(size)}`;
 
 // Enums
 export const RoleEnum = pgEnum('role', ['teacher', 'student']);
@@ -130,7 +124,9 @@ export const sessions = pgTable('sessions', {
 // Notifications Table
 export const notifications = pgTable('notifications', {
     id: serial('notification_id').primaryKey(),
+    title: text('title').notNull(),
     message: text('message').notNull(),
+    url: text('url'),
     isRead: boolean('is_read').default(false).notNull(),
     userId: text('user_id')
         .references(() => users.id, { onDelete: 'cascade' })
@@ -235,18 +231,6 @@ export const learningMaterials = pgTable('learning_materials', {
     updatedAt,
 });
 
-// export const learningMaterialFiles = pgTable('learning_material_files', {
-//     id: serial('learning_material_file_id').primaryKey(),
-//     learningMaterialId: text('learning_material_id')
-//         .references(() => learningMaterials.id, { onDelete: 'cascade' })
-//         .notNull(),
-//     fileId: text('file_id')
-//         .references(() => files.id, { onDelete: 'cascade' })
-//         .notNull(),
-//     createdAt,
-//     updatedAt,
-// });
-
 // Submissions Table
 export const submissions = pgTable('submissions', {
     id: text('submission_id')
@@ -258,7 +242,6 @@ export const submissions = pgTable('submissions', {
     studentId: text('student_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
-    // filePath: text('file_path'),
     isGraded: boolean('is_graded').default(false).notNull(),
     grade: numeric('grade'),
     submittedAt: timestamp('submitted_at', { withTimezone: true })
@@ -294,8 +277,6 @@ export const files = pgTable('files', {
     createdAt,
     updatedAt,
 });
-
-// case profile picture, case submission file, cas learning material file, case class thumbnail
 
 // Student Progress Table
 export const studentProgress = pgTable('student_progress', {
@@ -431,20 +412,6 @@ export const learningMaterialsRelations = relations(
     }),
 );
 
-// export const learningMaterialsFilesRelations = relations(
-//     learningMaterialFiles,
-//     ({ one }) => ({
-//         material: one(learningMaterials, {
-//             fields: [learningMaterialFiles.learningMaterialId],
-//             references: [learningMaterials.id],
-//         }),
-//         file: one(files, {
-//             fields: [learningMaterialFiles.fileId],
-//             references: [files.id],
-//         }),
-//     }),
-// );
-
 export const filesRelations = relations(files, ({ one }) => ({
     user: one(users, { fields: [files.userId], references: [users.id] }),
     learningMaterial: one(learningMaterials, {
@@ -474,10 +441,6 @@ export const submissionsRelations = relations(submissions, ({ one, many }) => ({
         fields: [submissions.studentId],
         references: [users.id],
     }),
-    // file: one(files, {
-    //     fields: [submissions.filePath],
-    //     references: [files.id],
-    // }),
     files: many(files),
 }));
 
@@ -525,6 +488,13 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     }),
     sender: one(users, {
         fields: [comments.senderId],
+        references: [users.id],
+    }),
+}));
+
+export const notificationRelations = relations(notifications, ({ one }) => ({
+    user: one(users, {
+        fields: [notifications.userId],
         references: [users.id],
     }),
 }));

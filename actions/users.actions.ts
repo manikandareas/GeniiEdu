@@ -14,6 +14,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import * as argon from 'argon2';
+import { findUserNotifications } from '@/common/data-access/notifications';
 
 /**
  * Handles the onboarding profile process for a user.
@@ -245,3 +246,16 @@ export const updateUserAccount = authenticatedProcedure
             message: 'Account updated successfully',
         };
     });
+
+export const getUserNotifications = async () => {
+    const { user } = await validateRequest();
+    if (!user) {
+        throw new ActionError('Unauthorized');
+    }
+
+    return findUserNotifications(user.id);
+};
+
+export type GetUserNotificationsResponse = Awaited<
+    ReturnType<typeof getUserNotifications>
+>;

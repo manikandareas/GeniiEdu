@@ -91,3 +91,7 @@ export type PatchAssignmentPersonalCommentInput =
 export type InsertCommentInput = typeof Schema.messages._.inferInsert;
 
 export type PatchCommentInput = Partial<InsertCommentInput>;
+
+export type InsertNotificationInput = typeof Schema.notifications._.inferInsert;
+
+export type PatchNotificationInput = Partial<InsertNotificationInput>;

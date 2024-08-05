@@ -9,6 +9,8 @@ import DropdownProfile from './dropdown-profile';
 import GlobalSearch from './global-search';
 import SidebarOnSM from './sidebar-on-sm';
 import TeamSwitcher from './team-switcher';
+import Notification from './notification';
+import { useUserNotificationsQuery } from '@/common/hooks/user-notifications-query';
 
 type HeaderProps = {};
 
@@ -16,6 +18,7 @@ const Header: React.FC<HeaderProps> = () => {
     const [mounted, setMounted] = useState<boolean>(false);
     const user = useCurrentUser();
     const pathname = usePathname();
+    const { data, isLoading } = useUserNotificationsQuery();
 
     useEffect(() => {
         setMounted(true);
@@ -35,9 +38,9 @@ const Header: React.FC<HeaderProps> = () => {
 
                 <NavLinks role={user?.role ?? 'student'} pathname={pathname} />
             </nav>
-
             <GlobalSearch />
             {/* <div className='sm:hidden'> */}
+            {!isLoading && <Notification notifications={data ?? []} />}
             <DropdownProfile />
             {/* </div> */}
         </header>

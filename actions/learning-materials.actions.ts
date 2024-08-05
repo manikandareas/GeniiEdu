@@ -1,15 +1,19 @@
 'use server';
 
-import { findClassBySlug, isOwnerOfClass } from '@/common/data-access/classes';
+import {
+    findIDMembersOfClass,
+    isOwnerOfClass,
+} from '@/common/data-access/classes';
 import { patchFiles } from '@/common/data-access/files';
 import {
     findDetailsLearningMaterial,
     insertLearningMaterial,
 } from '@/common/data-access/learning-materials';
+import { insertNotifications } from '@/common/data-access/notifications';
 
 import { createTransaction } from '@/common/data-access/utils';
+import { Goreal } from '@/common/libs/goreal';
 import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
-import { LearningMaterialsModel } from '@/common/models';
 import { insertLearningMaterialsSchema } from '@/common/models/learning-materials.model';
 import { ActRes } from '@/common/types/Action.type';
 import { revalidatePath } from 'next/cache';
@@ -61,6 +65,33 @@ export const createLearningMaterial = teacherProcedure
                         );
                     });
                 });
+            }
+
+            const recipientsNotification = await findIDMembersOfClass(
+                existingClass.id,
+            );
+
+            await insertNotifications(
+                recipientsNotification.map((r) => ({
+                    userId: r,
+                    title: 'New Learning Material added',
+                    isRead: false,
+                    message: `New learning material "${parsedInput.title}" has been added to the class "${existingClass.className}"`,
+                    url: `/classes/${classSlug}`,
+                })),
+                { tx },
+            );
+
+            const goreal = new Goreal(user.id);
+
+            const is_success = await goreal.pushBroadcast({
+                event: 'notification-updated',
+                recipients: recipientsNotification,
+            });
+
+            if (!is_success) {
+                tx.rollback();
+                throw new ActionError('Failed to broadcast notification');
             }
 
             revalidatePath(`/class/${classSlug}`);

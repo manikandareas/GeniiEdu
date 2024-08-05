@@ -86,3 +86,18 @@ export const findDetailsClass = async (slug: string) => {
         },
     });
 };
+
+export const findIDMembersOfClass = async (classId: string) => {
+    const res = await db.query.classMembers.findMany({
+        columns: {
+            userId: true,
+        },
+        where: (classMembers, { and, eq }) =>
+            and(
+                eq(classMembers.classId, classId),
+                eq(classMembers.role, 'student'),
+            ),
+    });
+
+    return res.map((member) => member.userId);
+};
