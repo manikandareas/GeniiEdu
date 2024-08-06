@@ -85,7 +85,7 @@ export const createLearningMaterial = teacherProcedure
             const goreal = new Goreal(user.id);
 
             const is_success = await goreal.pushBroadcast({
-                event: 'notification-updated',
+                event: Goreal.broadcastKey.NOTIFICATION_UPDATED,
                 recipients: recipientsNotification,
             });
 

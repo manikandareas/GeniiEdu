@@ -11,6 +11,7 @@ import SidebarOnSM from './sidebar-on-sm';
 import TeamSwitcher from './team-switcher';
 import Notification from './notification';
 import { useUserNotificationsQuery } from '@/common/hooks/user-notifications-query';
+import { Goreal } from '@/common/libs/goreal';
 
 type HeaderProps = {};
 
@@ -18,7 +19,20 @@ const Header: React.FC<HeaderProps> = () => {
     const [mounted, setMounted] = useState<boolean>(false);
     const user = useCurrentUser();
     const pathname = usePathname();
-    const { data, isLoading } = useUserNotificationsQuery();
+    const { data, isLoading, invalidate } = useUserNotificationsQuery();
+    const goreal = new Goreal(user?.id ?? '');
+
+    // Stream notifications
+    useEffect(() => {
+        goreal.streamNotifications((data) => {
+            console.log({ data });
+            if (data.includes(Goreal.broadcastKey.NOTIFICATION_UPDATED)) {
+                invalidate();
+            }
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         setMounted(true);
@@ -40,7 +54,12 @@ const Header: React.FC<HeaderProps> = () => {
             </nav>
             <GlobalSearch />
             {/* <div className='sm:hidden'> */}
-            {!isLoading && <Notification notifications={data ?? []} />}
+            {!isLoading && (
+                <Notification
+                    invalidate={invalidate}
+                    notifications={data ?? []}
+                />
+            )}
             <DropdownProfile />
             {/* </div> */}
         </header>

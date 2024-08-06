@@ -55,16 +55,16 @@ export const TABS_TRIGGER_CLASS: TabsTriggerClassProps[] = [
         ),
         value: 'forum',
     },
-    {
-        children: (
-            <>
-                <DETAILS_CLASS_ICONS.assignments.icon
-                    className='text-yellow-500'
-                    size={18}
-                />
-                <span className='hidden lg:inline'>Assignments</span>
-            </>
-        ),
-        value: 'assignments',
-    },
+    // {
+    //     children: (
+    //         <>
+    //             <DETAILS_CLASS_ICONS.assignments.icon
+    //                 className='text-yellow-500'
+    //                 size={18}
+    //             />
+    //             <span className='hidden lg:inline'>Assignments</span>
+    //         </>
+    //     ),
+    //     value: 'assignments',
+    // },
 ];

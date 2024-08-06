@@ -9,7 +9,6 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import Providers from '@/common/components/providers/providers';
-import StreamNotifications from '@/common/components/elements/strem-notifications';
 
 export const metadata: Metadata = {
     title: 'GeniiEdu',
@@ -31,7 +30,6 @@ export default async function RootLayout({
                     {children}
                     <Toaster richColors position='top-center' />
                     <ReactQueryDevtools initialIsOpen={false} />
-                    <StreamNotifications />
                 </Providers>
             </body>
         </html>

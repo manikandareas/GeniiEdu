@@ -11,7 +11,7 @@ import { TABS_TRIGGER_CLASS } from '@/common/constants/details-class-tabs';
 import { detailsClassQuery } from '@/common/hooks/details-class-query';
 import { validateRequest } from '@/common/libs/lucia';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, PlusIcon } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import AboutClassInformation from './_components/about-class-information';
 import AnnouncementForm from './_components/announcement-form';
@@ -55,7 +55,26 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
 
     return (
         <>
-            <PageHeader urls={urls} title={dataClass.data.className} />
+            <PageHeader
+                urls={urls}
+                title={dataClass.data.className}
+                actions={
+                    user?.role === 'teacher' && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button size={'sm'} variant={'neon'}>
+                                    <PlusCircle size={16} className='mr-2' />
+                                    Add Assignment
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className='flex flex-col gap-2'>
+                                <CreateLMForm />
+                                <CreateAssignmentForm />
+                            </PopoverContent>
+                        </Popover>
+                    )
+                }
+            />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <main className='mx-auto w-full px-2 lg:relative lg:px-6'>
                     <Tabs defaultValue='forum'>
@@ -110,24 +129,6 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                             </div>
                         </TabsContent>
                         <TabsContent value='assignments'>
-                            {user?.role === 'teacher' && (
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button size={'lg'}>
-                                            <PlusCircle
-                                                size={16}
-                                                className='mr-2'
-                                            />
-                                            Create
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className='flex flex-col gap-2'>
-                                        <CreateLMForm />
-                                        <CreateAssignmentForm />
-                                    </PopoverContent>
-                                </Popover>
-                            )}
-
                             {dataClass.data.assignments.length === 0 && (
                                 <EmptyStuff message='No Assignments in this class yet. 😪'>
                                     <CreateLMForm />

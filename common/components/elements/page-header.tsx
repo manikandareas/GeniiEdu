@@ -10,13 +10,13 @@ namespace PageHeader {
     };
 }
 
-const PageHeader: React.FC<PageHeader.Props> = ({
-    description,
+const PageHeader = ({
+    description = 'Dashboard page is a page that shows the current status of the system.',
     actions,
     title,
     urls,
     isShown = true,
-}) => {
+}: PageHeader.Props) => {
     if (!isShown) {
         return null;
     }
@@ -30,17 +30,22 @@ const PageHeader: React.FC<PageHeader.Props> = ({
                 <GenerateBreadcrumb urls={urls} />
             </div>
 
-            {actions ? (
-                actions
-            ) : (
-                <div>
-                    <p className='max-w-[250px] text-right text-xs text-muted-foreground md:text-sm'>
-                        Dashboard page is a page that shows the current status
-                        of the system.
-                    </p>
-                </div>
-            )}
+            <div>
+                <p className='max-w-[250px] text-right text-xs text-muted-foreground md:text-sm'>
+                    {actions ? actions : description}
+                </p>
+            </div>
         </div>
     );
 };
 export default PageHeader;
+
+const PageHeaderDescription = ({ description }: { description: string }) => {
+    return (
+        <p className='max-w-[250px] text-right text-xs text-muted-foreground md:text-sm'>
+            {description}
+        </p>
+    );
+};
+
+PageHeader.P = PageHeaderDescription;

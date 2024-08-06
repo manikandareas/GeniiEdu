@@ -10,6 +10,7 @@ type TiptapProps = {
 
 const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                 heading: {

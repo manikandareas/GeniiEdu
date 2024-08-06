@@ -7,31 +7,40 @@ export class Goreal {
     }
 
     async streamNotifications(callback: (data: string) => void) {
-        // Initiate the first call to connect to SSE API
         const url = `${this.BASE_URL}/api/users/${this._userId}/notification-stream`;
-        const apiResponse = await fetch(url, {
-            method: 'GET',
-
-            headers: {
-                'Content-Type': 'text/event-stream',
-                'x-user-id': this._userId,
-            },
-        });
-
-        if (!apiResponse.body) return;
-
-        // To decode incoming data as a string
-        const reader = apiResponse.body
-            .pipeThrough(new TextDecoderStream())
-            .getReader();
 
         while (true) {
-            const { value, done } = await reader.read();
-            if (done) {
-                break;
-            }
-            if (value) {
-                callback(value);
+            try {
+                const apiResponse = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/event-stream',
+                        'x-user-id': this._userId,
+                    },
+                });
+
+                if (!apiResponse.body) {
+                    throw new Error('No response body');
+                }
+
+                const reader = apiResponse.body
+                    .pipeThrough(new TextDecoderStream())
+                    .getReader();
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        console.log('Stream closed');
+                        break;
+                    }
+                    if (value) {
+                        callback(value);
+                    }
+                }
+            } catch (error) {
+                console.error('Error in SSE stream:', error);
+                // Retry after 5 seconds
+                await new Promise((resolve) => setTimeout(resolve, 5000));
             }
         }
     }
@@ -50,6 +59,10 @@ export class Goreal {
 
         return response.ok;
     }
+
+    static broadcastKey = {
+        NOTIFICATION_UPDATED: 'notification-updated',
+    };
 }
 
 type BroadcastRequest = {
