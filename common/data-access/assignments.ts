@@ -144,3 +144,23 @@ export const patchAssignment = async (
         .where(eq(Schema.assignments.id, input.id!))
         .returning();
 };
+
+export const findUpcomingTasks = async (
+    classId: string,
+    config: DataAccessConfig<'assignments'> = {},
+) => {
+    return await (config.tx ? config.tx : db).query.assignments.findMany({
+        where: (assignments, { and, gt, eq }) =>
+            and(
+                gt(assignments.dueDate, new Date()),
+                eq(assignments.isOpen, true),
+                eq(assignments.classId, classId),
+            ),
+        orderBy: (assignments, { asc }) => asc(assignments.dueDate),
+        columns: {
+            id: true,
+            title: true,
+            dueDate: true,
+        },
+    });
+};

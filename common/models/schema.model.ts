@@ -8,6 +8,7 @@ import {
     text,
     timestamp,
 } from 'drizzle-orm/pg-core';
+import { color } from 'framer-motion';
 import { uuidv7 } from 'uuidv7';
 
 // Enums
@@ -144,6 +145,7 @@ export const classes = pgTable('classes', {
     slug: text('slug').unique().notNull(),
     description: text('description'),
     classCode: text('class_code').notNull(),
+    color: text('color').default('default').notNull(),
     teacherId: text('teacher_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),

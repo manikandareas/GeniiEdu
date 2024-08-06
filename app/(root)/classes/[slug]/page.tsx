@@ -20,7 +20,9 @@ import CreateLMForm from './_components/create-lm-form';
 import EmptyStuff from './_components/empty-stuff';
 import MaterialsCard from './_components/materials-card';
 import TabsListClass from './_components/tabs-list';
-import UpcomingTasks from './_components/upcoming-tasks';
+import UpcomingTasks, {
+    UpcomingTasksDrawer,
+} from './_components/upcoming-tasks';
 type DetailClassPageProps = {
     params: {
         slug: string;
@@ -59,7 +61,7 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                 urls={urls}
                 title={dataClass.data.className}
                 actions={
-                    user?.role === 'teacher' && (
+                    user?.role === 'teacher' ? (
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button size={'sm'} variant={'neon'}>
@@ -72,22 +74,24 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                 <CreateAssignmentForm />
                             </PopoverContent>
                         </Popover>
+                    ) : (
+                        <UpcomingTasksDrawer classId={dataClass.data.id} />
                     )
                 }
             />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <main className='mx-auto w-full px-2 lg:relative lg:px-6'>
-                    <Tabs defaultValue='forum'>
+                    <Tabs className='lg:space-y-4' defaultValue='forum'>
                         <TabsListClass tabs={TABS_TRIGGER_CLASS} />
                         <TabsContent value='aboutClass' className='w-full'>
                             <AboutClassInformation initialData={dataClass} />
                         </TabsContent>
                         <TabsContent
                             value='forum'
-                            className='flex w-full gap-2'
+                            className='flex w-full gap-2 lg:gap-4'
                         >
-                            <UpcomingTasks />
-                            <div className='w-full max-w-4xl flex-1 space-y-4 lg:space-y-6'>
+                            <UpcomingTasks classId={dataClass.data.id} />
+                            <div className='w-full max-w-4xl flex-1 space-y-2 lg:space-y-4'>
                                 {user?.role === 'teacher' && (
                                     <AnnouncementForm />
                                 )}
@@ -127,13 +131,6 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                                         );
                                     })}
                             </div>
-                        </TabsContent>
-                        <TabsContent value='assignments'>
-                            {dataClass.data.assignments.length === 0 && (
-                                <EmptyStuff message='No Assignments in this class yet. 😪'>
-                                    <CreateLMForm />
-                                </EmptyStuff>
-                            )}
                         </TabsContent>
                     </Tabs>
                 </main>

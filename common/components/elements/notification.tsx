@@ -11,7 +11,7 @@ import Typography from '../ui/typography';
 import { InferResultType } from '@/common/data-access/types';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { markNotificationAsRead } from '@/actions/notifications.actions';
+import { markAllNotificationAsRead } from '@/actions/notifications.actions';
 import { toast } from 'sonner';
 
 type NotificationProps = {
@@ -24,7 +24,7 @@ const Notification = (props: NotificationProps) => {
         (not) => !not.isRead,
     );
 
-    const { executeAsync, isExecuting } = useAction(markNotificationAsRead, {
+    const { executeAsync, isExecuting } = useAction(markAllNotificationAsRead, {
         onSuccess: ({ data }) => {
             toast.success(data?.message);
         },
@@ -35,6 +35,11 @@ const Notification = (props: NotificationProps) => {
 
     const onMarkAllAsRead = () => {
         executeAsync(unreadNotifications.map((not) => not.id));
+        props.invalidate();
+    };
+
+    const onMarkAsRead = (id: number) => {
+        executeAsync([id]);
         props.invalidate();
     };
     return (
@@ -83,17 +88,27 @@ const Notification = (props: NotificationProps) => {
                     <TabsContent value='all' className='divide-y'>
                         {props.notifications.map((not) => (
                             <NotificationItem
+                                onItemClicked={onMarkAsRead}
                                 key={not.userId + not.id}
                                 {...not}
                             />
                         ))}
+                        {props.notifications.length === 0 && (
+                            <EmptyNotification />
+                        )}
                     </TabsContent>
-                    <TabsContent value='unread'></TabsContent>
+                    <TabsContent value='unread'>
+                        {unreadNotifications.length === 0 && (
+                            <EmptyNotification />
+                        )}
+                    </TabsContent>
                 </Tabs>
 
                 <div className='flex items-center justify-between px-4 py-2'>
                     <div className='flex items-center gap-2'>
-                        <Settings size={18} className='text-green-500' />
+                        <Link href={'/settings/notifications'}>
+                            <Settings size={18} className='text-green-500' />
+                        </Link>
                         <Button
                             className='text-xs text-green-500'
                             variant={'ghost'}
@@ -130,16 +145,23 @@ const Notification = (props: NotificationProps) => {
     );
 };
 export default Notification;
-type NotificationItemProps = InferResultType<'notifications'>;
+type NotificationItemProps = InferResultType<'notifications'> & {
+    onItemClicked: (id: number) => void;
+};
 const NotificationItem: React.FC<NotificationItemProps> = (props) => {
     const router = useRouter();
     const handleNavigate = () => {
+        if (!props.isRead) props.onItemClicked(props.id);
+
         if (props.url) {
             router.push(props.url);
         }
     };
     return (
-        <div onClick={handleNavigate} className='px-4 py-2'>
+        <div
+            onClick={handleNavigate}
+            className='px-4 py-2 hover:cursor-pointer hover:bg-secondary'
+        >
             <div className='flex items-center justify-between'>
                 <p
                     className={cn('text-sm font-semibold md:text-lg', {
@@ -157,5 +179,13 @@ const NotificationItem: React.FC<NotificationItemProps> = (props) => {
                 {props.message}
             </Typography>
         </div>
+    );
+};
+
+const EmptyNotification = () => {
+    return (
+        <Typography className='py-4 text-center text-sm text-gray-500'>
+            🔔 No notifications
+        </Typography>
     );
 };

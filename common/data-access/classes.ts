@@ -1,6 +1,6 @@
 import db from '../libs/DB';
 import { Schema } from '../models';
-import { InsertClassesInput } from './types';
+import { DataAccessConfig, InsertClassesInput } from './types';
 
 export const findClassBySlug = async (slug: string) => {
     return await db.query.classes.findFirst({
@@ -14,8 +14,12 @@ export const findClassByCode = async (code: string) => {
     });
 };
 
-export const findClassById = async (id: string) => {
+export const findClassById = async (
+    id: string,
+    config: DataAccessConfig<'classes'> = {},
+) => {
     return await db.query.classes.findFirst({
+        ...config.queryConfig,
         where: (classes, { eq }) => eq(classes.id, id),
     });
 };

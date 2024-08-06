@@ -22,12 +22,12 @@ export const STUDENT_MENU = [
         disabled: false,
         icon: School2,
     },
-    {
-        name: 'Assignments',
-        href: '/assignments',
-        disabled: false,
-        icon: Library,
-    },
+    // {
+    //     name: 'Assignments',
+    //     href: '/assignments',
+    //     disabled: false,
+    //     icon: Library,
+    // },
     {
         name: 'Genii Chat',
         href: '/genii-chat',

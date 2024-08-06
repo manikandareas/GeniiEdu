@@ -56,7 +56,7 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
                         keyType='archived'
                     />
                 </TabsList>
-                <div className='ml-auto flex items-center gap-2'>
+                <div className='ml-auto hidden items-center gap-2 md:flex'>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button

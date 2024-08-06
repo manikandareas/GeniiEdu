@@ -4,7 +4,7 @@ import RetroGrid from '@/common/components/ui/retro-grid';
 
 import { validateRequest } from '@/common/libs/lucia';
 import { redirect } from 'next/navigation';
-import Login from './_components/login';
+import Login from './_components/Login';
 import { Env } from '@/common/libs/Env';
 
 export const metadata: Metadata = {

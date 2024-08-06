@@ -5,7 +5,7 @@ import { createTransaction } from '@/common/data-access/utils';
 import { authenticatedProcedure } from '@/common/libs/safe-action';
 import { z } from 'zod';
 
-export const markNotificationAsRead = authenticatedProcedure
+export const markAllNotificationAsRead = authenticatedProcedure
     .metadata({
         actionName: 'markNotificationAsRead',
     })

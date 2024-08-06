@@ -1,9 +1,11 @@
 'use server';
 
 import { GlobalSearch } from '@/common/components/providers/flexsearch-provider';
+import { findUpcomingTasks } from '@/common/data-access/assignments';
 import { insertClassMember } from '@/common/data-access/class-members';
 import {
     findClassByCode,
+    findClassById,
     findClassBySlug,
     findDetailsClass,
     findStudentInClass,
@@ -200,4 +202,8 @@ export const joinClass = studentProcedure
 
 export const getClassesForSearch = async (userId: string) => {
     return (await findUserClassesForSearch(userId)) as GlobalSearch[];
+};
+
+export const getUpcomingTasks = async (classId: string) => {
+    return await findUpcomingTasks(classId);
 };
