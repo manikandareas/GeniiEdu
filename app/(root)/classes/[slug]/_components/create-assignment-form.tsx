@@ -42,6 +42,7 @@ import {
 } from '@/common/components/ui/tooltip';
 import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
 import { detailsClassQuery } from '@/common/hooks/details-class-query';
+import { useUpcomingTasksQuery } from '@/common/hooks/upcoimg-tasks-query';
 import { AssignmentsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
@@ -54,9 +55,11 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-type CreateAssignmentFormProps = {};
+type CreateAssignmentFormProps = {
+    classId: string;
+};
 
-const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
+const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
     const createAssignmentForm = useForm<
         z.infer<typeof AssignmentsModel.createAssignmentSchema>
     >({
@@ -71,6 +74,9 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
     });
 
     const params = useParams();
+    const { invalidate: invalidateUpcomingTasks } = useUpcomingTasksQuery(
+        props.classId,
+    );
 
     const minuteRef = useRef<HTMLInputElement>(null);
     const hourRef = useRef<HTMLInputElement>(null);
@@ -108,6 +114,7 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = () => {
             toast.success(data.message);
             createAssignmentForm.reset();
             invalidate();
+            invalidateUpcomingTasks();
             document.getElementById('closeButton')?.click();
         },
         onError: ({ error }) => {

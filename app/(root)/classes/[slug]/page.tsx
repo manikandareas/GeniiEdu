@@ -71,7 +71,9 @@ const DetailClassPage: React.FC<DetailClassPageProps> = async ({ params }) => {
                             </PopoverTrigger>
                             <PopoverContent className='flex flex-col gap-2'>
                                 <CreateLMForm />
-                                <CreateAssignmentForm />
+                                <CreateAssignmentForm
+                                    classId={dataClass.data.id}
+                                />
                             </PopoverContent>
                         </Popover>
                     ) : (

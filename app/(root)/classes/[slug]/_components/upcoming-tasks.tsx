@@ -41,7 +41,7 @@ const UpcomingTasks: React.FC<UpcomingTasksProps> = ({ classId }) => {
                         : `You have ${data.length} tasks to be completed`}
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className='space-y-2'>
                 {isHadData &&
                     data.map((task) => (
                         <UpcomingTaskItem {...task} key={task.id} />

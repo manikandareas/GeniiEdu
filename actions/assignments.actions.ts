@@ -5,8 +5,13 @@ import {
     insertAssignment,
     patchAssignment,
 } from '@/common/data-access/assignments';
-import { isOwnerOfClass } from '@/common/data-access/classes';
+import {
+    findIDMembersOfClass,
+    isOwnerOfClass,
+} from '@/common/data-access/classes';
 import { patchFiles } from '@/common/data-access/files';
+import { insertNotifications } from '@/common/data-access/notifications';
+import { Goreal } from '@/common/libs/goreal';
 import { ActionError, teacherProcedure } from '@/common/libs/safe-action';
 import { AssignmentsModel } from '@/common/models';
 import { revalidatePath } from 'next/cache';
@@ -52,6 +57,31 @@ export const createAssignment = teacherProcedure
                     );
                 });
             });
+        }
+
+        const recipientsNotification = await findIDMembersOfClass(
+            existingClass.id,
+        );
+
+        await insertNotifications(
+            recipientsNotification.map((r) => ({
+                userId: r,
+                title: 'New Assignment added',
+                isRead: false,
+                message: `New assignment "${parsedInput.title}" has been added to the class "${existingClass.className}"`,
+                url: `/classes/${classSlug}`,
+            })),
+        );
+
+        const goreal = new Goreal(user.id);
+
+        const is_success = await goreal.pushBroadcast({
+            event: Goreal.broadcastKey.NOTIFICATION_UPDATED,
+            recipients: recipientsNotification,
+        });
+
+        if (!is_success) {
+            throw new ActionError('Failed to broadcast notification');
         }
 
         revalidatePath(`/classes/${classSlug}`);
@@ -111,5 +141,3 @@ export const toggleAssignmentStatus = teacherProcedure
             message: 'Assignment status toggled successfully',
         };
     });
-
-    
