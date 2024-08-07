@@ -33,6 +33,8 @@ import { cookies } from 'next/headers';
 import React from 'react';
 import { z } from 'zod';
 import { sendEmail } from './email.actions';
+import { Goreal } from '@/common/libs/goreal';
+import { insertNotifications } from '@/common/data-access/notifications';
 
 // * Actions running expectedly
 const resendEmailVerificationSchema = z.string().email();
@@ -205,6 +207,30 @@ export const signIn = actionProcedure
             sessionCookie.value,
             sessionCookie.attributes,
         );
+
+        if (!existingUser.onBoardingComplete) {
+            revalidatePath('/onboarding');
+
+            const goreal = new Goreal(existingUser.id);
+
+            await insertNotifications([
+                {
+                    userId: existingUser.id,
+                    title: 'Welcome to GeniiEdu',
+                    message: "Hi there! Welcome to GeniiEdu. Let's get started",
+                    isRead: false,
+                },
+            ]);
+
+            await goreal.pushBroadcast({
+                event: Goreal.broadcastKey.NOTIFICATION_UPDATED,
+                recipients: [existingUser.id],
+            });
+
+            return {
+                message: 'Welcome! Please complete your onboarding',
+            };
+        }
 
         revalidatePath('/login');
 
