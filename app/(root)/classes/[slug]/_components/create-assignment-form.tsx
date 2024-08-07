@@ -25,6 +25,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/common/components/ui/sheet';
+import { Switch } from '@/common/components/ui/switch';
 import {
     Tabs,
     TabsContent,
@@ -40,12 +41,13 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/common/components/ui/tooltip';
+import Typography from '@/common/components/ui/typography';
 import { DETAILS_CLASS_ICONS } from '@/common/constants/details-class-tabs';
 import { detailsClassQuery } from '@/common/hooks/details-class-query';
 import { useUpcomingTasksQuery } from '@/common/hooks/upcoimg-tasks-query';
 import { AssignmentsModel } from '@/common/models';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X } from 'lucide-react';
+import { InfoIcon, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useAction } from 'next-safe-action/hooks';
 import Image from 'next/image';
@@ -83,6 +85,7 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
     const secondRef = useRef<HTMLInputElement>(null);
     const periodRef = useRef<HTMLButtonElement>(null);
     const [period, setPeriod] = useState<Period>('PM');
+    const [isHaveDueData, setIsHaveDueData] = useState<boolean>(false);
 
     const [youtubeLink, setYoutubeLink] = useState('');
 
@@ -122,9 +125,8 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
         },
     });
 
-    const { executeAsync: executeSaveFile, status: statusSaveFile } = useAction(
-        saveFilesToDB,
-        {
+    const { executeAsync: executeSaveFile, isExecuting: isSaveFileExecuting } =
+        useAction(saveFilesToDB, {
             onSuccess: ({ data }) => {
                 if (!data) return;
                 toast.success(data?.message);
@@ -149,8 +151,7 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                 toast.error(error.serverError);
                 // toast.error(error);
             },
-        },
-    );
+        });
 
     const onClientUploadSuccess = async (
         data: {
@@ -187,12 +188,13 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
     const onCreateAssignmentClicked = async (
         values: z.infer<typeof AssignmentsModel.createAssignmentSchema>,
     ) => {
-        console.log(params.slug);
-
-        await executeCreateAssignment(values);
+        await executeCreateAssignment({
+            ...values,
+            dueDate: isHaveDueData ? values.dueDate : null,
+        });
     };
 
-    const isLoading = isCreatingAssignment || statusSaveFile === 'executing';
+    const isLoading = isCreatingAssignment || isSaveFileExecuting;
 
     return (
         <Sheet>
@@ -419,7 +421,7 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                                 Date
                                             </Label>
                                             <DatePicker
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
                                             />
                                         </div>
@@ -510,10 +512,33 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                             name='dueDate'
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>
-                                        Due date of assignment
-                                    </FormLabel>
-
+                                    <div className='flex items-center justify-between'>
+                                        <FormLabel>
+                                            Due date of assignment
+                                        </FormLabel>
+                                        <div className='flex items-center gap-2'>
+                                            <Switch
+                                                checked={isHaveDueData}
+                                                onCheckedChange={
+                                                    setIsHaveDueData
+                                                }
+                                            />
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <InfoIcon size={18} />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='w-[350px] space-y-2'>
+                                                        <Typography>
+                                                            Switch on if the
+                                                            assignment have due
+                                                            date
+                                                        </Typography>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
+                                    </div>
                                     <div className='flex flex-wrap items-end gap-2 lg:flex-nowrap'>
                                         <div className='grid gap-1 text-start'>
                                             <Label
@@ -523,8 +548,9 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                                 Date
                                             </Label>
                                             <DatePicker
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
+                                                disabled={!isHaveDueData}
                                             />
                                         </div>
                                         <div className='grid gap-1 text-center'>
@@ -537,9 +563,10 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                             <TimePickerInput
                                                 picker='12hours'
                                                 period={period}
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
                                                 ref={hourRef}
+                                                disabled={!isHaveDueData}
                                                 onRightFocus={() =>
                                                     minuteRef.current?.focus()
                                                 }
@@ -554,9 +581,10 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                             </Label>
                                             <TimePickerInput
                                                 picker='minutes'
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
                                                 ref={minuteRef}
+                                                disabled={!isHaveDueData}
                                                 onLeftFocus={() =>
                                                     hourRef.current?.focus()
                                                 }
@@ -574,9 +602,10 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                             </Label>
                                             <TimePickerInput
                                                 picker='seconds'
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
                                                 ref={secondRef}
+                                                disabled={!isHaveDueData}
                                                 onLeftFocus={() =>
                                                     minuteRef.current?.focus()
                                                 }
@@ -592,9 +621,10 @@ const CreateAssignmentForm: React.FC<CreateAssignmentFormProps> = (props) => {
                                             <TimePeriodSelect
                                                 period={period}
                                                 setPeriod={setPeriod}
-                                                date={field.value}
+                                                date={field.value as Date}
                                                 setDate={field.onChange}
                                                 ref={periodRef}
+                                                disabled={!isHaveDueData}
                                                 onLeftFocus={() =>
                                                     secondRef.current?.focus()
                                                 }

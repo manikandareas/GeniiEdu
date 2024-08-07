@@ -201,7 +201,7 @@ export const assignments = pgTable('assignments', {
     authorId: text('author_id')
         .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
-    dueDate: timestamp('due_date', { withTimezone: true }).notNull(),
+    dueDate: timestamp('due_date', { withTimezone: true }),
     classId: text('class_id')
         .references(() => classes.id, { onDelete: 'cascade' })
         .notNull(),

@@ -4,7 +4,7 @@ import { FilesTypeEnum } from './schema.model';
 export const createAssignmentSchema = z.object({
     title: z.string(),
     description: z.string(),
-    dueDate: z.date().min(new Date()),
+    dueDate: z.date().min(new Date()).or(z.null()).optional(),
     publishedAt: z.date().optional(),
     files: z
         .array(

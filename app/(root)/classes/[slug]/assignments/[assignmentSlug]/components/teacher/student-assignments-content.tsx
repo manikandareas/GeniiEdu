@@ -35,15 +35,15 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
     return (
         <main className='space-y-4'>
             {/* Action bar */}
-            <div className='flex h-16 items-center justify-between'>
-                <div className='flex items-center gap-x-4'>
+            {/* <div className='flex h-16 items-center justify-between'> */}
+            {/* <div className='flex items-center gap-x-4'>
                     <ReturnSubmissions assignmentId={data.id as string} />
                     <Button variant={'ghost'} size={'icon'}>
                         <Mail size={24} />
                     </Button>
-                </div>
+                </div> */}
 
-                <div className='flex items-center gap-x-4'>
+            {/* <div className='flex items-center gap-x-4'>
                     <Select defaultValue='100'>
                         <SelectTrigger className='w-[180px]'>
                             <SelectValue
@@ -63,10 +63,27 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
                         <Settings size={24} />
                     </Button>
                 </div>
-            </div>
+            </div> */}
 
             <section className='flex'>
-                <div className='h-screen w-full lg:max-w-sm'>
+                <div className='h-screen w-full space-y-4 lg:max-w-sm'>
+                    <div className='flex items-center justify-between'>
+                        <ReturnSubmissions assignmentId={data.id as string} />
+                        <Select defaultValue='100'>
+                            <SelectTrigger className='w-[180px]'>
+                                <SelectValue
+                                    defaultValue={'100'}
+                                    placeholder='100'
+                                />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value='100'>100</SelectItem>
+                                <SelectItem value='tidak-dinilai'>
+                                    Tidak dinilai
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <DataTable
                         columns={columns}
                         data={
@@ -105,11 +122,6 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
                             </div>
 
                             <div>
-                                <SwitchAssignmentStatus
-                                    assignmentId={initialData?.id ?? ''}
-                                    isOpen={initialData?.isOpen ?? false}
-                                />
-
                                 <div className='pt-2'>
                                     <Select defaultValue='100'>
                                         <SelectTrigger className='w-[180px] border-transparent'>

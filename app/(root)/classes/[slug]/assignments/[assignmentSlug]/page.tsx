@@ -12,6 +12,8 @@ import { notFound } from 'next/navigation';
 import StudentSection from './components/student/student-section';
 import { InputGradeContextProvider } from './components/teacher/input-grade-context';
 import TeacherSection from './components/teacher/teacher-section';
+import SwitchAssignmentStatus from './components/teacher/switch-assignment-status';
+import UpdateAssignmentForm from './components/teacher/update-assignment-form';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -66,7 +68,11 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     return (
         <>
-            <PageHeader title='Assignment Details' urls={urls} />
+            <PageHeader
+                title='Assignment Details'
+                urls={urls}
+                actions={user.role === 'teacher' && <UpdateAssignmentForm />}
+            />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 {user.role === 'student' ? (
                     <StudentSection

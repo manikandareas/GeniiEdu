@@ -15,14 +15,20 @@ import {
 type DatePickerProps = {
     date: Date | undefined;
     setDate: (date: Date | undefined) => void;
+    disabled?: boolean;
 };
-const DatePicker: React.FC<DatePickerProps> = ({ date, setDate }) => {
+const DatePicker: React.FC<DatePickerProps> = ({
+    date,
+    setDate,
+    disabled = false,
+}) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <Button
                     variant={'outline'}
                     type='button'
+                    disabled={disabled}
                     className={cn(
                         'w-[280px] justify-start text-left font-normal',
                         !date && 'text-muted-foreground',

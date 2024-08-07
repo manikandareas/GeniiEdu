@@ -16,9 +16,17 @@ const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {
     return (
         <main className='w-full px-4 py-4 md:px-6 md:py-0'>
             <Tabs defaultValue='studentAssignment' className=''>
-                <TabsList className='mb-2'>
-                    <TabsTrigger value='details'>Details</TabsTrigger>
-                    <TabsTrigger value='studentAssignment'>
+                <TabsList className='mb-2 bg-transparent'>
+                    <TabsTrigger
+                        value='details'
+                        className='rounded-none border-b bg-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent'
+                    >
+                        Details
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value='studentAssignment'
+                        className='rounded-none border-b bg-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent'
+                    >
                         Student Assignment
                     </TabsTrigger>
                 </TabsList>

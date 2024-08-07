@@ -5,8 +5,13 @@ import { Switch } from '@/common/components/ui/switch';
 import Typography from '@/common/components/ui/typography';
 import { Info } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback } from 'react';
 import { toast } from 'sonner';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/common/components/ui/tooltip';
 
 type SwitchAssignmentStatusProps = {
     assignmentId: string;
@@ -37,8 +42,22 @@ const SwitchAssignmentStatus: React.FC<SwitchAssignmentStatusProps> = ({
                 onCheckedChange={onToggle}
                 defaultChecked={isOpen}
             />
-            <Typography variant={'p'}>Menerima kiriman</Typography>
-            <Info className='text-muted-foreground' />
+            <Typography className='hidden md:block' variant={'p'}>
+                Menerima kiriman
+            </Typography>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <Info size={20} className='text-muted-foreground' />
+                    </TooltipTrigger>
+                    <TooltipContent className='max-w-[18rem]'>
+                        <Typography className='text-left' variant={'p'}>
+                            Menonaktifkan ini akan mencegah siswa mengirimkan
+                            tugas
+                        </Typography>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </div>
     );
 };

@@ -14,7 +14,7 @@ const PreviewSubmissions: React.FC<PreviewSubmissionsProps> = ({
     return (
         <>
             {!!!searchParams.get('sb') ? (
-                <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-4'>
+                <div className='grid gap-4 lg:grid-cols-2 xl:grid-cols-3'>
                     {submissions.map((item) => (
                         <PreviewSubmissionCard key={item.id} {...item} />
                     ))}

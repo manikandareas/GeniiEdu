@@ -39,7 +39,7 @@ const PreviewSubmissionCard: React.FC<PreviewSubmissionCards.Props> = (
                 />
 
                 <Typography affects={'muted'}>
-                    {prettyText(props.files[0].name)}
+                    {prettyText(props.files[0].name, 35)}
                 </Typography>
             </CardContent>
             <CardFooter>
