@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { Env } from '@/common/libs/Env';
+import { Env } from '@/app/_libs/env';
 import { and, eq } from 'drizzle-orm';
-import db from '@/common/libs/DB';
-import { emailVerifications, users } from '@/common/models/schema.model';
-import { lucia } from '@/common/libs/lucia';
+import db from '@/app/_libs/db/DB';
+import { emailVerifications, users } from '@/app/_libs/db/schema';
+import { lucia } from '@/app/_libs/lucia';
 import { cookies } from 'next/headers';
 
 export const GET = async (request: NextRequest) => {
