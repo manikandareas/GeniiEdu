@@ -1,9 +1,9 @@
-import db from '@/common/libs/DB';
-import { Env } from '@/common/libs/Env';
-import { lucia } from '@/common/libs/lucia';
-import { github } from '@/common/libs/lucia/oauth';
-import { oauthAccounts, users } from '@/common/models/schema.model';
-import { GithubAuthenticatedUser } from '@/common/types/Oauth.type';
+import db from '@/app/_libs/db/DB';
+import { Env } from '@/app/_libs/env';
+import { lucia } from '@/app/_libs/lucia';
+import { github } from '@/app/_libs/lucia/oauth';
+import { oauthAccounts, users } from '@/app/_libs/db/schema';
+import { GithubAuthenticatedUser } from '@/app/_types/oauth';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';

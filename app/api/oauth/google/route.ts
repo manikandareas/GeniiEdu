@@ -1,13 +1,13 @@
-import db from '@/common/libs/DB';
-import { oauthAccounts, users } from '@/common/models/schema.model';
-import { lucia } from '@/common/libs/lucia';
+import db from '@/app/_libs/db/DB';
+import { oauthAccounts, users } from '@/app/_libs/db/schema';
+import { lucia } from '@/app/_libs/lucia';
 
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { google } from '@/common/libs/lucia/oauth';
-import { Env } from '@/common/libs/Env';
-import { GoogleAuthenticatedUser } from '@/common/types/Oauth.type';
+import { google } from '@/app/_libs/lucia/oauth';
+import { Env } from '@/app/_libs/env';
+import { GoogleAuthenticatedUser } from '@/app/_types/oauth';
 
 export const GET = async (req: NextRequest) => {
     try {
