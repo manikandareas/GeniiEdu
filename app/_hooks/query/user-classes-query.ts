@@ -1,16 +1,11 @@
-import {
-    getUserClasses,
-    GetUserClassesResponse,
-} from '@/app/_actions/users-actions';
+import { GetUserClassesResponse } from '@/app/_actions/users-actions';
 import { QueryClient, useQuery } from '@tanstack/react-query';
-
-const QUERY_KEY = ['classes'];
+import { queryStore } from './query-store';
 
 export const useUserClassesQuery = (initialData: GetUserClassesResponse) => {
     return useQuery({
         initialData,
-        queryKey: QUERY_KEY,
-        queryFn: getUserClasses,
+        ...queryStore.user.classes,
     });
 };
 
@@ -18,15 +13,12 @@ export const userClassesQuery = () => {
     const queryClient = new QueryClient();
 
     const prefetch = async () => {
-        await queryClient.prefetchQuery({
-            queryKey: QUERY_KEY,
-            queryFn: getUserClasses,
-        });
+        await queryClient.prefetchQuery(queryStore.user.classes);
     };
 
     const invalidate = () => {
         queryClient.invalidateQueries({
-            queryKey: QUERY_KEY,
+            queryKey: queryStore.user.classes.queryKey,
         });
     };
 

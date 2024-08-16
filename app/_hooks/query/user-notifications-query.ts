@@ -1,17 +1,14 @@
-import { getUserNotifications } from '@/app/_actions/users-actions';
+'use client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryStore } from './query-store';
 
 export const useUserNotificationsQuery = () => {
-    const QUERY_KEY = ['notifications'];
     const queryClient = useQueryClient();
-    const queryResult = useQuery({
-        queryKey: QUERY_KEY,
-        queryFn: () => getUserNotifications(),
-    });
+    const queryResult = useQuery(queryStore.user.notifications);
 
     const invalidate = () => {
         queryClient.invalidateQueries({
-            queryKey: QUERY_KEY,
+            queryKey: queryStore.user.notifications.queryKey,
         });
     };
 

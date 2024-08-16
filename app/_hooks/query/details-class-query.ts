@@ -1,8 +1,6 @@
-import {
-    getDetailsClass,
-    GetDetailsClassResponse,
-} from '@/app/_actions/classes-actions';
+import { GetDetailsClassResponse } from '@/app/_actions/classes-actions';
 import { QueryClient, useQuery } from '@tanstack/react-query';
+import { queryStore } from './query-store';
 
 export const useDetailsClassQuery = (
     initialData: GetDetailsClassResponse,
@@ -10,26 +8,20 @@ export const useDetailsClassQuery = (
 ) => {
     return useQuery({
         initialData,
-        queryKey: ['details-class', classSlug],
-        queryFn: () => getDetailsClass(classSlug),
+        ...queryStore.class.details(classSlug),
     });
 };
 
 export const detailsClassQuery = (classSlug: string) => {
     const queryClient = new QueryClient();
 
-    const QUERY_KEY = ['details-class', classSlug];
-
     const prefetch = async () => {
-        await queryClient.prefetchQuery({
-            queryKey: QUERY_KEY,
-            queryFn: () => getDetailsClass(classSlug),
-        });
+        await queryClient.prefetchQuery(queryStore.class.details(classSlug));
     };
 
     const invalidate = () => {
         queryClient.invalidateQueries({
-            queryKey: QUERY_KEY,
+            queryKey: queryStore.class.details(classSlug).queryKey,
         });
     };
 

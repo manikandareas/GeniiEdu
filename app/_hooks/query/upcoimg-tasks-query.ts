@@ -1,18 +1,15 @@
 'use client';
-import { getUpcomingTasks } from '@/app/_actions/classes-actions';
+
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryStore } from './query-store';
 
 export const useUpcomingTasksQuery = (classId: string) => {
-    const QUERY_KEY = ['upcoming-tasks', classId];
     const queryClient = useQueryClient();
-    const queryResult = useQuery({
-        queryKey: QUERY_KEY,
-        queryFn: () => getUpcomingTasks(classId),
-    });
+    const queryResult = useQuery(queryStore.class.upcomingTasks(classId));
 
     const invalidate = () => {
         queryClient.invalidateQueries({
-            queryKey: QUERY_KEY,
+            queryKey: queryStore.class.upcomingTasks(classId).queryKey,
         });
     };
 
