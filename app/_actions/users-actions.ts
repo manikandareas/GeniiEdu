@@ -1,7 +1,7 @@
 'use server';
 
-import { findMemberClasses } from '@/app/_data-access/class-members';
-import { findUserByEmail, patchUser } from '@/app/_data-access/users';
+import classMembersData from '@/app/_data-access/class-members';
+import usersData from '@/app/_data-access/users';
 import { validateRequest } from '@/app/_libs/lucia';
 import {
     ActionError,
@@ -17,7 +17,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import * as argon from 'argon2';
-import { findUserNotifications } from '@/app/_data-access/notifications';
+import notificationsData from '@/app/_data-access/notifications';
 
 /**
  * Handles the onboarding profile process for a user.
@@ -47,16 +47,14 @@ export const onboardingProfile = async (
             return redirect('/login');
         }
 
-        const response = await patchUser(
-            {
-                name: values.name,
-                username: values.username,
-                role: values.role,
-                onBoardingComplete: true,
-                updatedAt: new Date(),
-            },
-            user.id,
-        );
+        const response = await usersData.patch({
+            id: user.id,
+            name: values.name,
+            username: values.username,
+            role: values.role,
+            onBoardingComplete: true,
+            updatedAt: new Date(),
+        });
 
         if (response.length === 0) {
             return {
@@ -93,7 +91,7 @@ export const isEmailExist = actionProcedure
     .metadata({ actionName: 'isEmailExist' })
     .schema(isEmailExistSchema)
     .action(async ({ parsedInput }) => {
-        const existingUser = findUserByEmail(parsedInput.email);
+        const existingUser = usersData.findByEmail(parsedInput.email);
 
         if (!existingUser) {
             return {
@@ -120,7 +118,7 @@ export const getUserClasses = async () => {
         throw new ActionError('Unauthorized');
     }
 
-    const userClasses = await findMemberClasses(user.id);
+    const userClasses = await classMembersData.findMany(user.id);
 
     if (userClasses.length === 0) {
         revalidatePath('/classes');
@@ -176,14 +174,12 @@ export const updateUserProfile = authenticatedProcedure
     .action(async ({ parsedInput, ctx }) => {
         const { user } = ctx;
 
-        const response = await patchUser(
-            {
-                username: parsedInput.username,
-                email: parsedInput.email,
-                bio: parsedInput.bio,
-            },
-            user.id,
-        );
+        const response = await usersData.patch({
+            id: user.id,
+            username: parsedInput.username,
+            email: parsedInput.email,
+            bio: parsedInput.bio,
+        });
 
         if (response.length === 0) {
             throw new ActionError('User not found');
@@ -203,7 +199,7 @@ export const updateUserAccount = authenticatedProcedure
         const { user } = ctx;
         let response;
 
-        const userWithPassword = await findUserByEmail(user.email);
+        const userWithPassword = await usersData.findByEmail(user.email);
 
         if (!userWithPassword) {
             throw new ActionError('User not found');
@@ -229,20 +225,16 @@ export const updateUserAccount = authenticatedProcedure
                 throw new ActionError('Incorrect password');
             }
 
-            response = await patchUser(
-                {
-                    passwordHash: await argon.hash(parsedInput.newPassword),
-                    name: parsedInput.name,
-                },
-                user.id,
-            );
+            response = await usersData.patch({
+                id: user.id,
+                passwordHash: await argon.hash(parsedInput.newPassword),
+                name: parsedInput.name,
+            });
         } else {
-            response = await patchUser(
-                {
-                    name: parsedInput.name,
-                },
-                user.id,
-            );
+            response = await usersData.patch({
+                id: user.id,
+                name: parsedInput.name,
+            });
         }
 
         return {
@@ -256,7 +248,7 @@ export const getUserNotifications = async () => {
         throw new ActionError('Unauthorized');
     }
 
-    return findUserNotifications(user.id);
+    return notificationsData.findManyWhereUserId(user.id);
 };
 
 export type GetUserNotificationsResponse = Awaited<

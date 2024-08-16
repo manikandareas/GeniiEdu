@@ -9,7 +9,7 @@ import {
 import Typography from '@/app/_components/ui/typography';
 import { prettyText } from '@/app/_utilities';
 import Image from 'next/image';
-import { SubmissionsAssignment } from './Columns';
+import { SubmissionsAssignment } from './columns';
 
 namespace PreviewSubmissionCards {
     export type Props = SubmissionsAssignment;

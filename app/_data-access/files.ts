@@ -4,34 +4,57 @@ import { files } from '../_libs/db/schema';
 import { DataAccessConfig } from './types';
 import { FilesType } from '../_libs/db/schema';
 
-export const findFileByKey = async (key: string) => {
-    return await db.query.files.findFirst({
-        where: (files, { eq }) => eq(files.key, key),
-    });
-};
+class FilesData {
+    async findOneByKey(key: string, config: DataAccessConfig<'files'> = {}) {
+        return await (config.tx ? config.tx : db).query.files.findFirst({
+            where: (files, { eq }) => eq(files.key, key),
+        });
+    }
 
-export const insertFile = async (input: FilesType) => {
-    return await db.insert(files).values(input).returning();
-};
+    async create(input: FilesType, config: DataAccessConfig<'files'> = {}) {
+        return await (config.tx ? config.tx : db)
+            .insert(files)
+            .values(input)
+            .returning();
+    }
 
-export const insertFiles = async (input: FilesType[]) => {
-    return await db.insert(files).values(input).returning();
-};
+    async createMany(
+        input: FilesType[],
+        config: DataAccessConfig<'files'> = {},
+    ) {
+        return await (config.tx ? config.tx : db)
+            .insert(files)
+            .values(input)
+            .returning();
+    }
 
-export const deleteFilesByKey = async (key: string[]) => {
-    return await db.delete(files).where(inArray(files.key, key));
-};
+    async deleteByKey(key: string[], config: DataAccessConfig<'files'> = {}) {
+        return await (config.tx ? config.tx : db)
+            .delete(files)
+            .where(inArray(files.key, key));
+    }
 
-export const patchFiles = async (
-    fileId: string,
-    data: Partial<FilesType>,
-    config: DataAccessConfig<'files'> = {},
-) => {
-    return await (config.tx ? config.tx : db)
-        .update(files)
-        .set(data)
-        .where(eq(files.id, fileId))
-        .returning();
-};
+    async patch(
+        fileId: string,
+        data: Partial<FilesType>,
+        config: DataAccessConfig<'files'> = {},
+    ) {
+        return await (config.tx ? config.tx : db)
+            .update(files)
+            .set(data)
+            .where(eq(files.id, fileId))
+            .returning();
+    }
 
-// db.delete(files).where(inArray(files.key, key)),
+    async deleteFilesByKey(
+        key: string[],
+        config: DataAccessConfig<'files'> = {},
+    ) {
+        return await (config.tx ? config.tx : db)
+            .delete(files)
+            .where(inArray(files.key, key));
+    }
+}
+
+const filesData = new FilesData();
+export default filesData;

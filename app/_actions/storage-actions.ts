@@ -1,6 +1,6 @@
 'use server';
 
-import { deleteFilesByKey, insertFiles } from '@/app/_data-access/files';
+import filesData from '@/app/_data-access/files';
 import { utapi } from '@/app/_libs/uploadthing';
 import { ActionError, authenticatedProcedure } from '@/app/_libs/safe-action';
 import { FilesTypeEnum } from '../_libs/db/schema';
@@ -11,7 +11,7 @@ export const removeFiles = async (key: string[]) => {
         // ? Delete file from uploadthing and database
         const [utapiRes, sqlRes] = await Promise.all([
             utapi.deleteFiles(key),
-            await deleteFilesByKey(key),
+            await filesData.deleteFilesByKey(key),
         ]);
 
         if (!utapiRes.success || sqlRes.count === 0) {
@@ -61,7 +61,7 @@ export const saveFilesToDB = authenticatedProcedure
             name: file.name!,
         }));
 
-        const res = await insertFiles(mappedFiles);
+        const res = await filesData.createMany(mappedFiles);
 
         if (!res) {
             throw new ActionError('Failed to save files');

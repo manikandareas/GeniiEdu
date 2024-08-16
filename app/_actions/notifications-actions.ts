@@ -1,6 +1,6 @@
 'use server';
 
-import { patchNotification } from '@/app/_data-access/notifications';
+import notificationsData from '@/app/_data-access/notifications';
 import { createTransaction } from '@/app/_data-access/utils';
 import { authenticatedProcedure } from '@/app/_libs/safe-action';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ export const markAllNotificationAsRead = authenticatedProcedure
     .action(async ({ parsedInput, ctx }) => {
         createTransaction((tx) => {
             parsedInput.forEach(async (id) => {
-                const res = await patchNotification(
+                const res = await notificationsData.patch(
                     { id: id, isRead: true },
                     { tx },
                 );

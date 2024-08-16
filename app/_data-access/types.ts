@@ -50,3 +50,7 @@ export type InferResultType<
         with: With;
     }
 >;
+
+export type InferReturnType<T extends (...args: any) => any> = Awaited<
+    ReturnType<T>
+>;

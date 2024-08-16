@@ -1,4 +1,4 @@
-// import { SubmissionsAssignment } from '@/app/(root)/classes/[slug]/assignments/[assignmentSlug]/components/teacher/Columns';
+// import { SubmissionsAssignment } from '@/app/(root)/classes/[slug]/assignments/[assignmentSlug]/components/teacher/columns';
 
 export const DUMMY_STUDENT_SUBMISSIONS = [
     {

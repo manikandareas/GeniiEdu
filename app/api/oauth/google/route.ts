@@ -1,7 +1,6 @@
 import db from '@/app/_libs/db/DB';
 import { oauthAccounts, users } from '@/app/_libs/db/schema';
 import { lucia } from '@/app/_libs/lucia';
-
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';

@@ -5,11 +5,13 @@ import {
     TabsTrigger,
 } from '@/app/_components/ui/tabs';
 import DetailsAssignment from '../details-assignment';
-import { FindDetailsAssignmentForTeacherResponse } from '@/app/_data-access/assignments';
 import StudentAssignmentsContent from './student-assignments-content';
+import { InferReturnType } from '@/app/_data-access/types';
+import assignmentsData from '@/app/_data-access/assignments';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
 
 type TeacherSectionProps = {
-    initialData: FindDetailsAssignmentForTeacherResponse;
+    initialData: GetDetailsAssignmentResponse;
 };
 
 const TeacherSection: React.FC<TeacherSectionProps> = ({ initialData }) => {

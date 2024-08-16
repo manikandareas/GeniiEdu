@@ -1,4 +1,7 @@
-import { getDetailsClass } from '@/app/_actions/classes-actions';
+import {
+    getDetailsClass,
+    GetDetailsClassResponse,
+} from '@/app/_actions/classes-actions';
 import PageHeader from '@/app/_components/elements/page-header';
 import { Button } from '@/app/_components/ui/button';
 import {
@@ -11,7 +14,7 @@ import { TABS_TRIGGER_CLASS } from '@/app/_constants/details-class-tabs';
 import { detailsClassQuery } from '@/app/_hooks/query/details-class-query';
 import { validateRequest } from '@/app/_libs/lucia';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { PlusCircle, PlusIcon } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import AboutClassInformation from './_components/about-class-information';
 import AnnouncementForm from './_components/announcement-form';
@@ -23,6 +26,7 @@ import TabsListClass from './_components/tabs-list';
 import UpcomingTasks, {
     UpcomingTasksDrawer,
 } from './_components/upcoming-tasks';
+
 type DetailClassPageProps = {
     params: {
         slug: string;

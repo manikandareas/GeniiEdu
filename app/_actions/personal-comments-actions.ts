@@ -1,10 +1,6 @@
 'use server';
 
-import {
-    createAssignmentPersonalComment,
-    findAssignmentPersonalComments,
-    insertPersonalComment,
-} from '@/app/_data-access/personal-comments';
+import personalCommentsData from '@/app/_data-access/personal-comments';
 import { pusherServer } from '@/app/_libs/pusher';
 import { ActionError, authenticatedProcedure } from '@/app/_libs/safe-action';
 import { toPusherKey } from '@/app/_utilities';
@@ -18,13 +14,13 @@ export const sendPersonalComment = authenticatedProcedure
     .action(async ({ parsedInput, ctx }) => {
         const { user } = ctx;
 
-        let room = await findAssignmentPersonalComments({
+        let room = await personalCommentsData.findOne({
             assignmentId: parsedInput.assignmentId,
             studentId: parsedInput.studentId,
         });
 
         if (!room) {
-            const createdRoom = await createAssignmentPersonalComment({
+            const createdRoom = await personalCommentsData.create({
                 assignmentId: parsedInput.assignmentId,
                 studentId: parsedInput.studentId,
             });
@@ -34,7 +30,7 @@ export const sendPersonalComment = authenticatedProcedure
             };
         }
 
-        const insertedComment = await insertPersonalComment({
+        const insertedComment = await personalCommentsData.createComment({
             senderId: user.id,
             content: parsedInput.comment,
             assignmentPersonalChatId: room.id,
@@ -62,7 +58,7 @@ type GetPersonalComments = {
     assignmentId: string;
 };
 export const getPersonalComments = async (props: GetPersonalComments) => {
-    const response = await findAssignmentPersonalComments({
+    const response = await personalCommentsData.findOne({
         assignmentId: props.assignmentId,
         studentId: props.studentId,
     });

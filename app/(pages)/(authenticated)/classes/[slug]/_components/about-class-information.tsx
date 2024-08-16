@@ -6,7 +6,6 @@ import { cn } from '@/app/_utilities';
 import { Copy, Edit3 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SiGmail, SiInstagram, SiWhatsapp } from 'react-icons/si';
 import StudentList from './student-list';
 import TeacherInformation from './teacher-information';
 type AboutClassInformationProps = {

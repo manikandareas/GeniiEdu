@@ -1,9 +1,5 @@
 import PageHeader from '@/app/_components/elements/page-header';
-import {
-    findDetailsAssignment,
-    FindDetailsAssignmentForStudentResponse,
-    FindDetailsAssignmentForTeacherResponse,
-} from '@/app/_data-access/assignments';
+import assignmentsData from '@/app/_data-access/assignments';
 import { detailsAssignmentQuery } from '@/app/_hooks/query/details-assignment-query';
 import { validateRequest } from '@/app/_libs/lucia';
 import { decodeUuid } from '@/app/_utilities';
@@ -12,8 +8,8 @@ import { notFound } from 'next/navigation';
 import StudentSection from './components/student/student-section';
 import { InputGradeContextProvider } from './components/teacher/input-grade-context';
 import TeacherSection from './components/teacher/teacher-section';
-import SwitchAssignmentStatus from './components/teacher/switch-assignment-status';
 import UpdateAssignmentForm from './components/teacher/update-assignment-form';
+import { getDetailsAssignment } from '@/app/_actions/assignments-actions';
 
 type DetailClassAssignmentProps = {
     params: {
@@ -33,16 +29,14 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
 
     if (!assignmentId) return notFound();
 
-    const details = await findDetailsAssignment({
+    const details = await getDetailsAssignment({
         id: assignmentId,
-        userId: user.id,
     });
 
     if (!details) return notFound();
 
     const { queryClient, prefetch } = detailsAssignmentQuery({
         assignmentId,
-        userId: user.id,
     });
 
     await prefetch();
@@ -75,18 +69,10 @@ const DetailClassAssignment: React.FC<DetailClassAssignmentProps> = async ({
             />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 {user.role === 'student' ? (
-                    <StudentSection
-                        data={
-                            details as FindDetailsAssignmentForStudentResponse
-                        }
-                    />
+                    <StudentSection initialData={details} />
                 ) : (
                     <InputGradeContextProvider>
-                        <TeacherSection
-                            initialData={
-                                details! as FindDetailsAssignmentForTeacherResponse
-                            }
-                        />
+                        <TeacherSection initialData={details as any} />
                     </InputGradeContextProvider>
                 )}
             </HydrationBoundary>

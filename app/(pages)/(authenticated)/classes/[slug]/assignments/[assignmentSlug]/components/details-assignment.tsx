@@ -1,19 +1,16 @@
 import { buttonVariants } from '@/app/_components/ui/button';
 import Typography from '@/app/_components/ui/typography';
-import {
-    FindDetailsAssignmentForStudentResponse,
-    FindDetailsAssignmentForTeacherResponse,
-} from '@/app/_data-access/assignments';
 import { cn } from '@/app/_utilities';
 import reactParser from 'html-react-parser';
 import Link from 'next/link';
 import { ComponentProps } from 'react';
 import MaterialHeader from '../../../_components/material-header';
+import { InferReturnType } from '@/app/_data-access/types';
+import assignmentsData from '@/app/_data-access/assignments';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
 
 type DetailsAssignmentProps = ComponentProps<'main'> & {
-    initialData:
-        | FindDetailsAssignmentForStudentResponse
-        | FindDetailsAssignmentForTeacherResponse;
+    initialData: GetDetailsAssignmentResponse;
 };
 
 const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({

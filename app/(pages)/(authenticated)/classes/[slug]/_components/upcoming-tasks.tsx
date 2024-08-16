@@ -59,7 +59,7 @@ export default UpcomingTasks;
 
 type UpcomingTaskItemProps = {
     title: string;
-    dueDate: Date;
+    dueDate: Date | null;
 };
 const UpcomingTaskItem: React.FC<UpcomingTaskItemProps> = ({
     dueDate,
@@ -71,7 +71,7 @@ const UpcomingTaskItem: React.FC<UpcomingTaskItemProps> = ({
             <div className='flex-1 py-1'>
                 <p className='text-sm'>{title}</p>
                 <p className='text-xs text-muted-foreground'>
-                    {formatDate(dueDate)}
+                    {formatDate(dueDate ?? new Date())}
                 </p>
             </div>
         </div>

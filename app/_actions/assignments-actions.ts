@@ -1,21 +1,17 @@
 'use server';
 
-import {
-    findDetailsAssignment,
-    insertAssignment,
-    patchAssignment,
-} from '@/app/_data-access/assignments';
-import {
-    findIDMembersOfClass,
-    isOwnerOfClass,
-} from '@/app/_data-access/classes';
-import { patchFiles } from '@/app/_data-access/files';
-import { insertNotifications } from '@/app/_data-access/notifications';
+import assignmentsData from '@/app/_data-access/assignments';
+import classesData from '@/app/_data-access/classes';
+import filesData from '@/app/_data-access/files';
+import notificationsData from '@/app/_data-access/notifications';
 import { Goreal } from '../_libs/goreal';
 import { ActionError, teacherProcedure } from '@/app/_libs/safe-action';
 import { addAssignmentValidation } from '@/app/_validations/assignments-validation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import classMembersData from '../_data-access/class-members';
+import { validateRequest } from '../_libs/lucia';
+import { InferResultType } from '../_data-access/types';
 
 export const createAssignment = teacherProcedure
     .metadata({
@@ -26,13 +22,13 @@ export const createAssignment = teacherProcedure
     .action(async ({ parsedInput, ctx, bindArgsParsedInputs: [classSlug] }) => {
         const { user } = ctx;
 
-        const existingClass = await isOwnerOfClass(user.id, classSlug);
+        const existingClass = await classesData.isOwner(user.id, classSlug);
 
         if (!existingClass) {
             throw new ActionError('You are not the owner of this class');
         }
 
-        const insertedAssignment = await insertAssignment({
+        const insertedAssignment = await assignmentsData.create({
             authorId: user.id,
             classId: existingClass.id,
             description: parsedInput.description,
@@ -49,21 +45,23 @@ export const createAssignment = teacherProcedure
         // ? Insert learning material files if they exist
         if (parsedInput.files && parsedInput.files.length > 0) {
             parsedInput.files.forEach(async (file) => {
-                await patchFiles(file.id, {
-                    assignmentId: insertedAssignment.id,
-                }).catch(() => {
-                    throw new ActionError(
-                        'Failed to attach files to learning material',
-                    );
-                });
+                await filesData
+                    .patch(file.id, {
+                        assignmentId: insertedAssignment.id,
+                    })
+                    .catch(() => {
+                        throw new ActionError(
+                            'Failed to attach files to learning material',
+                        );
+                    });
             });
         }
 
-        const recipientsNotification = await findIDMembersOfClass(
+        const recipientsNotification = await classMembersData.findIdMembers(
             existingClass.id,
         );
 
-        await insertNotifications(
+        await notificationsData.createMany(
             recipientsNotification.map((r) => ({
                 userId: r,
                 title: 'New Assignment added',
@@ -93,23 +91,31 @@ export const createAssignment = teacherProcedure
 
 type GetDetailsAssignmentProps = {
     id: string;
-    userId: string;
 };
 
 export const getDetailsAssignment = async (
     properties: GetDetailsAssignmentProps,
-) => {
-    const response = await findDetailsAssignment({
-        id: properties.id,
-        userId: properties.userId,
+): Promise<GetDetailsAssignmentResponse> => {
+    const { user } = await validateRequest();
+    if (!user) {
+        throw new ActionError('User not found');
+    }
+    const response = await assignmentsData.findOne(properties.id, {
+        queryConfig: {
+            with: assignmentsData.W_CLASS_AUTHOR_FILES,
+        },
     });
 
     if (!response) {
         throw new ActionError('Assignment not found');
     }
-
-    return response;
+    return response as unknown as GetDetailsAssignmentResponse;
 };
+
+export type GetDetailsAssignmentResponse = InferResultType<
+    'assignments',
+    typeof assignmentsData.W_CLASS_AUTHOR_FILES
+>;
 
 export const toggleAssignmentStatus = teacherProcedure
     .metadata({
@@ -117,18 +123,18 @@ export const toggleAssignmentStatus = teacherProcedure
     })
     .schema(z.string())
     .action(async ({ parsedInput, ctx }) => {
-        const { user } = ctx;
+        // const assignment = await assignmentsData.findOne({
+        //     id: parsedInput,
+        //     userId: user.id,
+        // });
 
-        const assignment = await findDetailsAssignment({
-            id: parsedInput,
-            userId: user.id,
-        });
+        const assignment = await assignmentsData.findOne(parsedInput);
 
         if (!assignment) {
             throw new ActionError('Assignment not found');
         }
 
-        const updatedAssignment = patchAssignment({
+        const updatedAssignment = assignmentsData.patch({
             id: parsedInput,
             isOpen: !assignment.isOpen,
         });

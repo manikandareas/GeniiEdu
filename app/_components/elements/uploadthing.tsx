@@ -1,4 +1,4 @@
-import { OurFileRouter } from '@/app/_libs/Uploadthing';
+import { OurFileRouter } from '@/app/_libs/uploadthing';
 import {
     generateUploadButton,
     generateUploadDropzone,

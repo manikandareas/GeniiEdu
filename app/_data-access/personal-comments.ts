@@ -12,47 +12,46 @@ export type InsertCommentInput = typeof comments._.inferInsert;
 
 export type PatchCommentInput = Partial<InsertCommentInput>;
 
-export const createAssignmentPersonalComment = async (
-    input: InsertAssignmentPersonalCommentInput,
-    config: DataAccessConfig<'assignmentPersonalComments'> = {},
-) => {
-    const [response] = await (config.tx ? config.tx : db)
-        .insert(assignmentPersonalComments)
-        .values(input)
-        .returning();
+class PersonalCommentsData {
+    async create(
+        input: InsertAssignmentPersonalCommentInput,
+        config: DataAccessConfig<'assignmentPersonalComments'> = {},
+    ) {
+        return await (config.tx ? config.tx : db)
+            .insert(assignmentPersonalComments)
+            .values(input)
+            .returning()
+            .then((res) => res[0]);
+    }
 
-    return response;
-};
+    async findOne(
+        properties: { assignmentId: string; studentId: string },
+        config: DataAccessConfig<'assignmentPersonalComments'> = {},
+    ) {
+        return await (
+            config.tx ? config.tx : db
+        ).query.assignmentPersonalComments.findFirst({
+            where: (chat, { eq, and }) =>
+                and(
+                    eq(chat.assignmentId, properties.assignmentId),
+                    eq(chat.studentId, properties.studentId),
+                ),
+            with: {
+                messages: true,
+            },
+        });
+    }
 
-type FindAssignmentPersonalCommentsProps = {
-    assignmentId: string;
-    studentId: string;
-};
-export const findAssignmentPersonalComments = async (
-    properties: FindAssignmentPersonalCommentsProps,
-    config: DataAccessConfig<'assignmentPersonalComments'> = {},
-) => {
-    return await (
-        config.tx ? config.tx : db
-    ).query.assignmentPersonalComments.findFirst({
-        where: (chat, { eq, and }) =>
-            and(
-                eq(chat.assignmentId, properties.assignmentId),
-                eq(chat.studentId, properties.studentId),
-            ),
-        with: {
-            messages: true,
-        },
-    });
-};
+    async createComment(
+        input: InsertCommentInput,
+        config: DataAccessConfig<'comments'> = {},
+    ) {
+        return await (config.tx ? config.tx : db)
+            .insert(comments)
+            .values(input)
+            .returning();
+    }
+}
 
-export const insertPersonalComment = async (
-    input: InsertCommentInput,
-    config: DataAccessConfig<'comments'> = {},
-) => {
-    const [response] = await (config.tx ? config.tx : db)
-        .insert(comments)
-        .values(input)
-        .returning();
-    return response;
-};
+const personalCommentsData = new PersonalCommentsData();
+export default personalCommentsData;

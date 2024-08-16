@@ -1,18 +1,8 @@
 'use server';
 
 import { DEFAULT_PROFILE } from '../_constants/default-profile';
-import {
-    deleteEmailVerificationByUserId,
-    findEmailVerificationByUserId,
-    findEmailVerificationByUserIdAndCode,
-    insertEmailVerification,
-    patchEmailVerification,
-} from '@/app/_data-access/email-verifications';
-import {
-    insertUser,
-    patchUser,
-    findUserByEmail,
-} from '@/app/_data-access/users';
+import emailsVerificationsData from '@/app/_data-access/email-verifications';
+import usersData from '@/app/_data-access/users';
 import GeniiEduVerificationEmail from '@/app/_emails/verify-email';
 import { Env } from '@/app/_libs/env';
 import { lucia } from '@/app/_libs/lucia';
@@ -39,7 +29,7 @@ import React from 'react';
 import { z } from 'zod';
 import { sendEmail } from './email-actions';
 import { Goreal } from '@/app/_libs/goreal';
-import { insertNotifications } from '@/app/_data-access/notifications';
+import notificationsData from '@/app/_data-access/notifications';
 
 // * Actions running expectedly
 const resendEmailVerificationSchema = z.string().email();
@@ -47,7 +37,7 @@ export const resendEmailVerification = actionProcedure
     .metadata({ actionName: 'resendEmailVerification' })
     .schema(resendEmailVerificationSchema)
     .action(async ({ parsedInput: email }) => {
-        const existingUser = await findUserByEmail(email);
+        const existingUser = await usersData.findByEmail(email);
         if (!existingUser) {
             throw new ActionError('User not found');
         }
@@ -56,7 +46,7 @@ export const resendEmailVerification = actionProcedure
             throw new ActionError('Email is already verified');
         }
 
-        const existedCode = await findEmailVerificationByUserId(
+        const existedCode = await emailsVerificationsData.findByUserId(
             existingUser.id,
         );
 
@@ -77,7 +67,7 @@ export const resendEmailVerification = actionProcedure
 
         const code = generateRandomNumber(6);
 
-        await patchEmailVerification({
+        await emailsVerificationsData.patch({
             code,
             sentAt: new Date(),
         });
@@ -110,7 +100,7 @@ export const isEmailVerified = actionProcedure
     .metadata({ actionName: 'isEmailVerified' })
     .schema(isEmailVerifiedSchema)
     .action(async ({ parsedInput: email }) => {
-        const existingUser = await findUserByEmail(email);
+        const existingUser = await usersData.findByEmail(email);
         if (!existingUser) {
             throw new ActionError('User not found');
         }
@@ -129,7 +119,7 @@ export const signUp = actionProcedure
     .metadata({ actionName: 'signUp' })
     .schema(addUserValidation)
     .action(async ({ parsedInput }) => {
-        const existingUser = await findUserByEmail(parsedInput.email);
+        const existingUser = await usersData.findByEmail(parsedInput.email);
 
         if (existingUser) {
             throw new ActionError('Email already used');
@@ -137,16 +127,18 @@ export const signUp = actionProcedure
 
         const hashedPassword = await argon.hash(parsedInput.password);
 
-        const registeredUser = await insertUser({
-            email: parsedInput.email,
-            passwordHash: hashedPassword,
-            profilePicture: DEFAULT_PROFILE.profilePicture,
-        }).then((res) => res[0]);
+        const registeredUser = await usersData
+            .create({
+                email: parsedInput.email,
+                passwordHash: hashedPassword,
+                profilePicture: DEFAULT_PROFILE.profilePicture,
+            })
+            .then((res) => res[0]);
 
         // Random String for email verification
         const code = generateRandomNumber(6);
 
-        await insertEmailVerification({
+        await emailsVerificationsData.create({
             code,
             userId: registeredUser.id,
             sentAt: new Date(),
@@ -182,7 +174,7 @@ export const signIn = actionProcedure
     .metadata({ actionName: 'signIn' })
     .schema(userLoginValidation)
     .action(async ({ parsedInput }) => {
-        const existingUser = await findUserByEmail(parsedInput.email);
+        const existingUser = await usersData.findByEmail(parsedInput.email);
 
         if (!existingUser) {
             throw new ActionError('Incorrect email or password');
@@ -218,7 +210,7 @@ export const signIn = actionProcedure
 
             const goreal = new Goreal(existingUser.id);
 
-            await insertNotifications([
+            await notificationsData.createMany([
                 {
                     userId: existingUser.id,
                     title: 'Welcome to GeniiEdu',
@@ -273,7 +265,7 @@ export const verifyEmail = actionProcedure
     .schema(verifyEmailValidation)
     .bindArgsSchemas<[email: z.ZodString]>([z.string().email()])
     .action(async ({ parsedInput, bindArgsParsedInputs: [email] }) => {
-        const existingUser = await findUserByEmail(email);
+        const existingUser = await usersData.findByEmail(email);
 
         if (!existingUser) {
             throw new ActionError('Invalid Code');
@@ -284,7 +276,7 @@ export const verifyEmail = actionProcedure
         }
 
         // ? Check if code is valid and match
-        const existingCode = await findEmailVerificationByUserIdAndCode(
+        const existingCode = await emailsVerificationsData.findByUserIdAndCode(
             existingUser.id,
             parsedInput.code,
         );
@@ -293,14 +285,12 @@ export const verifyEmail = actionProcedure
             throw new ActionError('Invalid Code');
         }
 
-        await deleteEmailVerificationByUserId(existingUser.id);
+        await emailsVerificationsData.deleteByUserId(existingUser.id);
 
-        await patchUser(
-            {
-                isEmailVerified: true,
-            },
-            existingUser.id,
-        );
+        await usersData.patch({
+            isEmailVerified: true,
+            id: existingUser.id,
+        });
         return {
             message: 'Email verified successfully',
         };

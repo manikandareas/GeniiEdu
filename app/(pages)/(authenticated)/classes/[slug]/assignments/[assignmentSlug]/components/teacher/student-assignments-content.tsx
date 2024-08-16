@@ -7,26 +7,30 @@ import {
     SelectValue,
 } from '@/app/_components/ui/select';
 import Typography from '@/app/_components/ui/typography';
-import { FindDetailsAssignmentForTeacherResponse } from '@/app/_data-access/assignments';
 import { useDetailsAssignmentQuery } from '@/app/_hooks/query/details-assignment-query';
 import { columns } from './columns';
 import { DataTable } from './data-table';
 import HintTable from './hint-table';
 import PreviewSubmissions from './preview-submissions';
 import ReturnSubmissions from './return-submissions';
+import { InferReturnType } from '@/app/_data-access/types';
+import assignmentsData from '@/app/_data-access/assignments';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
+import { useQuery } from '@tanstack/react-query';
+import { getSubmissionsWhereAssId } from '@/app/_actions/submissions-actions';
 
 type StudentAssignmentsContentProps = {
-    initialData: FindDetailsAssignmentForTeacherResponse;
+    initialData: GetDetailsAssignmentResponse;
 };
 
 const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
     initialData,
 }) => {
-    const { data } = useDetailsAssignmentQuery(initialData, {
-        assignmentId: initialData?.id as string,
-        userId: initialData?.author.id as string,
+    const { data: submissions } = useQuery({
+        queryKey: [initialData.id, 'submissions'],
+        queryFn: () => getSubmissionsWhereAssId(initialData.id),
     });
-    if (!data) return null;
+
     return (
         <main className='space-y-4'>
             {/* Action bar */}
@@ -63,7 +67,9 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
             <section className='flex'>
                 <div className='h-screen w-full space-y-4 lg:max-w-sm'>
                     <div className='flex items-center justify-between'>
-                        <ReturnSubmissions assignmentId={data.id as string} />
+                        <ReturnSubmissions
+                            assignmentId={initialData.id as string}
+                        />
                         <Select defaultValue='100'>
                             <SelectTrigger className='w-[180px]'>
                                 <SelectValue
@@ -79,24 +85,20 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
                             </SelectContent>
                         </Select>
                     </div>
-                    <DataTable
-                        columns={columns}
-                        data={
-                            (data as NonNullable<typeof initialData>)
-                                .submissions ?? []
-                        }
-                    />
+                    <DataTable columns={columns} data={submissions ?? []} />
                     <HintTable />
                 </div>
                 <div className='hidden h-screen w-full lg:block'>
                     <div className='space-y-2 p-4'>
-                        <Typography variant={'h4'}>{data.title}</Typography>
+                        <Typography variant={'h4'}>
+                            {initialData.title}
+                        </Typography>
 
                         <div className='flex justify-between'>
                             <div className='flex w-32 divide-x'>
                                 <div className='p-4'>
                                     <Typography variant={'h2'}>
-                                        {data.submissions.length}
+                                        {submissions?.length}
                                     </Typography>
                                     <p className='text-xs text-muted-foreground'>
                                         Diserahkan
@@ -105,7 +107,7 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
                                 <div className='p-4'>
                                     <Typography variant={'h2'}>
                                         {
-                                            data.submissions.filter(
+                                            submissions?.filter(
                                                 (item) => item.isGraded,
                                             ).length
                                         }
@@ -144,9 +146,7 @@ const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
                             </div>
                         </div>
 
-                        <PreviewSubmissions
-                            submissions={initialData?.submissions ?? []}
-                        />
+                        <PreviewSubmissions submissions={submissions ?? []} />
                     </div>
                 </div>
             </section>

@@ -4,7 +4,7 @@ import { prettyText } from '@/app/_utilities';
 import Image from 'next/image';
 import Link from 'next/link';
 import PersonalComments from '../student/personal-comments';
-import { SubmissionsAssignment } from './Columns';
+import { SubmissionsAssignment } from './columns';
 
 namespace DetailsSubmission {
     export type Props = {

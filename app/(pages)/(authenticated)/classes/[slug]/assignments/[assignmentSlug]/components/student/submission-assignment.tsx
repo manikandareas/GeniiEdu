@@ -1,6 +1,10 @@
 'use client';
 import { removeFiles, saveFilesToDB } from '@/app/_actions/storage-actions';
-import { createSubmission } from '@/app/_actions/submissions-actions';
+import {
+    createSubmission,
+    getSubmission,
+    getSubmissionWhereAssIdAndStudentId,
+} from '@/app/_actions/submissions-actions';
 import { Button } from '@/app/_components/ui/button';
 import {
     Card,
@@ -16,7 +20,7 @@ import {
     DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
 import { Input } from '@/app/_components/ui/input';
-import { FindDetailsAssignmentForStudentResponse } from '@/app/_data-access/assignments';
+import assignmentsData from '@/app/_data-access/assignments';
 import { useUploadThing } from '@/app/_utilities/uploadthing';
 import { Loader2, Plus, SendHorizonal, User2 } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
@@ -26,9 +30,13 @@ import SelectedFile from '../selected-files';
 import { formatDate } from '@/app/_utilities';
 import { formatDistance } from 'date-fns';
 import PersonalComments from './personal-comments';
+import { InferReturnType } from '@/app/_data-access/types';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
+import { useQuery } from '@tanstack/react-query';
+import useCurrentUser from '@/app/_hooks/current-user';
 
 type SubmissionAssignmentProps = {
-    data: FindDetailsAssignmentForStudentResponse;
+    initialData: GetDetailsAssignmentResponse;
 };
 
 const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
@@ -42,9 +50,11 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
         }[]
     >([]);
 
+    const user = useCurrentUser();
+
     const bindCreateSubmissionWithArgs = createSubmission.bind(
         null,
-        props.data?.id ?? '',
+        props.initialData.id ?? '',
     );
     const { executeAsync: executeCreateSubmissions, isExecuting } = useAction(
         bindCreateSubmissionWithArgs,
@@ -114,29 +124,34 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
         if (!response) return;
     };
 
-    const userSubmission = props.data?.submissions[0];
+    const { data: submission } = useQuery({
+        queryKey: ['submission', props.initialData.id, user?.id],
+        queryFn: () =>
+            getSubmissionWhereAssIdAndStudentId(
+                props.initialData.id,
+                user?.id as string,
+            ),
+    });
 
     const isLoading =
         isUploading || statusSaveFile === 'executing' || isExecuting;
 
     const isSubmittedEarlier =
-        (props.data?.submissions[0].submittedAt || new Date()) <
-        (props.data?.dueDate || new Date());
+        (submission?.submittedAt || new Date()) <
+        (props.initialData?.dueDate as Date);
 
     const timeDifference = formatDistance(
-        props.data?.submissions[0].submittedAt || new Date(),
-        props.data?.dueDate || new Date(),
+        submission?.submittedAt || new Date(),
+        props.initialData?.dueDate || new Date(),
     );
 
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between'>
                 <CardTitle>Assignment</CardTitle>
-                {props.data?.submissions &&
-                props.data.submissions.length > 0 &&
-                props.data.submissions[0].isGraded ? (
+                {submission && submission.isGraded ? (
                     <CardDescription className='font-semibold text-green-500'>
-                        Graded: {props.data.submissions[0].grade}
+                        Graded: {submission.grade}
                     </CardDescription>
                 ) : (
                     <CardDescription>Submitted</CardDescription>
@@ -151,7 +166,7 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                     accept='image/*,  .pdf, .doc, .docx'
                 />
                 <div className='flex flex-col gap-4'>
-                    {!userSubmission &&
+                    {!submission &&
                         submissionFiles.length > 0 &&
                         submissionFiles.map((file) => (
                             <SelectedFile
@@ -162,8 +177,8 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                             />
                         ))}
 
-                    {userSubmission &&
-                        userSubmission.files.map((file) => (
+                    {submission &&
+                        submission.files.map((file) => (
                             <SelectedFile
                                 onXClicked={onXClicked}
                                 key={file.id}
@@ -171,11 +186,11 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                                 isStatic={true}
                             />
                         ))}
-                    {!!!userSubmission && (
+                    {!submission && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
-                                    disabled={isUploading || !!userSubmission}
+                                    disabled={isUploading || submission}
                                     className='flex items-center gap-2 bg-secondary text-primary hover:bg-secondary/80'
                                 >
                                     <Plus size={16} />
@@ -210,7 +225,7 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                         disabled={isLoading}
                     >
                         {!isExecuting ? (
-                            !!userSubmission ? (
+                            !!submission ? (
                                 'Cancel Submission'
                             ) : (
                                 'Turn in'
@@ -225,11 +240,9 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
                             </p>
                         )}
                     </Button>
-                    {props.data?.submissions[0].submittedAt && (
+                    {submission && (
                         <span className='text-xs text-muted-foreground'>
-                            Submitted at{' '}
-                            {formatDate(props.data?.submissions[0].submittedAt)}
-                            ,{' '}
+                            Submitted at {formatDate(submission.submittedAt)},{' '}
                             {isSubmittedEarlier ? (
                                 <span className='text-primary'>
                                     {timeDifference} earlier

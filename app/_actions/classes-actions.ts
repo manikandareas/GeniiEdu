@@ -1,22 +1,11 @@
 'use server';
 
 import { GlobalSearch } from '@/app/_providers/flex-search-provider';
-import { findUpcomingTasks } from '@/app/_data-access/assignments';
-import { insertClassMember } from '@/app/_data-access/class-members';
-import {
-    findClassByCode,
-    findClassById,
-    findClassBySlug,
-    findDetailsClass,
-    findStudentInClass,
-    insertClass,
-} from '@/app/_data-access/classes';
-import {
-    findFileByKey,
-    insertFile,
-    patchFiles,
-} from '@/app/_data-access/files';
-import { findUserClassesForSearch } from '@/app/_data-access/users';
+import assignmentsData from '@/app/_data-access/assignments';
+import classMembersData from '@/app/_data-access/class-members';
+import classesData from '@/app/_data-access/classes';
+import filesData from '@/app/_data-access/files';
+import usersData from '@/app/_data-access/users';
 import {
     ActionError,
     studentProcedure,
@@ -28,6 +17,7 @@ import {
 } from '@/app/_validations/classes-validation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { InferResultType, InferReturnType } from '../_data-access/types';
 
 // * Actions running expectedly
 export const createClass = teacherProcedure
@@ -46,8 +36,8 @@ export const createClass = teacherProcedure
 
         const [existingClassBySlug, existingClassByClassCode] =
             await Promise.all([
-                await findClassBySlug(parsedInput.slug),
-                await findClassByCode(parsedInput.classCode),
+                await classesData.findOneBySlug(parsedInput.slug),
+                await classesData.findOneByCode(parsedInput.classCode),
             ]);
 
         if (existingClassBySlug) {
@@ -66,7 +56,7 @@ export const createClass = teacherProcedure
 
         // ? Upload default thumbnail to database if not provided
         if (!parsedInput.thumbnailKey && parsedInput.thumbnail) {
-            const [uploadedDefaultThumbnail] = await insertFile({
+            const [uploadedDefaultThumbnail] = await filesData.create({
                 url: parsedInput.thumbnail,
                 key: parsedInput.slug,
                 userId: teacher.id,
@@ -77,7 +67,7 @@ export const createClass = teacherProcedure
             classThumbnailId = uploadedDefaultThumbnail.id;
         } else if (parsedInput.thumbnailKey && parsedInput.thumbnail) {
             // ? Get inserted thumbnail id from database
-            const classThumbnail = await findFileByKey(
+            const classThumbnail = await filesData.findOneByKey(
                 parsedInput.thumbnailKey,
             );
 
@@ -90,7 +80,7 @@ export const createClass = teacherProcedure
             throw new ActionError('Something went wrong, please try again.');
         }
 
-        const [insertedClass] = await insertClass({
+        const insertedClass = await classesData.create({
             className: parsedInput.className,
             slug: parsedInput.slug,
             description: parsedInput.description,
@@ -103,13 +93,13 @@ export const createClass = teacherProcedure
             throw new ActionError('Something went wrong, please try again.');
         }
 
-        await insertClassMember({
+        await classMembersData.create({
             classId: insertedClass.id,
             userId: teacher.id,
             role: 'teacher',
         });
 
-        await patchFiles(classThumbnailId, {
+        await filesData.patch(classThumbnailId, {
             classId: insertedClass.id,
         });
 
@@ -132,7 +122,7 @@ export const uploadClassThumbnail = teacherProcedure
     .action(async ({ parsedInput, ctx }) => {
         const { user } = ctx;
 
-        const response = await insertFile({
+        const response = await filesData.create({
             url: parsedInput.url,
             key: parsedInput.key,
             type: 'image',
@@ -152,19 +142,23 @@ export const uploadClassThumbnail = teacherProcedure
     });
 
 export const getDetailsClass = async (slug: string) => {
-    const existingClass = await findDetailsClass(slug);
+    const existingClass = await classesData.findOneBySlug(slug, {
+        queryConfig: {
+            with: classesData.detailsQuery,
+        },
+    });
 
     if (!existingClass) {
         throw new ActionError('Class not found');
     }
 
     return {
-        data: existingClass,
+        data: existingClass as unknown as GetDetailsClassResponse['data'],
     };
 };
-export type GetDetailsClassResponse = Awaited<
-    ReturnType<typeof getDetailsClass>
->;
+export type GetDetailsClassResponse = {
+    data: InferResultType<'classes', typeof classesData.detailsQuery>;
+};
 
 // * Actions running expectedly
 export const joinClass = studentProcedure
@@ -175,22 +169,25 @@ export const joinClass = studentProcedure
     .action(async ({ parsedInput, ctx }) => {
         const { user: student } = ctx;
 
-        const classToJoin = await findClassByCode(parsedInput.classCode);
+        const classToJoin = await classesData.findOneByCode(
+            parsedInput.classCode,
+        );
 
         if (!classToJoin) {
             throw new ActionError('Class not found');
         }
 
-        const isStudentAlreadyInClass = await findStudentInClass(
-            student.id,
-            classToJoin.id,
-        );
+        const isStudentAlreadyInClass =
+            await classMembersData.findOneWhereUserIdAndClassId(
+                student.id,
+                classToJoin.id,
+            );
 
         if (isStudentAlreadyInClass) {
             throw new ActionError('Your already in this class');
         }
 
-        await insertClassMember({
+        await classMembersData.create({
             classId: classToJoin.id,
             userId: student.id,
             role: 'student',
@@ -204,9 +201,9 @@ export const joinClass = studentProcedure
     });
 
 export const getClassesForSearch = async (userId: string) => {
-    return (await findUserClassesForSearch(userId)) as GlobalSearch[];
+    return (await classMembersData.findForSearch(userId)) as GlobalSearch[];
 };
 
 export const getUpcomingTasks = async (classId: string) => {
-    return await findUpcomingTasks(classId);
+    return await assignmentsData.findUpcomingTasks(classId);
 };

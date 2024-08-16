@@ -1,15 +1,9 @@
 'use server';
 
-import {
-    findIDMembersOfClass,
-    isOwnerOfClass,
-} from '@/app/_data-access/classes';
-import { patchFiles } from '@/app/_data-access/files';
-import {
-    findDetailsLearningMaterial,
-    insertLearningMaterial,
-} from '@/app/_data-access/learning-materials';
-import { insertNotifications } from '@/app/_data-access/notifications';
+import classesData from '@/app/_data-access/classes';
+import filesData from '@/app/_data-access/files';
+import materialsData from '@/app/_data-access/materials';
+import notificationsData from '@/app/_data-access/notifications';
 
 import { createTransaction } from '@/app/_data-access/utils';
 import { Goreal } from '@/app/_libs/goreal';
@@ -18,6 +12,8 @@ import { addMaterialValidation } from '@/app/_validations/materials-validation';
 import { revalidatePath } from 'next/cache';
 import sanitizeHtml from 'sanitize-html';
 import * as z from 'zod';
+import { classMembers } from '../_libs/db/schema';
+import classMembersData from '../_data-access/class-members';
 
 export const createLearningMaterial = teacherProcedure
     .metadata({
@@ -29,13 +25,13 @@ export const createLearningMaterial = teacherProcedure
         const { user } = ctx;
 
         await createTransaction(async (tx) => {
-            const existingClass = await isOwnerOfClass(user.id, classSlug);
+            const existingClass = await classesData.isOwner(user.id, classSlug);
 
             if (!existingClass) {
                 throw new ActionError('You are not the owner of this class');
             }
 
-            const insertedLearningMaterial = await insertLearningMaterial(
+            const insertedLearningMaterial = await materialsData.create(
                 {
                     title: parsedInput.title,
                     content: sanitizeHtml(parsedInput.content),
@@ -54,23 +50,28 @@ export const createLearningMaterial = teacherProcedure
             // ? Insert learning material files if they exist
             if (parsedInput.files && parsedInput.files.length > 0) {
                 parsedInput.files.forEach(async (file) => {
-                    await patchFiles(
-                        file.id,
-                        { learningMaterialId: insertedLearningMaterial[0].id },
-                        { tx },
-                    ).catch(() => {
-                        throw new ActionError(
-                            'Failed to attach files to learning material',
-                        );
-                    });
+                    await filesData
+                        .patch(
+                            file.id,
+                            {
+                                learningMaterialId:
+                                    insertedLearningMaterial[0].id,
+                            },
+                            { tx },
+                        )
+                        .catch(() => {
+                            throw new ActionError(
+                                'Failed to attach files to learning material',
+                            );
+                        });
                 });
             }
 
-            const recipientsNotification = await findIDMembersOfClass(
+            const recipientsNotification = await classMembersData.findIdMembers(
                 existingClass.id,
             );
 
-            await insertNotifications(
+            await notificationsData.createMany(
                 recipientsNotification.map((r) => ({
                     userId: r,
                     title: 'New Learning Material added',
@@ -102,5 +103,5 @@ export const createLearningMaterial = teacherProcedure
     });
 
 export const getDetailsLearningMaterial = async (materialId: string) => {
-    return await findDetailsLearningMaterial(materialId);
+    return await materialsData.findOne(materialId);
 };

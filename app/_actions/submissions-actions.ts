@@ -1,17 +1,10 @@
 'use server';
-import {
-    findAssignment,
-    findDetailsAssignment,
-    findDetailsAssignmentForStudent,
-} from '@/app/_data-access/assignments';
-import { patchFiles } from '@/app/_data-access/files';
-import {
-    findSubmissionById,
-    insertSubmission,
-    patchSubmission,
-} from '@/app/_data-access/submissions';
+import assignmentsData from '@/app/_data-access/assignments';
+import filesData from '@/app/_data-access/files';
+import submissionData from '@/app/_data-access/submissions';
 import {
     ActionError,
+    assertAuthoredBy,
     studentProcedure,
     teacherProcedure,
 } from '@/app/_libs/safe-action';
@@ -19,7 +12,7 @@ import {
     addSubmissionValidation,
     submitGradesValidation,
 } from '@/app/_validations/submissions-validation';
-import { z, ZodObject, ZodString } from 'zod';
+import { z, ZodString } from 'zod';
 
 export const createSubmission = studentProcedure
     .metadata({
@@ -31,7 +24,7 @@ export const createSubmission = studentProcedure
         async ({ ctx, parsedInput, bindArgsParsedInputs: [assignmentId] }) => {
             const { user } = ctx;
 
-            const assignment = await findAssignment(assignmentId);
+            const assignment = await assignmentsData.findOne(assignmentId);
 
             if (!assignment) {
                 throw new ActionError('Assignment not found');
@@ -41,7 +34,7 @@ export const createSubmission = studentProcedure
                 throw new ActionError('Assignment is closed');
             }
 
-            const insertedSubmission = await insertSubmission({
+            const insertedSubmission = await submissionData.create({
                 studentId: user.id,
                 assignmentId: assignment.id,
             });
@@ -52,13 +45,15 @@ export const createSubmission = studentProcedure
 
             if (parsedInput.files && parsedInput.files.length > 0) {
                 parsedInput.files.forEach(async (file) => {
-                    await patchFiles(file.id, {
-                        submissionId: insertedSubmission.id,
-                    }).catch(() => {
-                        throw new ActionError(
-                            'Failed to attach files to submission',
-                        );
-                    });
+                    await filesData
+                        .patch(file.id, {
+                            submissionId: insertedSubmission.id,
+                        })
+                        .catch(() => {
+                            throw new ActionError(
+                                'Failed to attach files to submission',
+                            );
+                        });
                 });
             }
 
@@ -77,7 +72,7 @@ export const submitGrades = teacherProcedure
         const { user: teacher } = ctx;
 
         parsedInput.forEach(async (grade) => {
-            const submission = await findSubmissionById(grade.id);
+            const submission = await submissionData.findById(grade.id);
             if (!submission) {
                 throw new ActionError('Submission not found');
             }
@@ -86,16 +81,55 @@ export const submitGrades = teacherProcedure
                 throw new ActionError('Unauthorized to submit grade');
             }
 
-            await patchSubmission({
-                id: grade.id,
-                grade: String(grade.grade),
-                isGraded: true,
-            }).catch(() => {
-                throw new ActionError('Failed to submit grade');
-            });
+            await submissionData
+                .patch({
+                    id: grade.id,
+                    grade: String(grade.grade),
+                    isGraded: true,
+                })
+                .catch(() => {
+                    throw new ActionError('Failed to submit grade');
+                });
         });
 
         return {
             message: 'Grades submitted successfully',
         };
     });
+
+export const getSubmissionsWhereAssId = async (assignmentId: string) => {
+    const assignment = await assignmentsData.findOne(assignmentId);
+
+    if (!assignment) {
+        throw new ActionError('Assignment not found');
+    }
+
+    const submissions = await submissionData.findManyWhereAssId(assignmentId);
+    return submissions;
+};
+
+export const getSubmission = async (submissionId: string) => {
+    const submission = await submissionData.findById(submissionId);
+
+    if (!submission) {
+        throw new ActionError('Submission not found');
+    }
+
+    return submission;
+};
+
+export const getSubmissionWhereAssIdAndStudentId = async (
+    assignmentId: string,
+    studentId: string,
+) => {
+    const submission = await submissionData.findOneWhereAssIdAndStudentId(
+        assignmentId,
+        studentId,
+    );
+
+    if (!submission) {
+        throw new ActionError('Submission not found');
+    }
+
+    return submission;
+};

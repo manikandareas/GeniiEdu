@@ -7,6 +7,12 @@ import { z } from 'zod';
 
 export class ActionError extends Error {}
 
+export const assertAuthoredBy = (userId: string, authorId: string) => {
+    if (userId !== authorId) {
+        throw new ActionError('Unauthorized');
+    }
+};
+
 export const actionProcedure = createSafeActionClient({
     handleReturnedServerError: (e) => {
         if (e instanceof ActionError) {
