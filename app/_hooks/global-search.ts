@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import initialData from '@/app/_constants/search-index.json';
 import {
     GlobalSearch,
     useFlexSearch,
 } from '@/app/_providers/flex-search-provider';
 import { useQuery } from '@tanstack/react-query';
-import { getClassesForSearch } from '../_actions/classes-actions';
+import { useEffect, useState } from 'react';
 import useCurrentUser from './current-user';
+import { queryStore } from './query/query-store';
 
 export const useGlobalSearch = () => {
     const [query, setQuery] = useState<string>('');
@@ -16,10 +16,9 @@ export const useGlobalSearch = () => {
     const [results, setResults] = useState<GlobalSearch[]>([]);
     const user = useCurrentUser();
 
-    const { data: dataClasses, isLoading } = useQuery({
-        queryKey: ['search-index', user?.id ?? ''],
-        queryFn: () => getClassesForSearch(user?.id ?? ''),
-    });
+    const { data: dataClasses, isLoading } = useQuery(
+        queryStore.user.globalSearch(user?.id as string),
+    );
 
     const { createIndex, searchIndex } = useFlexSearch();
 
