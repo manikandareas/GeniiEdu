@@ -36,7 +36,11 @@ const StudentTabs: React.FC<StudentTabsProps> = ({ initialData }) => {
     const { data: classes } = useUserClassesQuery(initialData);
 
     return (
-        <Tabs value={searchParams.get('tab') ?? 'all'} defaultValue='all'>
+        <Tabs
+            className='w-full'
+            value={searchParams.get('tab') ?? 'all'}
+            defaultValue='all'
+        >
             <div className='flex items-center'>
                 <TabsList className='bg-transparent'>
                     <StudentTabsTrigger
