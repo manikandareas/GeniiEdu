@@ -14,11 +14,11 @@ export const queryStore = createQueryKeyStore({
     user: {
         notifications: {
             queryKey: ['user-notifications'],
-            queryFn: getUserNotifications,
+            queryFn: () => getUserNotifications(),
         },
         classes: {
             queryKey: ['user-classes'],
-            queryFn: getUserClasses,
+            queryFn: () => getUserClasses(),
         },
     },
     class: {
@@ -42,7 +42,7 @@ export const queryStore = createQueryKeyStore({
         }),
     },
 
-    subbmission: {},
+    submission: {},
 
     personalComment: {
         get: (assignmentId: string, studentId: string) => ({

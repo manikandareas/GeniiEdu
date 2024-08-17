@@ -243,10 +243,14 @@ export const updateUserAccount = authenticatedProcedure
     });
 
 export const getUserNotifications = async () => {
+    console.log('Getting notifications');
+
     const { user } = await validateRequest();
     if (!user) {
         throw new ActionError('Unauthorized');
     }
+
+    console.log('Getting notifications for user:', user.id);
 
     return notificationsData.findManyWhereUserId(user.id);
 };

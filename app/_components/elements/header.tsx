@@ -22,6 +22,8 @@ const Header: React.FC<HeaderProps> = () => {
     const { data, isLoading, invalidate } = useUserNotificationsQuery();
     const goreal = new Goreal(user?.id ?? '');
 
+    console.log({ data });
+
     // Stream notifications
     useEffect(() => {
         goreal.streamNotifications((data) => {
