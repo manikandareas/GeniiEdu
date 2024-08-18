@@ -16,6 +16,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { toast } from 'sonner';
 import { DropdownMenuItem, DropdownMenuShortcut } from '../ui/dropdown-menu';
 import { LogOut } from 'lucide-react';
+import { getQueryClient } from '@/app/_providers/react-query-provider';
 
 type SignOutDialogProps = {};
 
@@ -29,8 +30,11 @@ const SignOutDialog: React.FC<SignOutDialogProps> = () => {
         },
     });
 
+    const queryClient = getQueryClient();
+
     const onSignOutClick = () => {
         // @ts-ignore
+        queryClient.clear();
         execute();
     };
     return (
