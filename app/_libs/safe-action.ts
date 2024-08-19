@@ -42,6 +42,7 @@ export const actionProcedure = createSafeActionClient({
 
 export const authenticatedProcedure = actionProcedure.use(async ({ next }) => {
     const { user, session } = await validateRequest();
+
     if (!session) {
         throw new ActionError('Unauthorized');
     }

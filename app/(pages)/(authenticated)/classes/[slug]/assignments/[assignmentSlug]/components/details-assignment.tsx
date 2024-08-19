@@ -5,8 +5,6 @@ import reactParser from 'html-react-parser';
 import Link from 'next/link';
 import { ComponentProps } from 'react';
 import MaterialHeader from '../../../_components/material-header';
-import { InferReturnType } from '@/app/_data-access/types';
-import assignmentsData from '@/app/_data-access/assignments';
 import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
 
 type DetailsAssignmentProps = ComponentProps<'main'> & {
@@ -43,6 +41,7 @@ const DetailsAssignment: React.FC<DetailsAssignmentProps> = ({
                             src={file.url}
                             className='aspect-video w-full rounded-md'
                             allowFullScreen
+                            loading='lazy'
                         />
                         <Typography
                             className=''

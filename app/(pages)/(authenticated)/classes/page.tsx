@@ -42,11 +42,6 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
             />
             <ClassesContainer>
                 <HydrationBoundary state={dehydrate(queryClient)}>
-                    {/* {user.role === 'teacher' ? (
-                        <TeacherTabs initialData={initialData} />
-                    ) : (
-                        <StudentTabs initialData={initialData} />
-                    )} */}
                     <ClassesTabs initialData={initialData} />
                 </HydrationBoundary>
             </ClassesContainer>

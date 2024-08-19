@@ -19,6 +19,7 @@ import {
     FormMessage,
 } from '@/app/_components/ui/form';
 import { Input } from '@/app/_components/ui/input';
+import LoadingSpinner from '@/app/_components/ui/loading-spinner';
 import { userClassesQuery } from '@/app/_hooks/query/user-classes-query';
 import { joinClassValidation } from '@/app/_validations/classes-validation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -113,6 +114,7 @@ const JoinClassForm: React.FC<JoinClassFormProps> = () => {
                             <Button
                                 disabled={joinClassStatus === 'executing'}
                                 type='submit'
+                                className=''
                             >
                                 {joinClassStatus === 'executing'
                                     ? 'Joining...'

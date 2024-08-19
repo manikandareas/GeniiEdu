@@ -23,7 +23,6 @@ import { useMemo } from 'react';
 import { GetUserClassesResponse } from '@/app/_actions/users-actions';
 import useSearchParamsState from '@/app/_hooks/search-params-state';
 import { cn } from '@/app/_utilities';
-import useCurrentUser from '@/app/_hooks/current-user';
 import useCurrentRole from '@/app/_hooks/current-role';
 import CreateClassForm from './create-class-form';
 
