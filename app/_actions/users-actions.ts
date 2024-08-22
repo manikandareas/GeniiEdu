@@ -126,7 +126,7 @@ export const getUserClasses = async () => {
             data: {
                 classes: [],
                 metadata: {
-                    total: 0,
+                    all: 0,
                     ongoing: 0,
                     completed: 0,
                     archived: 0,
@@ -147,7 +147,7 @@ export const getUserClasses = async () => {
             return acc;
         },
         {
-            total: userClasses.length,
+            all: userClasses.length,
             ongoing: 0,
             completed: 0,
             archived: 0,
