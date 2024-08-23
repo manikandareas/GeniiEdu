@@ -1,9 +1,14 @@
 import { getDetailsAssignment } from '@/app/_actions/assignments-actions';
 import {
+    getClassesForSearch,
     getDetailsClass,
     getUpcomingTasks,
 } from '@/app/_actions/classes-actions';
 import { getPersonalComments } from '@/app/_actions/personal-comments-actions';
+import {
+    getSubmissionsWhereAssId,
+    getSubmissionWhereAssIdAndStudentId,
+} from '@/app/_actions/submissions-actions';
 import {
     getUserClasses,
     getUserNotifications,
@@ -13,28 +18,32 @@ import { createQueryKeyStore } from '@lukemorales/query-key-factory';
 export const queryStore = createQueryKeyStore({
     user: {
         notifications: {
-            queryKey: ['user-notifications'],
-            queryFn: getUserNotifications,
+            queryKey: null,
+            queryFn: () => getUserNotifications(),
         },
         classes: {
-            queryKey: ['user-classes'],
-            queryFn: getUserClasses,
+            queryKey: null,
+            queryFn: () => getUserClasses(),
         },
+        globalSearch: (userId: string) => ({
+            queryKey: [userId],
+            queryFn: () => getClassesForSearch(userId),
+        }),
     },
     class: {
         details: (slug: string) => ({
-            queryKey: ['details-class', slug],
+            queryKey: [slug],
             queryFn: () => getDetailsClass(slug),
         }),
         upcomingTasks: (classId: string) => ({
-            queryKey: ['upcoming-tasks', classId],
+            queryKey: [classId],
             queryFn: () => getUpcomingTasks(classId),
         }),
     },
 
     assignment: {
         details: (assignmentId: string) => ({
-            queryKey: ['details-assignment', assignmentId],
+            queryKey: [assignmentId],
             queryFn: () =>
                 getDetailsAssignment({
                     id: assignmentId,
@@ -42,11 +51,22 @@ export const queryStore = createQueryKeyStore({
         }),
     },
 
-    subbmission: {},
+    submission: {
+        userSubmitted: (assignmentId: string, userId: string) => ({
+            queryKey: [assignmentId, userId],
+            queryFn: () =>
+                getSubmissionWhereAssIdAndStudentId(assignmentId, userId),
+        }),
+
+        studentsSubmission: (assignmentId: string) => ({
+            queryKey: [assignmentId],
+            queryFn: () => getSubmissionsWhereAssId(assignmentId),
+        }),
+    },
 
     personalComment: {
         get: (assignmentId: string, studentId: string) => ({
-            queryKey: ['personal-comments', assignmentId, studentId],
+            queryKey: [assignmentId, studentId],
             queryFn: () =>
                 getPersonalComments({
                     assignmentId,

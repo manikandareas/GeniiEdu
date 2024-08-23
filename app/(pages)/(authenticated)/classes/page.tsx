@@ -5,8 +5,7 @@ import { validateRequest } from '@/app/_libs/lucia';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 import ClassesContainer from './_components/classes-container';
-import StudentTabs from './_components/student-tabs';
-import TeacherTabs from './_components/teacher-tabs';
+import ClassesTabs from './_components/classes-tabs';
 
 type ClassesPageProps = {};
 
@@ -43,11 +42,7 @@ const ClassesPage: React.FC<ClassesPageProps> = async () => {
             />
             <ClassesContainer>
                 <HydrationBoundary state={dehydrate(queryClient)}>
-                    {user.role === 'teacher' ? (
-                        <TeacherTabs initialData={initialData} />
-                    ) : (
-                        <StudentTabs initialData={initialData} />
-                    )}
+                    <ClassesTabs initialData={initialData} />
                 </HydrationBoundary>
             </ClassesContainer>
         </>

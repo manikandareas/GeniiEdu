@@ -90,6 +90,7 @@ const PersonalComments: React.FC<PersonalComments.Props> = ({
                     defaultId,
             ),
         );
+        // `personal_comments:${assignmentId}:${studentId || user.id}`
 
         pusherClient.bind(
             'incoming-message',

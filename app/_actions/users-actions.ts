@@ -126,7 +126,7 @@ export const getUserClasses = async () => {
             data: {
                 classes: [],
                 metadata: {
-                    total: 0,
+                    all: 0,
                     ongoing: 0,
                     completed: 0,
                     archived: 0,
@@ -147,7 +147,7 @@ export const getUserClasses = async () => {
             return acc;
         },
         {
-            total: userClasses.length,
+            all: userClasses.length,
             ongoing: 0,
             completed: 0,
             archived: 0,
@@ -243,10 +243,14 @@ export const updateUserAccount = authenticatedProcedure
     });
 
 export const getUserNotifications = async () => {
+    console.log('Getting notifications');
+
     const { user } = await validateRequest();
     if (!user) {
         throw new ActionError('Unauthorized');
     }
+
+    console.log('Getting notifications for user:', user.id);
 
     return notificationsData.findManyWhereUserId(user.id);
 };

@@ -1,4 +1,6 @@
 'use client';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
+import { getSubmissionsWhereAssId } from '@/app/_actions/submissions-actions';
 import {
     Select,
     SelectContent,
@@ -7,17 +9,13 @@ import {
     SelectValue,
 } from '@/app/_components/ui/select';
 import Typography from '@/app/_components/ui/typography';
-import { useDetailsAssignmentQuery } from '@/app/_hooks/query/details-assignment-query';
+import { useQuery } from '@tanstack/react-query';
 import { columns } from './columns';
 import { DataTable } from './data-table';
 import HintTable from './hint-table';
 import PreviewSubmissions from './preview-submissions';
 import ReturnSubmissions from './return-submissions';
-import { InferReturnType } from '@/app/_data-access/types';
-import assignmentsData from '@/app/_data-access/assignments';
-import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
-import { useQuery } from '@tanstack/react-query';
-import { getSubmissionsWhereAssId } from '@/app/_actions/submissions-actions';
+import { useStudentSubmissionsQuery } from '@/app/_hooks/query/submission-query';
 
 type StudentAssignmentsContentProps = {
     initialData: GetDetailsAssignmentResponse;
@@ -26,10 +24,7 @@ type StudentAssignmentsContentProps = {
 const StudentAssignmentsContent: React.FC<StudentAssignmentsContentProps> = ({
     initialData,
 }) => {
-    const { data: submissions } = useQuery({
-        queryKey: [initialData.id, 'submissions'],
-        queryFn: () => getSubmissionsWhereAssId(initialData.id),
-    });
+    const { data: submissions } = useStudentSubmissionsQuery(initialData.id);
 
     return (
         <main className='space-y-4'>

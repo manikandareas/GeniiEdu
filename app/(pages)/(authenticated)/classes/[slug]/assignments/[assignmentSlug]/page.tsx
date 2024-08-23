@@ -1,5 +1,4 @@
 import PageHeader from '@/app/_components/elements/page-header';
-import assignmentsData from '@/app/_data-access/assignments';
 import { detailsAssignmentQuery } from '@/app/_hooks/query/details-assignment-query';
 import { validateRequest } from '@/app/_libs/lucia';
 import { decodeUuid } from '@/app/_utilities';

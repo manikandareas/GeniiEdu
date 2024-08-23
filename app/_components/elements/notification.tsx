@@ -20,6 +20,8 @@ type NotificationProps = {
 };
 
 const Notification = (props: NotificationProps) => {
+    console.log({ props });
+
     const unreadNotifications = props.notifications.filter(
         (not) => !not.isRead,
     );

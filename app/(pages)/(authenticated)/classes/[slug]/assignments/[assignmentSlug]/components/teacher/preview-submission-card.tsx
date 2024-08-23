@@ -10,6 +10,7 @@ import Typography from '@/app/_components/ui/typography';
 import { prettyText } from '@/app/_utilities';
 import Image from 'next/image';
 import { SubmissionsAssignment } from './columns';
+import ReactPlayer from 'react-player/youtube';
 
 namespace PreviewSubmissionCards {
     export type Props = SubmissionsAssignment;
@@ -30,12 +31,17 @@ const PreviewSubmissionCard: React.FC<PreviewSubmissionCards.Props> = (
                 <Typography>{props.student.name}</Typography>
             </CardHeader>
             <CardContent className='space-y-2'>
-                <iframe
-                    src={props.files[0].url}
+                <ReactPlayer
+                    url={props.files[0].url}
                     width={200}
                     height={200}
-                    className='aspect-video max-h-24 w-full object-cover'
-                    // alt='file name'
+                    // className='aspect-video max-h-24 w-full object-cover'
+                    style={{
+                        aspectRatio: '16/9',
+                        maxHeight: '6rem',
+                        width: '100%',
+                        objectFit: 'cover',
+                    }}
                 />
 
                 <Typography affects={'muted'}>

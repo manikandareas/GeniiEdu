@@ -1,10 +1,7 @@
 'use client';
+import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
 import { removeFiles, saveFilesToDB } from '@/app/_actions/storage-actions';
-import {
-    createSubmission,
-    getSubmission,
-    getSubmissionWhereAssIdAndStudentId,
-} from '@/app/_actions/submissions-actions';
+import { createSubmission } from '@/app/_actions/submissions-actions';
 import { Button } from '@/app/_components/ui/button';
 import {
     Card,
@@ -19,21 +16,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
-import { Input } from '@/app/_components/ui/input';
-import assignmentsData from '@/app/_data-access/assignments';
+import useCurrentUser from '@/app/_hooks/current-user';
+import { useSubmissionQuery } from '@/app/_hooks/query/submission-query';
+import { formatDate } from '@/app/_utilities';
 import { useUploadThing } from '@/app/_utilities/uploadthing';
-import { Loader2, Plus, SendHorizonal, User2 } from 'lucide-react';
+import { formatDistance } from 'date-fns';
+import { Loader2, Plus } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import SelectedFile from '../selected-files';
-import { formatDate } from '@/app/_utilities';
-import { formatDistance } from 'date-fns';
-import PersonalComments from './personal-comments';
-import { InferReturnType } from '@/app/_data-access/types';
-import { GetDetailsAssignmentResponse } from '@/app/_actions/assignments-actions';
-import { useQuery } from '@tanstack/react-query';
-import useCurrentUser from '@/app/_hooks/current-user';
 
 type SubmissionAssignmentProps = {
     initialData: GetDetailsAssignmentResponse;
@@ -124,14 +116,10 @@ const SubmissionAssignment: React.FC<SubmissionAssignmentProps> = (props) => {
         if (!response) return;
     };
 
-    const { data: submission } = useQuery({
-        queryKey: ['submission', props.initialData.id, user?.id],
-        queryFn: () =>
-            getSubmissionWhereAssIdAndStudentId(
-                props.initialData.id,
-                user?.id as string,
-            ),
-    });
+    const { data: submission } = useSubmissionQuery(
+        props.initialData.id,
+        user?.id as string,
+    );
 
     const isLoading =
         isUploading || statusSaveFile === 'executing' || isExecuting;

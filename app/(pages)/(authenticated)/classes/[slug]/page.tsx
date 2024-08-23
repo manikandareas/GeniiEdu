@@ -1,7 +1,4 @@
-import {
-    getDetailsClass,
-    GetDetailsClassResponse,
-} from '@/app/_actions/classes-actions';
+import { getDetailsClass } from '@/app/_actions/classes-actions';
 import PageHeader from '@/app/_components/elements/page-header';
 import { Button } from '@/app/_components/ui/button';
 import {
